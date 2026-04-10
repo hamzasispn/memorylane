@@ -1,0 +1,11 @@
+{
+  "assets/src/js/main.js": {
+    "file": "assets/main-CnFW0vdO.js",
+    "name": "main",
+    "src": "assets/src/js/main.js",
+    "isEntry": true,
+    "css": [
+      "assets/main-8ecXKwu0.css"
+    ]
+  }
+}

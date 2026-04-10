@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.font-primary {
+  font-family: 'AdleryPro';
+}
+
+.font-secondary {
+  font-family: 'AdlerySwash', sans-serif;
+}
+
+@layer components {
+    img{
+        @apply block w-full h-auto;
+    }
+    .btn-primary{
+        @apply inline-block bg-button-bg text-primary py-3 px-10 rounded-full font-primary md:text-3xl text-lg border-2 border-primary;
+    }
+    .btn-secondary{
+        @apply inline-block bg-white/90 text-primary py-3 px-10 rounded-full font-primary md:text-3xl text-lg;
+    }  
+}
