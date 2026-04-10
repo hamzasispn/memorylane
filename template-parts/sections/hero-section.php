@@ -8,6 +8,6 @@
         Your browser does not support the video tag.
     </video>
     <a href="<?php echo esc_url(home_url('/')); ?>" class="absolute bottom-20 left-1/2 transform -translate-x-1/2 btn-primary">
-            Boek een adada
+            Boek een opname
     </a>
 </section>
