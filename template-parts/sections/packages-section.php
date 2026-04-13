@@ -37,13 +37,23 @@ $packagesData = [
 ];
 ?>
 
-<section class="package-section bg-gradient-tb border-t border-white">
+<section class="package-section bg-gradient-bt border-t border-white">
     <div class="w-[90vw] mx-auto py-20">
         <?= get_template_part('template-parts/components/section-header', null, $packageHeaderData) ?>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-20">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-20 justify-center">
             <?php foreach ($packagesData as $item): ?>
                 <?= get_template_part('template-parts/components/package-card', null, $item); ?>
             <?php endforeach; ?>
+        </div>
+        <div class="w-[70%] mx-auto rounded-[2.604vw] bg-white py-[1.563vw] px-[8vw] mt-[1.563vw]">
+            <div class="flex items-center justify-center">
+                <img src="<?= get_template_directory_uri(); ?>/assets/star-icon.png"
+                    alt="Abonnement maandelijks opzegbaar" class="w-16 h-16 mr-4">
+                <h2 class="text-primary font-primary text-[2.5vw]">Abonnement maandelijks opzegbaar</h2>
+            </div>
+            <p class="text-primary text-center text-[1.24vw]">Je beslist zelf of je jouw woning op Memory Lane online
+                wilt houden al
+                dan niet. Abonnement op elk moment opzegbaar.</p>
         </div>
     </div>
 </section>
