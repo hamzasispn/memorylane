@@ -5,7 +5,7 @@ $headerSubtitle = $headerData['subtitle'] ?? '';
 $headerDesc = $headerData['description'] ?? '';
 ?>
 
-<div class="text-center mb-10">
+<div class="section-header text-center mb-10">
     <h2 class="text-[3.229vw] text-primary font-primary leading-[1.3] <?= $headerSubtitle ? '' : 'mb-[1.042vw]'; ?> text-center">
         <?= $headerTitle ?>
     </h2>

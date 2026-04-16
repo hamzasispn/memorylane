@@ -16,6 +16,36 @@
   font-family: 'AdlerySwash', sans-serif;
 }
 
+/* ── Animation initial states ───────────────────────────────── */
+/* Elements that motion.js will animate into view start invisible */
+.about-us .grid > div,
+.about-us > img,
+.section-header,
+.why-choose-us .grid > *,
+.how-its-work-card,
+.how-its-work img[src*="Aerrow"],
+.how-its-work .btn-primary,
+.video-section iframe,
+.package-section .grid > *,
+.contact-us .btn-primary,
+.contact-us .flex.justify-center,
+.contact-us .bg-white\/60 {
+    opacity: 0;
+}
+
+/* Hover cursor on interactive cards */
+.why-choose-us .grid > *,
+.package-section .grid > *,
+.how-its-work-card {
+    cursor: default;
+    will-change: transform;
+}
+
+.btn-primary,
+.btn-secondary {
+    will-change: transform;
+}
+
 @layer components {
     img{
         @apply block w-full h-auto;
