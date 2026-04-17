@@ -41,6 +41,16 @@
     will-change: transform;
 }
 
+// ── Sticky header scrolled state ─────────────────────────────────
+.site-header {
+    &.scrolled {
+        background: rgba(21, 39, 81, 0.93);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 2px 28px rgba(21, 39, 81, 0.22);
+    }
+}
+
 // ── Mobile nav styles ─────────────────────────────────────────────
 .mobile-nav {
     list-style: none;

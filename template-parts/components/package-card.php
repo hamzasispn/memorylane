@@ -2,26 +2,38 @@
 $itemData = $args;
 ?>
 
-<div class="bg-white flex flex-col items-center justify-between text-center py-[4vw] px-[1.563vw] border rounded-[2.604vw] relative">
-    <h3 class="text-[2.5vw] text-primary font-primary mb-8"><?= $itemData['title'] ?></h3>
-    <img src="<?= $itemData['icon'] ?>" alt="<?= $itemData['title'] ?>" class="w-[4vw] h-auto mb-[1.563vw] object-contain">
+<div class="bg-white flex flex-col items-center justify-between text-center py-10 md:py-[3vw] px-6 md:px-[1.563vw] border rounded-[2.604vw] relative">
+    <h3 class="text-[6vw] md:text-[2vw] text-primary font-primary mb-6 md:mb-[1.5vw] leading-[1.3]">
+        <?= esc_html($itemData['title']) ?>
+    </h3>
+    <img src="<?= esc_url($itemData['icon']) ?>" alt="<?= esc_attr($itemData['title']) ?>"
+        class="!w-[18vw] md:!w-[4vw] h-auto mb-5 md:mb-[1.563vw] object-contain">
+
     <?php if (isset($itemData['description'])): ?>
-        <p class="text-primary text-[1.30vw] text-left leading-[1.5]">
-            <?= $itemData['description'] ?>
+        <p class="text-primary text-[4vw] md:text-[1.2vw] text-left leading-[1.8] mb-4">
+            <?= esc_html($itemData['description']) ?>
         </p>
     <?php endif; ?>
+
     <?php if (isset($itemData['features'])): ?>
-            <ul class="text-primary text-[1.30vw] leading-[1.5]  list-none w-full">
-                <?php foreach ($itemData['features'] as $feature): ?>
-                    <li class="flex items-center text-left">
-                        <img src="<?= get_template_directory_uri() ?>/assets/check-icon.png" alt="Check" class="mr-2 w-[1.25vw] h-[1.25vw] flex-1/12">
-                        <span class="flex-11/12"><?= $feature ?></span>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+        <ul class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8] list-none w-full mb-4">
+            <?php foreach ($itemData['features'] as $feature): ?>
+                <li class="flex items-center text-left gap-2 mb-1">
+                    <img src="<?= get_template_directory_uri() ?>/assets/check-icon.png" alt=""
+                        class="!w-[4vw] md:!w-[1.1vw] !h-auto flex-shrink-0">
+                    <span><?= esc_html($feature) ?></span>
+                </li>
+            <?php endforeach; ?>
+        </ul>
     <?php endif; ?>
-    <p class="text-primary text-[1.25vw] mt-[2.63vw] font-bold"><?= $itemData['price'] ?></p>
+
+    <p class="text-primary text-[6vw] md:text-[1.6vw] mt-auto pt-4 border-t border-primary/10 w-full font-bold font-primary">
+        <?= esc_html($itemData['price']) ?>
+    </p>
+
     <?php if (isset($itemData['extra'])): ?>
-            <p class="text-primary font-bold text-[1.25vw] absolute bottom-4 right-4"><?= $itemData['extra'] ?></p>
+        <p class="text-primary font-bold text-[4vw] md:text-[1.1vw] mt-2">
+            <?= esc_html($itemData['extra']) ?>
+        </p>
     <?php endif; ?>
 </div>

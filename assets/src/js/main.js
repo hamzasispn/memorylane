@@ -74,6 +74,55 @@ function playWordFade(el) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // ── Sticky header ──────────────────────────────────────────────
+    const siteHeader = document.querySelector('.site-header')
+    if (siteHeader) {
+        const syncHeader = () => siteHeader.classList.toggle('scrolled', window.scrollY > 50)
+        window.addEventListener('scroll', syncHeader, { passive: true })
+        syncHeader()
+    }
+
+    // ── Scroll-driven steps (hoe-werkt page) ───────────────────────
+    const stepsOuter = document.querySelector('.steps-scroll-outer')
+    if (stepsOuter) {
+        const steps = Array.from(stepsOuter.querySelectorAll('.scroll-step'))
+        if (steps.length) {
+            steps.forEach(s => { s.style.opacity = '0'; s.style.transform = 'translateY(44px)' })
+
+            if (window.innerWidth < 768) {
+                // Mobile: simple inView stagger
+                steps.forEach(s => {
+                    inView(s, () => animate(s, { opacity: 1, y: [44, 0] }, {
+                        duration: 0.6, easing: [0.25, 0.46, 0.45, 0.94],
+                    }), { amount: 0.3 })
+                })
+            } else {
+                // Desktop: pinned one-by-one reveal
+                const scrollPerStep = Math.max(window.innerHeight * 0.72, 420)
+                stepsOuter.style.minHeight = (window.innerHeight + steps.length * scrollPerStep) + 'px'
+
+                function updateSteps() {
+                    const scrolled = Math.max(0, -stepsOuter.getBoundingClientRect().top)
+                    steps.forEach((step, i) => {
+                        const wasVis = step.dataset.vis === '1'
+                        const isVis  = scrolled >= i * scrollPerStep
+                        if (isVis === wasVis) return
+                        step.dataset.vis = isVis ? '1' : '0'
+                        isVis
+                            ? animate(step, { opacity: 1, y: [44, 0] }, { duration: 0.55, easing: [0.25, 0.46, 0.45, 0.94] })
+                            : animate(step, { opacity: 0, y: 44 },      { duration: 0.32, easing: 'ease-in' })
+                    })
+                }
+                window.addEventListener('scroll', updateSteps, { passive: true })
+                window.addEventListener('resize', () => {
+                    stepsOuter.style.minHeight = (window.innerHeight + steps.length * Math.max(window.innerHeight * 0.72, 420)) + 'px'
+                    updateSteps()
+                })
+                updateSteps()
+            }
+        }
+    }
+
     // ── Typewriter: section headers + page headings ────────────────
     document.querySelectorAll(
         '.section-header h2, .page-hero-title, .page-section-title'

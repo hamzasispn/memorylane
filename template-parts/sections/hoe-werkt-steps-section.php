@@ -27,10 +27,12 @@ $steps = [
 ];
 ?>
 
-<section class="bg-gradient-lr border-t border-white/30 overflow-hidden">
-    <div class="w-[90vw] mx-auto py-16 md:py-24">
+<!-- Outer div: no overflow-hidden so sticky child works. JS sets min-height for desktop. -->
+<div class="steps-scroll-outer bg-gradient-lr border-t border-white/30">
 
-        <div class="section-header text-center mb-12 md:mb-[3vw]">
+    <!-- Section header — scrolls normally -->
+    <div class="w-[90vw] mx-auto pt-16 md:pt-[4vw] pb-8 md:pb-[2vw]">
+        <div class="section-header text-center">
             <h2 class="text-[8vw] md:text-[3.229vw] text-primary font-primary leading-[1.3] mb-[1.042vw] text-center">
                 In 4 stappen naar jouw Memory Lane
             </h2>
@@ -38,45 +40,56 @@ $steps = [
                 Een eenvoudig proces met een blijvende emotionele waarde.
             </p>
         </div>
-
-        <div class="flex flex-col gap-10 md:gap-[2.5vw] animate-stagger-parent">
-            <?php foreach ($steps as $index => $step) : ?>
-                <div class="animate-stagger-child grid grid-cols-1 md:grid-cols-[auto_1fr] gap-5 md:gap-[2vw] items-start">
-
-                    <!-- Step number circle -->
-                    <div class="flex items-center gap-4 md:flex-col md:items-center md:gap-2">
-                        <span class="flex-shrink-0 w-14 h-14 md:w-[3.5vw] md:h-[3.5vw] rounded-full bg-primary text-white flex items-center justify-center font-primary text-2xl md:text-[1.8vw] leading-none">
-                            <?= $step['number'] ?>
-                        </span>
-                        <?php if ($index < count($steps) - 1) : ?>
-                            <div class="hidden md:block w-[2px] flex-1 bg-primary/20 mt-1 h-[4vw]"></div>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- Step content -->
-                    <div class="bg-white/70 rounded-[2vw] p-7 md:p-[1.8vw]">
-                        <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] mb-3 md:mb-[0.6vw]">
-                            <?= esc_html($step['title']) ?>
-                        </h3>
-                        <p class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8] mb-3">
-                            <?= esc_html($step['description']) ?>
-                        </p>
-                        <?php if ($step['note']) : ?>
-                            <p class="text-primary/60 text-[3.5vw] md:text-[1vw] leading-[1.6] italic border-t border-primary/10 pt-3">
-                                <?= esc_html($step['note']) ?>
-                            </p>
-                        <?php endif; ?>
-                    </div>
-
-                </div>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="flex justify-center mt-12 md:mt-[3vw]">
-            <a href="<?php echo esc_url(home_url('/boek')); ?>" class="btn-primary animate-fade-up">
-                Boek jouw opname
-            </a>
-        </div>
-
     </div>
-</section>
+
+    <!-- Sticky steps — sticks below fixed header on desktop, normal on mobile -->
+    <div class="steps-sticky-inner md:sticky md:top-[5.5vw] bg-gradient-lr overflow-hidden">
+        <div class="w-[90vw] mx-auto pb-16 md:pb-[3vw]">
+
+            <div class="flex flex-col gap-5 md:gap-[1vw]">
+                <?php foreach ($steps as $index => $step) : ?>
+                    <div class="scroll-step grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 md:gap-[1.5vw] items-start">
+
+                        <!-- Number circle + connector -->
+                        <div class="flex items-center gap-4 md:flex-col md:items-center md:gap-2">
+                            <span class="flex-shrink-0 w-12 h-12 md:w-[3vw] md:h-[3vw] rounded-full bg-primary text-white flex items-center justify-center font-primary text-xl md:text-[1.6vw] leading-none">
+                                <?= $step['number'] ?>
+                            </span>
+                            <?php if ($index < count($steps) - 1) : ?>
+                                <div class="hidden md:block w-[2px] bg-primary/20 mt-1" style="height:3.5vw"></div>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Content card -->
+                        <div class="bg-white/70 rounded-[2vw] p-6 md:p-[1.5vw]">
+                            <h3 class="font-primary text-primary text-[6vw] md:text-[1.7vw] leading-[1.3] mb-2 md:mb-[0.5vw]">
+                                <?= esc_html($step['title']) ?>
+                            </h3>
+                            <p class="text-primary text-[4vw] md:text-[1.15vw] leading-[1.8]">
+                                <?= esc_html($step['description']) ?>
+                            </p>
+                            <?php if ($step['note']) : ?>
+                                <p class="text-primary/55 text-[3.5vw] md:text-[0.95vw] leading-[1.6] italic border-t border-primary/10 pt-3 mt-3">
+                                    <?= esc_html($step['note']) ?>
+                                </p>
+                            <?php endif; ?>
+                        </div>
+
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- CTAs -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 md:mt-[2vw]">
+                <a href="<?php echo esc_url(home_url('/boek')); ?>" class="btn-primary animate-fade-up">
+                    Boek jouw opname
+                </a>
+                <a href="<?php echo esc_url(home_url('/hoe-werkt-het')); ?>" class="btn-secondary animate-fade-up">
+                    Meer informatie
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>

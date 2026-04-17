@@ -44,15 +44,36 @@
 
                 <?php
                 $states = [
-                    ['emoji' => '🟢', 'label' => 'Online & actief', 'desc' => 'Jouw tour is zichtbaar en toegankelijk via de klantenzone. Maandelijks abonnement actief.'],
-                    ['emoji' => '📦', 'label' => 'Gearchiveerd', 'desc' => 'Tour is niet toegankelijk maar blijft veilig bewaard. Abonnementskosten gestopt. Heractiveerbaar tegen eenmalige kost.'],
-                    ['emoji' => '🔄', 'label' => 'Hergeactiveerd', 'desc' => 'Via een eenmalige activatiekost wordt de tour manueel opnieuw online gezet. Dit kan tot 8 uur duren.'],
+                    [
+                        'svg'   => '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
+                        'color' => '#16a34a',
+                        'label' => 'Online &amp; actief',
+                        'desc'  => 'Jouw tour is zichtbaar en toegankelijk via de klantenzone. Maandelijks abonnement actief.',
+                    ],
+                    [
+                        'svg'   => '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+                        'color' => '#152751',
+                        'label' => 'Gearchiveerd',
+                        'desc'  => 'Tour is niet toegankelijk maar blijft veilig bewaard. Abonnementskosten gestopt. Heractiveerbaar tegen eenmalige kost.',
+                    ],
+                    [
+                        'svg'   => '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+                        'color' => '#7c3aed',
+                        'label' => 'Hergeactiveerd',
+                        'desc'  => 'Via een eenmalige activatiekost wordt de tour manueel opnieuw online gezet. Dit kan tot 8 uur duren.',
+                    ],
                 ];
                 foreach ($states as $state) : ?>
                     <div class="bg-white/80 rounded-[1.5vw] p-5 md:p-[1.2vw] flex items-start gap-4">
-                        <span class="text-3xl md:text-[1.8vw] flex-shrink-0 leading-none mt-0.5"><?= $state['emoji'] ?></span>
+                        <span class="flex-shrink-0 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                 stroke="<?= esc_attr($state['color']) ?>" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                 class="w-7 h-7 md:w-[1.8vw] md:h-[1.8vw]">
+                                <?= $state['svg'] ?>
+                            </svg>
+                        </span>
                         <div>
-                            <strong class="block font-primary text-primary text-[4.5vw] md:text-[1.3vw] mb-1"><?= esc_html($state['label']) ?></strong>
+                            <strong class="block font-primary text-primary text-[4.5vw] md:text-[1.3vw] mb-1"><?= $state['label'] ?></strong>
                             <p class="text-primary text-[3.5vw] md:text-[1.1vw] leading-[1.6]"><?= esc_html($state['desc']) ?></p>
                         </div>
                     </div>

@@ -11,7 +11,7 @@
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
 
-    <header class="site-header absolute top-0 left-0 w-full z-50" x-data="{ mobileOpen: false }">
+    <header class="site-header fixed top-0 left-0 w-full z-50 transition-all duration-300" x-data="{ mobileOpen: false }">
 
         <!-- Desktop Header -->
         <div class="w-[90vw] mx-auto px-4 py-6 hidden md:block">
