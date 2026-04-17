@@ -82,6 +82,45 @@ document.addEventListener('DOMContentLoaded', () => {
         syncHeader()
     }
 
+    // ── Scroll-driven steps (home page how-its-work) ──────────────
+    const hwOuter = document.querySelector('.hw-scroll-outer')
+    if (hwOuter) {
+        const hwSteps = Array.from(hwOuter.querySelectorAll('.hw-scroll-step'))
+        if (hwSteps.length) {
+            hwSteps.forEach(s => { s.style.opacity = '0'; s.style.transform = 'translateY(44px)' })
+
+            if (window.innerWidth < 768) {
+                hwSteps.forEach(s => {
+                    inView(s, () => animate(s, { opacity: 1, y: [44, 0] }, {
+                        duration: 0.6, easing: [0.25, 0.46, 0.45, 0.94],
+                    }), { amount: 0.3 })
+                })
+            } else {
+                const hwScrollPerStep = Math.max(window.innerHeight * 0.72, 420)
+                hwOuter.style.minHeight = (window.innerHeight + hwSteps.length * hwScrollPerStep) + 'px'
+
+                function updateHwSteps() {
+                    const scrolled = Math.max(0, -hwOuter.getBoundingClientRect().top)
+                    hwSteps.forEach((step, i) => {
+                        const wasVis = step.dataset.vis === '1'
+                        const isVis  = scrolled >= i * hwScrollPerStep
+                        if (isVis === wasVis) return
+                        step.dataset.vis = isVis ? '1' : '0'
+                        isVis
+                            ? animate(step, { opacity: 1, y: [44, 0] }, { duration: 0.55, easing: [0.25, 0.46, 0.45, 0.94] })
+                            : animate(step, { opacity: 0, y: 44 },      { duration: 0.32, easing: 'ease-in' })
+                    })
+                }
+                window.addEventListener('scroll', updateHwSteps, { passive: true })
+                window.addEventListener('resize', () => {
+                    hwOuter.style.minHeight = (window.innerHeight + hwSteps.length * Math.max(window.innerHeight * 0.72, 420)) + 'px'
+                    updateHwSteps()
+                })
+                updateHwSteps()
+            }
+        }
+    }
+
     // ── Scroll-driven steps (hoe-werkt page) ───────────────────────
     const stepsOuter = document.querySelector('.steps-scroll-outer')
     if (stepsOuter) {
@@ -209,22 +248,11 @@ inView('.why-choose-us', () => {
     }
 }, { amount: 0.15 })
 
-// ── How-it-works steps ─────────────────────────────────────────
-inView('.how-its-work', () => {
-    const steps = Array.from(document.querySelectorAll('.how-its-work .row-gap-20 > .how-its-work-card'))
-    const arrow = document.querySelector('.how-its-work img[src*="Aerrow"]')
-    const btn   = document.querySelector('.how-its-work .btn-primary')
-
-    if (steps.length) {
-        animate(steps, { opacity: [0, 1], x: [-50, 0] }, {
-            duration: 0.7,
-            delay: stagger(0.2, { start: 0.2 }),
-            easing: [0.25, 0.46, 0.45, 0.94],
-        })
-    }
-    if (arrow) animate(arrow, { opacity: [0, 1], scale: [0.8, 1] }, { duration: 0.8, delay: 0.5, easing: 'ease-out' })
-    if (btn)   animate(btn,   { opacity: [0, 1], y: [20, 0] },      { duration: 0.6, delay: 0.6, easing: 'ease-out' })
-}, { amount: 0.15 })
+// ── How-it-works arrow (scroll-driven steps handled in DOMContentLoaded) ──
+inView('.hw-scroll-outer', () => {
+    const arrow = document.querySelector('.hw-scroll-outer img[src*="Aerrow"]')
+    if (arrow) animate(arrow, { opacity: [0, 1], scale: [0.8, 1] }, { duration: 0.8, delay: 0.3, easing: 'ease-out' })
+}, { amount: 0.1 })
 
 // ── Video section ──────────────────────────────────────────────
 inView('.video-section', () => {

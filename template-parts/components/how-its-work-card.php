@@ -11,7 +11,7 @@ $itemData = $args;
             <?= esc_html($itemData['title']) ?>
         </h3>
     </div>
-    <div class="bg-white rounded-[2vw] p-6 md:p-[1.5vw] w-full md:w-[60%] mx-auto">
+    <div class="bg-white rounded-full p-6 md:p-[1.5vw] w-full md:w-[60%] mx-auto">
         <p class="text-primary text-[4vw] md:text-[1.2vw] text-center leading-[1.8] font-medium">
             <?= esc_html($itemData['description']) ?>
         </p>
