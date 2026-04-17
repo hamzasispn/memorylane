@@ -3,7 +3,7 @@ $itemData = $args;
 ?>
 
 <div class="how-its-work-card flex flex-col gap-4 justify-center mb-8 md:mb-[2vw]">
-    <div class="flex items-center gap-4 w-full md:w-[40%] mx-auto mb-2">
+    <div class="flex items-center justify-center gap-4 w-full md:w-[40%] mx-auto mb-2">
         <span class="inline-flex rounded-full w-14 h-14 md:w-[3.5vw] md:h-[3.5vw] flex-shrink-0 items-center justify-center text-white bg-primary font-primary text-2xl md:text-[1.8vw] leading-none">
             <?= esc_html($itemData['step']) ?>
         </span>
