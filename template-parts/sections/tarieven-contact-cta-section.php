@@ -1,20 +1,23 @@
 <?php
 $sectionTitle = [
     'title'       => 'Wil je meer weten over de tarieven of voorwaarden?',
-    'description' => 'We vinden het belangrijk dat je met een gerust gevoel kiest voor een Memory Lane. Heb je vragen over de opnamekost, het abonnement, archivering of heractivatie? Of wil je graag een offerte opvragen?',
+    'description' => 'We vinden het belangrijk dat je er met een gerust gevoel voor kiest jouw woning te laten vereeuwigen op Memory Lane. Heb je vragen of wil je een offerte aanvragen? Stuur ons dan een bericht via het contactformulier. Of je kan natuurlijk ook meteen een opname inboeken via onderstaande button. 🙂',
 ];
 $contactInfo = [
     [
         'icon' => get_template_directory_uri() . '/assets/Message.png',
         'text' => 'info@memorylane.be',
+        'link' => 'mailto:info@memorylane.be',
     ],
     [
         'icon' => get_template_directory_uri() . '/assets/Call.png',
         'text' => '016 60 60 60',
+        'link' => 'tel:+3216606060',
     ],
     [
         'icon' => get_template_directory_uri() . '/assets/location-icon.png',
         'text' => 'Heel België',
+        'link' => null,
     ],
 ];
 ?>
@@ -44,7 +47,11 @@ $contactInfo = [
                     <?php foreach ($contactInfo as $item) : ?>
                         <li class="flex items-center gap-4">
                             <img src="<?= esc_url($item['icon']) ?>" alt="" class="!w-10 !h-10 object-contain">
-                            <span class="text-primary text-[4.5vw] md:text-xl font-medium"><?= esc_html($item['text']) ?></span>
+                            <?php if (!empty($item['link'])): ?>
+                                <a href="<?= esc_url($item['link']) ?>" class="text-primary text-[4.5vw] md:text-xl font-medium hover:underline"><?= esc_html($item['text']) ?></a>
+                            <?php else: ?>
+                                <span class="text-primary text-[4.5vw] md:text-xl font-medium"><?= esc_html($item['text']) ?></span>
+                            <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ul>

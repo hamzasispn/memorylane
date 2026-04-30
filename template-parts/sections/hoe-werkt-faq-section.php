@@ -2,11 +2,11 @@
 $faqItems = [
     [
         'question' => 'Hoe verloopt een opname van mijn woning?',
-        'answer'   => 'We komen langs op het afgesproken moment en maken met professionele 3D-scantechnologie een digitale opname van de woning, inclusief delen van de omgeving errond, zoals de straat, de voortuin, zijtuin en achtertuin. De prijs is geldig voor percelen tot max. 5a.',
+        'answer'   => 'We komen langs op het afgesproken moment en maken met professionele 3D-scantechnologie een digitale opname van de woning, inclusief delen van de omgeving errond, zoals de straat, de voortuin, zijtuin en achtertuin. De prijs is geldig voor opnames van het perceel tot max. 7a. Indien je graag je hele tuin wilt laten doen en deze is groter, dan laat je best eerst een offerte opmaken voor het hele perceel.',
     ],
     [
         'question' => 'Hoe lang duurt een opname?',
-        'answer'   => 'Dat hangt af van de grootte en indeling van de woning, maar we voorzien hier altijd voldoende tijd voor. Voor een standaard woning moet je ongeveer 1 uur rekenen.',
+        'answer'   => 'Dat hangt af van de grootte en indeling van de woning, maar we voorzien hier altijd voldoende tijd voor. Voor een standaard woning moet je ongeveer 1u30 rekenen.',
     ],
     [
         'question' => 'Kan ik mijn Memory Lane op elk moment bekijken?',

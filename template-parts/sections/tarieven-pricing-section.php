@@ -1,10 +1,10 @@
 <?php
 $pricingCards = [
     [
-        'icon'        => get_template_directory_uri() . '/assets/Camera.png',
-        'title'       => 'Opname van jouw woning',
+        'icon'        => get_template_directory_uri() . '/assets/icons/camera-around-icon.png',
+        'title'       => 'Jouw woning op Memory Lane',
         'price'       => '€ XX eenmalig',
-        'badge'       => 'Meest gekozen',
+        'badge'       => null,
         'highlight'   => true,
         'features'    => [
             'Professionele 3D-scan van jouw volledige woning en perceel',
@@ -15,8 +15,9 @@ $pricingCards = [
         'note'        => 'Prijs geldig tot max. 300 m² totale vloeroppervlakte en 7a perceelsoppervlakte. Voor grotere woningen of percelen kan je steeds een offerte aanvragen.',
     ],
     [
-        'icon'        => get_template_directory_uri() . '/assets/Cloud.png',
+        'icon'        => get_template_directory_uri() . '/assets/icons/cloud-icon.png',
         'title'       => 'Je woning online actief houden',
+        'subtitle'    => '(na 1 jaar)',
         'price'       => '€ XX / maand',
         'badge'       => null,
         'highlight'   => false,
@@ -29,7 +30,7 @@ $pricingCards = [
         'note'        => 'Na het eerste jaar kies je zelf of je jouw woning op Memory Lane actief wilt houden.',
     ],
     [
-        'icon'        => get_template_directory_uri() . '/assets/rotate-icon.png',
+        'icon'        => get_template_directory_uri() . '/assets/icons/activate-icon.png',
         'title'       => 'Heractivatie van een gearchiveerde tour',
         'price'       => '€ XX eenmalig',
         'badge'       => null,
@@ -68,9 +69,14 @@ $pricingCards = [
 
                     <img src="<?= esc_url($card['icon']) ?>" alt="<?= esc_attr($card['title']) ?>" class="!w-[14vw] md:!w-[4vw] h-auto mb-5 md:mb-[1.2vw] object-contain mx-auto">
 
-                    <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] text-center mb-4 md:mb-[1vw]">
+                    <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] text-center mb-1">
                         <?= esc_html($card['title']) ?>
                     </h3>
+                    <?php if (!empty($card['subtitle'])): ?>
+                        <p class="text-primary italic text-[3.5vw] md:text-[1vw] text-center mb-4 md:mb-[1vw]"><?= esc_html($card['subtitle']) ?></p>
+                    <?php else: ?>
+                        <div class="mb-4 md:mb-[1vw]"></div>
+                    <?php endif; ?>
 
                     <ul class="flex flex-col gap-2 md:gap-[0.5vw] list-none mb-5 md:mb-[1.2vw] flex-1">
                         <?php foreach ($card['features'] as $feature) : ?>

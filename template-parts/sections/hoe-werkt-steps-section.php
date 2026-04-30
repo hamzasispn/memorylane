@@ -9,13 +9,13 @@ $steps = [
     [
         'number'      => '2',
         'title'       => 'We maken een professionele 3D-scan van jouw woning',
-        'description' => 'Op de afgesproken dag en uur komen we langs om jouw woning digitaal in kaart te brengen. Met professionele 3D-scanningstechnologie leggen we de ruimtes vast zoals ze op dat moment zijn — niet als losse foto\'s, maar als een volledige 360° digitale weergave.',
+        'description' => 'Op de afgesproken dag en uur komen we langs om jouw woning digitaal in kaart te brengen. Met professionele 3D-scanningstechnologie leggen we de ruimtes vast zoals ze op dat moment zijnniet als losse foto\'s, maar als een volledige 360° digitale weergave.',
         'note'        => 'We leggen ook de omgeving vast: een stukje van jouw straat, de volledige voortuin en eventueel ook achtertuin. Bij percelen groter dan 5a geldt een meerprijs.',
     ],
     [
         'number'      => '3',
         'title'       => 'We bouwen jouw persoonlijke Memory Lane',
-        'description' => 'Na de opname verwerken we alles tot een virtuele tour van jouw woning. Die digitale tour wordt gekoppeld aan jouw persoonlijke klantenzone, waar je veilig toegang krijgt tot jouw eigen Memory Lane. Zo blijft jouw woning privé en eenvoudig bereikbaar wanneer jij dat wilt.',
+        'description' => 'Na de opname verwerken we alles tot een virtuele tour van jouw woning. Die digitale tour wordt gekoppeld aan jouw persoonlijke klantenzone op Memory Lane, waar jij alleen toegang krijgt tot jouw woning. Zo blijft jouw woning privé en eenvoudig bereikbaar wanneer jij dat wilt.',
         'note'        => null,
     ],
     [
@@ -27,10 +27,9 @@ $steps = [
 ];
 ?>
 
-<!-- Outer div: no overflow-hidden so sticky child works. JS sets min-height for desktop. -->
-<div class="steps-scroll-outer bg-gradient-lr border-t border-white/30">
+<div class="bg-gradient-lr border-t border-white/30 overflow-hidden">
 
-    <!-- Section header — scrolls normally -->
+    <!-- Section headerscrolls normally -->
     <div class="w-[90vw] mx-auto pt-16 md:pt-[4vw] pb-8 md:pb-[2vw]">
         <div class="section-header text-center">
             <h2 class="text-[8vw] md:text-[3.229vw] text-primary font-primary leading-[1.3] mb-[1.042vw] text-center">
@@ -42,13 +41,12 @@ $steps = [
         </div>
     </div>
 
-    <!-- Sticky steps — sticks below fixed header on desktop, normal on mobile -->
-    <div class="steps-sticky-inner md:sticky md:top-[5.5vw] bg-gradient-lr overflow-hidden">
+    <div>
         <div class="w-[90vw] mx-auto pb-16 md:pb-[3vw]">
 
-            <div class="flex flex-col gap-5 md:gap-[1vw]">
+            <div class="flex flex-col gap-5 md:gap-[1vw] animate-stagger-parent">
                 <?php foreach ($steps as $index => $step) : ?>
-                    <div class="scroll-step grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 md:gap-[1.5vw] items-start">
+                    <div class="animate-stagger-child grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 md:gap-[1.5vw] items-start">
 
                         <!-- Number circle + connector -->
                         <div class="flex items-center gap-4 md:flex-col md:items-center md:gap-2">
@@ -83,9 +81,6 @@ $steps = [
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 md:mt-[2vw]">
                 <a href="<?php echo esc_url(home_url('/boek')); ?>" class="btn-primary animate-fade-up">
                     Boek jouw opname
-                </a>
-                <a href="<?php echo esc_url(home_url('/hoe-werkt-het')); ?>" class="btn-secondary animate-fade-up">
-                    Meer informatie
                 </a>
             </div>
 

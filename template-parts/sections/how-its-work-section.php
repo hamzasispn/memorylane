@@ -1,14 +1,14 @@
 <?php
 $headerData = [
     'title'       => 'Hoe werkt het?',
-    'description' => 'Het bewaren van jouw woning als digitale herinnering is eenvoudiger dan je denkt. In drie stappen maken we jouw woning een virtuele twin. '
+    'description' => 'Het bewaren van jouw woning als digitale herinnering is eenvoudiger dan je denkt. In drie stappen maken we van jouw woning een virtuele twin. '
 ];
 
 $itemData = [
     [
         'step'        => '1',
         'title'       => 'Boek een opname',
-        'description' => 'Bestel een opname en plan eenvoudig een moment in via onze online boekingstool waarop we jouw woning in kaart komen brengen met onze 3D scanningsapparatuur. '
+        'description' => 'Bestel een opname en plan eenvoudig een moment in via onze online boekingstool, waarna we jouw woning in kaart komen brengen met onze 3D scanningsapparatuur.'
     ],
     [
         'step'        => '2',

@@ -14,7 +14,7 @@ $faqItems = [
     ],
     [
         'question' => 'Wat gebeurt er als ik stop met het abonnement?',
-        'answer'   => 'Dan is de tour niet langer actief toegankelijk in jouw klantenzone en wordt deze gearchiveerd. De tour blijft echter bewaard en kan later opnieuw geactiveerd worden.',
+        'answer'   => 'Dan is de tour niet langer actief toegankelijk in jouw klantenzone en wordt deze gearchiveerd. De tour blijft echter bewaard en kan later opnieuw geactiveerd worden mits een eenmalige activatiekost. Daarna betaal je gewoon de maandelijkse abonnementskost.',
     ],
     [
         'question' => 'Betekent archivering dat mijn tour weg is?',

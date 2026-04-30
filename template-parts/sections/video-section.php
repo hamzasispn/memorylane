@@ -1,6 +1,6 @@
 <?php
 $videoSectionHeaderData = [
-    'title' => 'Bezoek dit huis op Memory Lane',
+    'title' => 'Bezoek deze voorbeeldwoning op Memory Lane',
 ];
 ?>
 

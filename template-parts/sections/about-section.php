@@ -15,8 +15,8 @@
                     <p>Met een professionele 3D-scan maken we een virtuele tour van jouw woning, zodat je er altijd opnieuw doorheen kan wandelen, zelfs jaren later.</p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="<?php echo esc_url(home_url('/')); ?>" class="btn-secondary">
-                        Vereeuwig jouw woning
+                    <a href="<?php echo esc_url(home_url('/boek')); ?>" class="btn-primary cta-pop">
+                        Plan jouw opname
                     </a>
                     <a href="<?php echo esc_url(home_url('/waarom')); ?>" class="btn-secondary">
                         Meer informatie

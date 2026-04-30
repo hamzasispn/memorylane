@@ -7,7 +7,7 @@ $itemData = $args;
         <?= esc_html($itemData['title']) ?>
     </h3>
     <img src="<?= esc_url($itemData['icon']) ?>" alt="<?= esc_attr($itemData['title']) ?>"
-        class="!w-[20vw] md:!w-[5vw] h-auto mb-6 md:mb-[1.5vw] object-contain">
+        class="!w-[20vw] md:!w-[10vw] h-auto mb-6 md:mb-[1.5vw] object-contain">
     <p class="text-primary text-[4vw] md:text-[1.2vw] text-center leading-[1.8]">
         <?= esc_html($itemData['description']) ?>
     </p>

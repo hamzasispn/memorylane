@@ -2,13 +2,13 @@
 $packageHeaderData = [
     'title' => 'Tarieven',
     'subtitle' => 'Transparant en Eenvoudig',
-    'description' => 'Je betaalt één keer voor de opname (1 jaar abonnement inbegrepen) en daarna kan je kiezen om maandelijks een klein bedrag te betalen om de virtuele tour van jouw woning online te houden.'
+    'description' => 'Je betaalt eenmalig voor de opname met 1 jaar abonnement inbegrepen. Na afloop van dat jaar, kan je kiezen om maandelijks een klein bedrag te betalen om de virtuele tour van jouw woning online te houden.'
 ];
 $packagesData = [
     [
-        'title' => 'Opname woning',
+        'title' => 'Jouw woning op Memory Lane',
         'price' => '€00 eenmalig',
-        'icon' => get_template_directory_uri() . '/assets/Camera.png',
+        'icon' => get_template_directory_uri() . '/assets/icons/360-icon.png',
         'features' => [
             '3D-scan van jouw woning',
             'Virtuele Tour',
@@ -18,8 +18,9 @@ $packagesData = [
     ],
     [
         'title' => 'Woning online houden',
+        'subtitle' => '(na 1 jaar)',
         'price' => '€0,0/maand',
-        'icon' => get_template_directory_uri() . '/assets/Cloud.png',
+        'icon' => get_template_directory_uri() . '/assets/icons/cloud-icon.png',
         'features' => [
             '24/7 toegang tot jouw tour',
             'Veilig opgeslagen in de cloud',
@@ -29,9 +30,9 @@ $packagesData = [
     [
         'title' => 'Opnieuw activeren',
         'price' => '€00 eenmalig',
-        'icon' => get_template_directory_uri() . '/assets/rotate-icon.png',
-        'description' => 'Abonnement stopgezet, maar wil je toch graag jouw tour bekijken? Dat kan via een her-activatie, waarna jouw tour binnen de 6 uur opnieuw toegankelijk is.',
-        'extra' => '+ €0,0/maand'
+        'icon' => get_template_directory_uri() . '/assets/icons/activate-icon.png',
+        'description' => 'Abonnement stopgezet, maar wil je toch graag jouw tour bekijken? Dat kan via een her-activatie, waarna jouw tour binnen de 8 uur opnieuw toegankelijk is.',
+        'extra' => '+ €0,0/maand abonnementskost'
     ],
 ];
 ?>

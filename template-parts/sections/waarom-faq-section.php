@@ -2,11 +2,11 @@
 $faqItems = [
     [
         'question' => 'Waarom zou ik een woning vereeuwigen?',
-        'answer'   => 'Omdat sommige woningen meer zijn dan alleen een huis. Ze dragen herinneringen, emoties en levensmomenten die je niet wilt verliezen. Door een woning te vereeuwigen, blijft die plek digitaal bewaard — voor jezelf, voor later, voor wie je dierbaar is.',
+        'answer'   => 'Omdat sommige woningen meer zijn dan alleen een huis. Ze dragen herinneringen, emoties en levensmomenten die je niet wilt verliezen. Door een woning te vereeuwigen, blijft die plek digitaal bewaard, voor jezelf, voor later, voor wie je dierbaar is. En ook jouw gemoedsrust speelt daarin een grote rol: het idee dat die woning nog altijd virtueel bestaat en dat je er later opnieuw naar kan terugkeren, geeft veel mensen rust. Vaak besef je pas achteraf hoeveel een plek voor je betekende. Net daarom kiezen veel mensen ervoor om ze nu al vast te leggen, zodat ze later geen spijt hoeven te hebben dat ze die kans hebben laten voorbijgaan.',
     ],
     [
         'question' => 'Is een woning via Memory Lane vereeuwigen hetzelfde als foto\'s nemen?',
-        'answer'   => 'Nee. Foto\'s tonen losse beelden, terwijl een virtuele tour de woning als geheel bewaart. Je kan later opnieuw door de ruimtes wandelen en de plek veel realistischer beleven dan met een fotoreeks.',
+        'answer'   => 'Neen, toch niet. Foto\'s tonen losse beelden, terwijl een virtuele tour de woning als geheel bewaart met 360° beelden. Je kan later opnieuw door de ruimtes wandelen en de plek veel realistischer beleven in 360°. Dat maakt de ervaring veel realistischer en completer dan een gewone fotoreeks.',
     ],
     [
         'question' => 'Voor wie is een woning vereeuwigen interessant?',
