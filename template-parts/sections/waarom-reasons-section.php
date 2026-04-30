@@ -36,7 +36,7 @@ $reasons = [
             <?php foreach ($reasons as $reason) : ?>
                 <div class="animate-stagger-child reason-card group bg-white/70 rounded-[2.604vw] p-8 md:p-[2vw] text-center">
                     <div class="flex justify-center mb-4 text-primary">
-                        <img src="<?= esc_url($reason['icon']) ?>" alt="" class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
+                        <img src="<?= esc_url($reason['icon']) ?>" alt="" class="w-16 h-16 md:w-[6vw] md:h-[6vw] object-contain transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
                     </div>
                     <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] mb-4 md:mb-[0.8vw]">
                         <?= esc_html($reason['title']) ?>

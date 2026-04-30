@@ -67,7 +67,7 @@ $pricingCards = [
                         </div>
                     <?php endif; ?>
 
-                    <img src="<?= esc_url($card['icon']) ?>" alt="<?= esc_attr($card['title']) ?>" class="!w-[14vw] md:!w-[4vw] h-auto mb-5 md:mb-[1.2vw] object-contain mx-auto">
+                    <img src="<?= esc_url($card['icon']) ?>" alt="<?= esc_attr($card['title']) ?>" class="!w-[20vw] md:!w-[7vw] h-auto mb-5 md:mb-[1.2vw] object-contain mx-auto">
 
                     <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] text-center mb-1">
                         <?= esc_html($card['title']) ?>

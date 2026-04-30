@@ -34,7 +34,7 @@ $situations = [
             <?php foreach ($situations as $item) : ?>
                 <div class="situation-card group animate-stagger-child bg-white/80 rounded-[2.604vw] p-8 md:p-[2vw] flex gap-5 items-start">
                     <span class="flex-shrink-0 mt-1 text-primary">
-                        <img src="<?= esc_url($item['icon']) ?>" alt="" class="w-10 h-10 md:w-[2.2vw] md:h-[2.2vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
+                        <img src="<?= esc_url($item['icon']) ?>" alt="" class="w-14 h-14 md:w-[5vw] md:h-[5vw] object-contain transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
                     </span>
                     <div>
                         <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] mb-3 md:mb-[0.6vw]">
