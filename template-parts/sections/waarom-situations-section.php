@@ -1,17 +1,17 @@
 <?php
 $situations = [
     [
-        'icon'        => get_template_directory_uri() . '/assets/icons/house.svg',
+        'icon'        => get_template_directory_uri() . '/assets/icons/house-icon.png',
         'title'       => 'Het ouderlijk huis wordt verkocht',
         'description' => 'Voor veel mensen is dit het meest herkenbare en emotionele moment. Het huis waar je opgroeide verdwijnt uit de familie, krijgt nieuwe bewoners en wordt langzaam een plek waar je alleen nog aan terugdenkt.',
     ],
     [
-        'icon'        => get_template_directory_uri() . '/assets/icons/memory.svg',
+        'icon'        => get_template_directory_uri() . '/assets/icons/memory-icon.png',
         'title'       => 'Je neemt afscheid van een woning waar je zelf woonde',
         'description' => 'Je eerste appartement. Het huis waar jullie samen begonnen. De plek waar een belangrijk hoofdstuk van je leven zich afspeelde. Sommige woningen laat je niet zomaar los.',
     ],
     [
-        'icon'        => get_template_directory_uri() . '/assets/icons/heart.svg',
+        'icon'        => get_template_directory_uri() . '/assets/icons/heart-icon.png',
         'title'       => 'Je wil een betekenisvolle plek bewaren voor later',
         'description' => 'Sommige mensen voelen gewoon intuïtief dat een plek te waardevol is om te vergeten. Niet omdat ze vandaag al afscheid nemen, maar omdat ze nu al weten dat die woning later veel voor hen zal blijven betekenen.',
     ],

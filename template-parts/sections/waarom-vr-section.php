@@ -33,7 +33,7 @@
             <!-- Right: VR glasses visual -->
             <div class="animate-fade-up flex items-center justify-center">
                 <div class="bg-white/40 rounded-[2.604vw] p-10 md:p-[3vw] w-full flex items-center justify-center">
-                    <img src="<?= get_template_directory_uri() ?>/assets/icons/vr.svg" alt="VR-bril"
+                    <img src="<?= get_template_directory_uri() ?>/assets/icons/vr-icon.png" alt="VR-bril"
                         class="w-[60%] h-auto text-primary">
                 </div>
             </div>

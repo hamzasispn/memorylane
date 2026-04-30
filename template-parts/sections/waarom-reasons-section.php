@@ -1,22 +1,22 @@
 <?php
 $reasons = [
     [
-        'icon'        => get_template_directory_uri() . '/assets/icons/house.svg',
+        'icon'        => get_template_directory_uri() . '/assets/icons/house-icon.png',
         'title'       => 'Omdat herinneringen verbonden zijn aan plaatsen',
         'description' => 'Herinneringen leven niet alleen in foto\'s of verhalen, maar ook in ruimtes. Soms hoef je maar een gang, een deur of een bepaalde lichtinval te zien om meteen weer iets te voelen. Een gewone foto toont een moment. Een virtuele tour bewaart een plek.',
     ],
     [
-        'icon'        => get_template_directory_uri() . '/assets/icons/hourglass.svg',
+        'icon'        => get_template_directory_uri() . '/assets/icons/houreglass-icon.png',
         'title'       => 'Omdat afscheid nemen vaak sneller gaat dan je denkt',
         'description' => 'Veel mensen denken: dat doen we later nog wel. Tot later plots te laat is. Een woning wordt verkocht. Een verhuisdatum komt dichterbij. De sleutels worden overgedragen. Net daarom is een woning vereeuwigen zo waardevol: je legt ze vast vóór ze verdwijnt.',
     ],
     [
-        'icon'        => get_template_directory_uri() . '/assets/icons/memory.svg',
+        'icon'        => get_template_directory_uri() . '/assets/icons/memory-icon.png',
         'title'       => 'Omdat sommige plekken een blijvende emotionele waarde hebben',
         'description' => 'Dat kan het ouderlijk huis zijn. Je eerste eigen woning. Het huis waar je gezin groeide. Of een plek waar je een diepe nostalgische band mee hebt. Een woning vereeuwigen is dan geen rationele keuze, maar een emotionele.',
     ],
     [
-        'icon'        => get_template_directory_uri() . '/assets/icons/heart.svg',
+        'icon'        => get_template_directory_uri() . '/assets/icons/heart-icon.png',
         'title'       => 'Omdat je later dankbaar zal zijn dat je het gedaan hebt',
         'description' => 'Een woning digitaal bewaren is een geschenk aan je toekomstige zelf. En soms ook aan je kinderen, familie of geliefden. Wat vandaag vanzelfsprekend lijkt, kan later onbetaalbaar aanvoelen.',
     ],

@@ -6,7 +6,7 @@ $archiveCards = [
         'desc'  => 'Wanneer je beslist om jouw abonnement stop te zetten, wordt jouw woning niet langer actief online gehouden, maar gearchiveerd. De woning is dan niet meer toegankelijk in jouw klantenzone, maar ook niet volledig verloren. Ze wordt bewaard in een niet-actieve toestand, zodat ze later opnieuw geactiveerd kan worden.',
     ],
     [
-        'icon'  => get_template_directory_uri() . '/assets/icons/heart-icon.png',
+        'icon'  => get_template_directory_uri() . '/assets/icons/gemoedsrust-icon.png',
         'title' => 'Gemoedsrust',
         'desc'  => 'Voor veel mensen geeft dat extra gemoedsrust. Omdat ze weten dat de woning nog altijd bestaat op hun Memory Lane, ook al houden ze ze op dat moment niet actief online.',
     ],
@@ -30,9 +30,9 @@ $archiveCards = [
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-[1.8vw] animate-stagger-parent">
-            <?php foreach ($archiveCards as $card): ?>
-                <div class="archive-card group animate-stagger-child bg-white/80 rounded-[2.604vw] p-8 md:p-[2vw] text-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-[1.8vw] animate-stagger-parent md:items-start">
+            <?php foreach ($archiveCards as $index => $card): ?>
+                <div class="archive-card group animate-stagger-child bg-white/80 rounded-[2.604vw] p-8 md:p-[2vw] text-center<?= $index === 0 ? ' md:row-span-2 md:self-stretch md:flex md:flex-col md:justify-center' : '' ?>">
                     <div class="flex justify-center mb-5 text-primary">
                         <img src="<?= esc_url($card['icon']) ?>" alt="<?= esc_attr($card['title']) ?>"
                             class="w-12 h-12 md:w-[8vw] md:h-[8vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">

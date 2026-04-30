@@ -14,7 +14,7 @@
 
             <div class="process-card group animate-stagger-child bg-white/70 rounded-[2.604vw] p-8 md:p-[2vw] text-center">
                 <div class="flex justify-center mb-4 text-primary">
-                    <img src="<?= get_template_directory_uri() ?>/assets/icons/house.svg" alt="" class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
+                    <img src="<?= get_template_directory_uri() ?>/assets/icons/house-icon.png" alt="" class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
                 </div>
                 <h3 class="font-primary text-primary text-[5.5vw] md:text-[1.6vw] leading-[1.3] mb-3">Woning bewaard</h3>
                 <p class="text-primary text-[4vw] md:text-[1.15vw] leading-[1.8]">De woning is vastgelegd. Niet alleen de beelden, maar het idee dat die plek er nog altijd is geeft veel mensen rust.</p>
@@ -22,7 +22,7 @@
 
             <div class="process-card group animate-stagger-child bg-white/70 rounded-[2.604vw] p-8 md:p-[2vw] text-center">
                 <div class="flex justify-center mb-4 text-primary">
-                    <img src="<?= get_template_directory_uri() ?>/assets/icons/safe.svg" alt="" class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
+                    <img src="<?= get_template_directory_uri() ?>/assets/icons/keep-safe-icon.png" alt="" class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
                 </div>
                 <h3 class="font-primary text-primary text-[5.5vw] md:text-[1.6vw] leading-[1.3] mb-3">Privé &amp; veilig</h3>
                 <p class="text-primary text-[4vw] md:text-[1.15vw] leading-[1.8]">Jouw woning is enkel toegankelijk via jouw persoonlijke klantenzone. Volledig privé, altijd bereikbaar wanneer jij dat wilt.</p>
@@ -30,7 +30,7 @@
 
             <div class="process-card group animate-stagger-child bg-white/70 rounded-[2.604vw] p-8 md:p-[2vw] text-center">
                 <div class="flex justify-center mb-4 text-primary">
-                    <img src="<?= get_template_directory_uri() ?>/assets/icons/archive.svg" alt="" class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
+                    <img src="<?= get_template_directory_uri() ?>/assets/icons/archive-icon.png" alt="" class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
                 </div>
                 <h3 class="font-primary text-primary text-[5.5vw] md:text-[1.6vw] leading-[1.3] mb-3">Archivering mogelijk</h3>
                 <p class="text-primary text-[4vw] md:text-[1.15vw] leading-[1.8]">Wil je de tour later niet meer actief online houden? Ze kan worden gearchiveerd en op elk moment opnieuw geactiveerd.</p>
