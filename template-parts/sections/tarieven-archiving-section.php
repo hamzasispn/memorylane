@@ -33,9 +33,9 @@ $archiveCards = [
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-[1.8vw] animate-stagger-parent">
             <?php foreach ($archiveCards as $card): ?>
                 <div class="archive-card group animate-stagger-child bg-white/80 rounded-[2.604vw] p-8 md:p-[2vw] text-center">
-                    <div class="flex justify-center mb-4 text-primary">
+                    <div class="flex justify-center mb-5 text-primary">
                         <img src="<?= esc_url($card['icon']) ?>" alt="<?= esc_attr($card['title']) ?>"
-                            class="w-12 h-12 md:w-[10vw] md:h-[10vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
+                            class="w-12 h-12 md:w-[8vw] md:h-[8vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
                     </div>
                     <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] mb-3">
                         <?= esc_html($card['title']) ?>
