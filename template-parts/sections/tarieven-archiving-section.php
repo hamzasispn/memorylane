@@ -35,7 +35,7 @@ $archiveCards = [
                 <div class="archive-card group animate-stagger-child bg-white/80 rounded-[2.604vw] p-8 md:p-[2vw] text-center">
                     <div class="flex justify-center mb-4 text-primary">
                         <img src="<?= esc_url($card['icon']) ?>" alt="<?= esc_attr($card['title']) ?>"
-                            class="w-12 h-12 md:w-[3vw] md:h-[3vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
+                            class="w-12 h-12 md:w-[10vw] md:h-[10vw] transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-1">
                     </div>
                     <h3 class="font-primary text-primary text-[6vw] md:text-[1.8vw] leading-[1.3] mb-3">
                         <?= esc_html($card['title']) ?>
