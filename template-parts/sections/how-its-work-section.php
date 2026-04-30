@@ -12,7 +12,7 @@ $itemData = [
     ],
     [
         'step'        => '2',
-        'title'       => 'D-scan van je woning',
+        'title'       => '3D-scan van je woning',
         'description' => 'Met ons professioneel 3D-scanningsmateriaal maken we een volledige digitale opname van jouw woning.'
     ],
     [
