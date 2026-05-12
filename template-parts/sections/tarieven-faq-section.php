@@ -6,23 +6,23 @@ $faqItems = [
     ],
     [
         'question' => 'Wat gebeurt er na het eerste jaar?',
-        'answer'   => 'Na het eerste jaar kies je zelf of je jouw Memory Lane online actief wilt houden via een maandelijks abonnement of om de tour te archiveren met de optie te heractiveren op elk gewenst moment.',
+        'answer'   => 'Na het eerste jaar kies je zelf of je jouw woning op Memory Lane online actief wilt houden via een maandelijks abonnement of om jouw woning te archiveren met de optie te heractiveren op elk gewenst moment.',
     ],
     [
         'question' => 'Ben ik verplicht om het abonnement te verlengen?',
-        'answer'   => 'Nee, na het eerste jaar beslis je zelf of je de tour actief online wilt houden. Je kan op elk moment stoppen met het abonnement.',
+        'answer'   => 'Nee, na het eerste jaar beslis je zelf of je jouw woning op Memory Lane actief online wilt houden. Je kan op elk moment stoppen met het abonnement.',
     ],
     [
         'question' => 'Wat gebeurt er als ik stop met het abonnement?',
-        'answer'   => 'Dan is de tour niet langer actief toegankelijk in jouw klantenzone en wordt deze gearchiveerd. De tour blijft echter bewaard en kan later opnieuw geactiveerd worden mits een eenmalige activatiekost. Daarna betaal je gewoon de maandelijkse abonnementskost.',
+        'answer'   => 'Dan is jouw woning op Memory Lane niet langer actief toegankelijk in jouw klantenzone en wordt deze gearchiveerd. Jouw woning blijft echter bewaard en kan later opnieuw geactiveerd worden mits een eenmalige activatiekost. Daarna betaal je gewoon de maandelijkse abonnementskost.',
     ],
     [
-        'question' => 'Betekent archivering dat mijn tour weg is?',
-        'answer'   => 'Nee. Bij archivering blijft de tour bewaard, maar is ze niet actief toegankelijk. Ze wordt veilig opgeslagen en kan op elk moment opnieuw geactiveerd worden via een eenmalige activatiekost.',
+        'question' => 'Betekent archivering dat mijn woning weg is?',
+        'answer'   => 'Nee. Bij archivering blijft jouw woning op Memory Lane bewaard, maar is ze niet actief toegankelijk. Ze wordt veilig opgeslagen en kan op elk moment opnieuw geactiveerd worden via een eenmalige activatiekost.',
     ],
     [
         'question' => 'Hoe lang duurt een heractivatie?',
-        'answer'   => 'Een heractivatie kan tot 8 uur duren. Ze wordt manueel uitgevoerd door één van onze collega\'s. Zodra de tour opnieuw online staat, krijg je een melding in jouw klantenzone.',
+        'answer'   => 'Een heractivatie kan tot 8 uur duren. Ze wordt manueel uitgevoerd door één van onze collega\'s. Zodra jouw woning op Memory Lane opnieuw online staat, krijg je een melding in jouw klantenzone.',
     ],
     [
         'question' => 'Waarom kost het geld om de tour online te houden?',

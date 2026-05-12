@@ -8,7 +8,7 @@ $reasons = [
     [
         'icon'        => get_template_directory_uri() . '/assets/icons/houreglass-icon.png',
         'title'       => 'Omdat afscheid nemen vaak sneller gaat dan je denkt',
-        'description' => 'Veel mensen denken: dat doen we later nog wel. Tot later plots te laat is. Een woning wordt verkocht. Een verhuisdatum komt dichterbij. De sleutels worden overgedragen. Net daarom is een woning vereeuwigen zo waardevol: je legt ze vast vóór ze verdwijnt.',
+        'description' => 'Veel mensen denken: dat doen we later nog wel. Tot later plots te laat is. Een woning wordt verkocht. Een verhuisdatum komt dichterbij. De sleutels worden overgedragen. Net daarom is een woning vereeuwigen zo waardevol: je legt ze vast vóór ze uit je leven verdwijnt.',
     ],
     [
         'icon'        => get_template_directory_uri() . '/assets/icons/memory-icon.png',

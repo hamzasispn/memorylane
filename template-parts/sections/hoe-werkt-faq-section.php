@@ -18,7 +18,7 @@ $faqItems = [
     ],
     [
         'question' => 'Wat is het verschil tussen een virtuele tour en gewone foto\'s?',
-        'answer'   => 'Foto\'s tonen losse beelden. Een virtuele tour laat je opnieuw door de woning wandelen met een 360° view. Dit geeft een veel completere beleving — je ervaart de indeling, de sfeer en het gevoel van door de ruimtes te bewegen.',
+        'answer'   => 'Foto\'s tonen losse beelden. Een virtuele tour laat je opnieuw door de woning wandelen met een 360° view. Dit geeft een veel completere beleving, je ervaart de indeling, de sfeer en het gevoel van door de ruimtes te bewegen.',
     ],
 ];
 ?>

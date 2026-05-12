@@ -16,10 +16,10 @@
                         Voor wie de herinnering nog intenser wil beleven, is er ook de mogelijkheid om de woning in virtual reality te bekijken.
                     </p>
                     <p class="animate-words text-primary text-[4vw] md:text-[1.3vw] leading-[1.8]">
-                        Dat geeft een extra laag aan de ervaring. Je kijkt niet alleen naar een woning, je stapt er als het ware opnieuw binnen. Voor sommige mensen maakt dat het verschil tussen herinneren en echt opnieuw voelen.
+                        Dat geeft een extra laag aan de ervaring. Je kijkt niet alleen naar een woning, je stapt er als het ware opnieuw binnen. Voor sommige mensen maakt dat het verschil tussen herinneren en echt opnieuw beleven.
                     </p>
                     <p class="animate-words text-primary text-[4vw] md:text-[1.3vw] leading-[1.8]">
-                        Virtual reality is geen must om van je Memory Lane te genieten, maar het toont wel hoe krachtig het kan zijn om een woning op een hedendaagse manier te bewaren.
+                        Virtual reality is geen must om van je woning op Memory Lane te genieten, maar het toont wel hoe krachtig het kan zijn om een woning op een hedendaagse manier te bewaren.
                     </p>
                 </div>
 
@@ -30,12 +30,10 @@
                 </div>
             </div>
 
-            <!-- Right: VR glasses visual -->
+            <!-- Right: VR visual -->
             <div class="animate-fade-up flex items-center justify-center">
-                <div class="bg-white/40 rounded-[2.604vw] p-10 md:p-[3vw] w-full flex items-center justify-center">
-                    <img src="<?= get_template_directory_uri() ?>/assets/icons/vr-icon.png" alt="VR-bril"
-                        class="w-[60%] h-auto text-primary">
-                </div>
+                <img src="<?= get_template_directory_uri() ?>/assets/icons/vr-afbeelding-icon.png" alt="Virtual reality"
+                    class="w-full h-auto rounded-[2.604vw] object-cover">
             </div>
 
         </div>
@@ -44,35 +42,26 @@
         <div class="mt-12 md:mt-[3vw] animate-fade-up">
             <div class="bg-white/80 rounded-[2.604vw] p-8 md:p-[2.5vw] max-w-[90%] md:max-w-[70vw] mx-auto">
                 <h3 class="font-primary text-primary text-[6.5vw] md:text-[2vw] leading-[1.3] mb-5 md:mb-[1.2vw] text-center">
-                    Waarom mensen achteraf vooral blij zijn dat ze het gedaan hebben
+                    Waarom mensen achteraf blij zijn dat ze hun woning hebben bewaard
                 </h3>
 
-                <div class="flex flex-col gap-4 md:gap-[0.8vw] mb-6 md:mb-[1.2vw]">
-                    <p class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8] italic">
-                        Is dit nodig? Ga ik hier later echt naar terugkeren? Is het de moeite waard?
+                <div class="flex flex-col gap-4 md:gap-[0.8vw]">
+                    <p class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8]">
+                        Misschien vraag je je af of je er later wel echt naar zal terugkeren. Of het de investering waard is. De echte vraag is echter: Hoe zou het voelen als je het niet doet en je later beseft dat de kans voorbij is?
                     </p>
                     <p class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8]">
-                        De echte vraag is: hoe zou het voelen als ik het niet doe, en later besef dat ik die kans voorbij heb laten gaan?
+                        Een betekenisvolle woning kan je maar één keer vastleggen zoals ze écht was. Voor ze leeg is. Voor ze verbouwd wordt. Voor iemand anders erin woont.
                     </p>
                     <p class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8]">
-                        Een betekenisvolle woning kan je maar één keer vastleggen zoals ze écht was. Voor ze leeg is. Voor er verbouwd wordt. Voor iemand anders er woont.
+                        Zorg er dus voor dat je later geen spijt krijgt dat je het niet gedaan hebt.
+                    </p>
+                    <p class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8]">
+                        De opname is een eenmalige investering. Daarna kies je zelf of je jouw woning online actief wilt houden. Het abonnement kan op elk moment stopgezet worden.
+                    </p>
+                    <p class="text-primary text-[4vw] md:text-[1.2vw] leading-[1.8]">
+                        Zo koop je niet alleen een virtuele herinnering, maar ook iets anders dat voor veel mensen minstens even waardevol is: <strong>gemoedsrust</strong>.
                     </p>
                 </div>
-
-                <ul class="flex flex-col gap-2 md:gap-[0.4vw] list-none">
-                    <?php
-                    $reasons = [
-                        'Omdat ze het toch gedaan hebben.',
-                        'Omdat die plek bewaard bleef.',
-                        'Omdat ze nog altijd kunnen terugkeren.',
-                    ];
-                    foreach ($reasons as $reason) : ?>
-                        <li class="flex items-center gap-3 text-primary text-[4vw] md:text-[1.2vw]">
-                            <span class="w-2 h-2 rounded-full bg-primary flex-shrink-0"></span>
-                            <?= esc_html($reason) ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
             </div>
         </div>
 

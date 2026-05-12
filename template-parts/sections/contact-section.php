@@ -1,6 +1,7 @@
 <?php
 $sectionTitle = [
-    'title' => 'Klaar om jouw huis aan Memory Lane toe te voegen?',
+    'title'       => 'Wil je meer weten over de tarieven of voorwaarden?',
+    'description' => 'We vinden het belangrijk dat je er met een gerust gevoel voor kiest jouw woning te laten vereeuwigen op Memory Lane. Heb je vragen of wil je een offerte aanvragen? Stuur ons dan een bericht via het contactformulier. Of je kan natuurlijk ook meteen een opname inboeken via onderstaande button. 🙂',
 ];
 $contactInfo = [
     [
@@ -28,6 +29,9 @@ $contactInfo = [
             <h2 class="text-[8vw] md:text-[3.229vw] text-primary font-primary leading-[1.3] mb-[1.042vw] text-center">
                 <?= esc_html($sectionTitle['title']) ?>
             </h2>
+            <p class="text-primary text-[4vw] md:text-[1.25vw] text-center w-full md:w-[60%] mx-auto leading-[1.8]">
+                <?= esc_html($sectionTitle['description']) ?>
+            </p>
         </div>
 
         <div class="flex flex-col items-center justify-center mb-8">

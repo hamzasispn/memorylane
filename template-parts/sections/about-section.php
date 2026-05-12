@@ -18,7 +18,7 @@
                     <a href="<?php echo esc_url(home_url('/boek')); ?>" class="btn-primary cta-pop">
                         Plan jouw opname
                     </a>
-                    <a href="<?php echo esc_url(home_url('/waarom')); ?>" class="btn-secondary">
+                    <a href="<?php echo esc_url(home_url('/hoe-werk-het')); ?>" class="btn-secondary">
                         Meer informatie
                     </a>
                 </div>

@@ -13,7 +13,7 @@ $situations = [
     [
         'icon'        => get_template_directory_uri() . '/assets/icons/heart-icon.png',
         'title'       => 'Je wil een betekenisvolle plek bewaren voor later',
-        'description' => 'Sommige mensen voelen gewoon intuïtief dat een plek te waardevol is om te vergeten. Niet omdat ze vandaag al afscheid nemen, maar omdat ze nu al weten dat die woning later veel voor hen zal blijven betekenen.',
+        'description' => 'Soms is een plek gewoon te waardevol om te vergeten. Niet omdat je vandaag al afscheid moet nemen, maar omdat je nu al weet dat die woning later veel voor jou zal blijven betekenen.',
     ],
 ];
 ?>
@@ -26,7 +26,7 @@ $situations = [
                 Voor welke situaties is een woning vereeuwigen interessant?
             </h2>
             <p class="text-primary text-[4vw] md:text-[1.25vw] text-center w-full md:w-[60%] mx-auto leading-[1.8]">
-                Niet elke woning heeft dezelfde betekenis — maar sommige plekken dragen zoveel gevoel in zich dat het idee om ze volledig kwijt te raken simpelweg te zwaar voelt.
+                Niet elke woning heeft dezelfde betekenis, maar sommige plekken dragen zoveel gevoel in zich dat het idee om ze volledig kwijt te raken simpelweg te zwaar voelt.
             </p>
         </div>
 

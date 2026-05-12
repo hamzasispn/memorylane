@@ -9,8 +9,8 @@ $steps = [
     [
         'number'      => '2',
         'title'       => 'We maken een professionele 3D-scan van jouw woning',
-        'description' => 'Op de afgesproken dag en uur komen we langs om jouw woning digitaal in kaart te brengen. Met professionele 3D-scanningstechnologie leggen we de ruimtes vast zoals ze op dat moment zijnniet als losse foto\'s, maar als een volledige 360° digitale weergave.',
-        'note'        => 'We leggen ook de omgeving vast: een stukje van jouw straat, de volledige voortuin en eventueel ook achtertuin. Bij percelen groter dan 5a geldt een meerprijs.',
+        'description' => 'Op de afgesproken dag en uur komen we langs om jouw woning digitaal in kaart te brengen. Met professionele 3D-scanningstechnologie leggen we de ruimtes vast zoals ze op dat moment zijn niet als losse foto\'s, maar als een volledige 360° digitale weergave.',
+        'note'        => 'We leggen ook de omgeving vast: een stukje van jouw straat, de volledige voortuin en eventueel ook achtertuin. Bij percelen groter dan 7a geldt een meerprijs.',
     ],
     [
         'number'      => '3',

@@ -30,7 +30,7 @@
                 Wanneer je een woning laat vereeuwigen, betaal je in eerste instantie voor de opname en de creatie van jouw virtuele tour. In die prijs is ook het <strong class="text-white">eerste jaar online beschikbaarheid inbegrepen</strong>.
             </p>
             <p class="animate-words text-white/90 text-[4.5vw] md:text-[1.3vw] leading-[1.8]">
-                Na dat eerste jaar kies je zelf of je jouw Memory Lane online actief wil houden via een maandelijks abonnement. Zo blijft het systeem flexibel, duidelijk en afgestemd op wat voor jou het meest waardevol is.
+                Na dat eerste jaar kies je zelf of je jouw woning op Memory Lane online actief wil houden via een maandelijks abonnement. Zo blijft het systeem flexibel, duidelijk en afgestemd op wat voor jou het meest waardevol is.
             </p>
         </div>
 
