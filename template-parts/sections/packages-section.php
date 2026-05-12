@@ -103,7 +103,7 @@ $pricingCards = [
 
         <div class="w-full md:w-[70%] mx-auto rounded-[2.604vw] bg-white py-5 md:py-[1.563vw] px-8 md:px-[4vw] mt-6 md:mt-[1.563vw]">
             <div class="flex items-center justify-center gap-4">
-                <img src="<?= get_template_directory_uri(); ?>/assets/icons/cloud-icon.png"
+                <img src="<?= get_template_directory_uri(); ?>/assets/icons/pause-icon.png"
                     alt="Abonnement maandelijks opzegbaar"
                     class="!w-12 !h-12 md:!w-[2.5vw] md:!h-[2.5vw] object-contain flex-shrink-0">
                 <h4 class="text-primary font-primary text-[5.5vw] md:text-[1.8vw] leading-[1.3]">
