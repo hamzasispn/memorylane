@@ -89,6 +89,39 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
     update_user_meta( $user->ID, ML_META_SETUP_AMOUNT,   (int) $session->amount_total );
     update_user_meta( $user->ID, ML_META_SETUP_CURRENCY, strtolower( (string) $session->currency ) );
 
+    // If this checkout was initiated from /boek with a pre-picked slot, create the booking row.
+    $slot_id = isset( $session->metadata->ml_slot_id ) ? (int) $session->metadata->ml_slot_id : 0;
+    if ( $slot_id ) {
+        global $wpdb;
+        $book_tbl = ml_table( 'bookings' );
+        // Idempotent: only one booking per (user, slot) for initial_scan.
+        $exists = $wpdb->get_var( $wpdb->prepare(
+            "SELECT id FROM {$book_tbl} WHERE user_id=%d AND slot_id=%d AND service_type=%s",
+            $user->ID, $slot_id, 'initial_scan'
+        ) );
+        if ( ! $exists ) {
+            $slot = ml_get_slot( $slot_id );
+            if ( $slot ) {
+                $now_db = current_time( 'mysql', true );
+                $wpdb->insert( $book_tbl, array(
+                    'user_id'        => $user->ID,
+                    'slot_id'        => $slot_id,
+                    'service_type'   => 'initial_scan',
+                    'status'         => 'requested',
+                    'customer_notes' => isset( $session->metadata->ml_notes ) ? (string) $session->metadata->ml_notes : '',
+                    'scheduled_for'  => $slot->slot_start_datetime,
+                    'created_at'     => $now_db,
+                    'updated_at'     => $now_db,
+                ) );
+                // Booked_count was already incremented during /boek soft-hold — don't double-count.
+            }
+        }
+        // Store address from /boek form into user meta if Stripe didn't get one.
+        if ( ! empty( $session->metadata->ml_address ) && ! get_user_meta( $user->ID, '_ml_address_line1', true ) ) {
+            update_user_meta( $user->ID, '_ml_address_line1', (string) $session->metadata->ml_address );
+        }
+    }
+
     // Welcome email with password setup link.
     ml_send_reset_email( $user, 'welcome_set_password' );
 

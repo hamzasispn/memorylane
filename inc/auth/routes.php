@@ -33,6 +33,7 @@ add_action( 'init', function () {
     add_rewrite_rule( '^checkout/start/?$',                     'index.php?ml_route=checkout_start',              'top' );
     add_rewrite_rule( '^checkout/success/?$',                   'index.php?ml_route=checkout_success',            'top' );
     add_rewrite_rule( '^checkout/cancel/?$',                    'index.php?ml_route=checkout_cancel',             'top' );
+    add_rewrite_rule( '^boek/?$',                               'index.php?ml_route=boek',                        'top' );
 
     // Dashboard.
     add_rewrite_rule( '^dashboard/?$',                          'index.php?ml_route=dashboard&ml_subroute=overview',   'top' );
@@ -87,6 +88,10 @@ add_action( 'template_redirect', function () {
         case 'checkout_start':
             ml_handle_checkout_start();
             exit;
+
+        case 'boek':
+            ml_render_template( 'public/boek' );
+            break;
 
         case 'checkout_success':
             ml_render_template( 'auth/checkout-success' );

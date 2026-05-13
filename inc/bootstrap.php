@@ -52,6 +52,7 @@ require_once __DIR__ . '/tours/viewer.php';
 require_once __DIR__ . '/booking/slots.php';
 require_once __DIR__ . '/booking/bookings.php';
 require_once __DIR__ . '/booking/admin.php';
+require_once __DIR__ . '/booking/boek-checkout.php';
 
 // Admin (Phase 5).
 require_once __DIR__ . '/admin/menu.php';
