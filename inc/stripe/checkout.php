@@ -14,8 +14,11 @@ function ml_handle_checkout_start() {
     $stripe = ml_stripe();
 
     try {
+        // mode=payment: customer pays the one-time setup fee (which covers Year 1 of access).
+        // The recurring monthly subscription is created later, after admin approves
+        // (post-scan / Matterport processing — up to 8h SLA).
         $session = $stripe->checkout->sessions->create( array(
-            'mode'      => 'subscription',
+            'mode'      => 'payment',
             'line_items' => array( array(
                 'price'    => ml_stripe_setup_price_id(),
                 'quantity' => 1,
@@ -26,9 +29,9 @@ function ml_handle_checkout_start() {
             'locale'                     => ml_current_lang() === 'en' ? 'en' : 'nl',
             'success_url'                => home_url( '/checkout/success?session_id={CHECKOUT_SESSION_ID}' ),
             'cancel_url'                 => home_url( '/checkout/cancel' ),
-            'subscription_data'          => array(
+            'payment_intent_data'        => array(
                 'metadata' => array(
-                    'ml_intent' => 'memory_lane_full_cycle',
+                    'ml_intent' => 'memory_lane_setup_year_one',
                 ),
             ),
             'metadata' => array(
@@ -60,7 +63,7 @@ add_action( 'rest_api_init', function () {
             $stripe = ml_stripe();
             try {
                 $session = $stripe->checkout->sessions->create( array(
-                    'mode' => 'subscription',
+                    'mode' => 'payment',
                     'line_items' => array( array( 'price' => ml_stripe_setup_price_id(), 'quantity' => 1 ) ),
                     'customer_creation' => 'always',
                     'billing_address_collection' => 'required',
@@ -68,7 +71,7 @@ add_action( 'rest_api_init', function () {
                     'locale' => ml_current_lang() === 'en' ? 'en' : 'nl',
                     'success_url' => home_url( '/checkout/success?session_id={CHECKOUT_SESSION_ID}' ),
                     'cancel_url'  => home_url( '/checkout/cancel' ),
-                    'subscription_data' => array( 'metadata' => array( 'ml_intent' => 'memory_lane_full_cycle' ) ),
+                    'payment_intent_data' => array( 'metadata' => array( 'ml_intent' => 'memory_lane_setup_year_one' ) ),
                     'metadata' => array( 'ml_intent' => 'initial_purchase', 'ml_lang' => ml_current_lang() ),
                     'allow_promotion_codes' => true,
                 ) );

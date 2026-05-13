@@ -32,15 +32,16 @@ On the Stripe page they:
 - Enter card details
 - Pay the **Setup + Year 1** amount
 
-### Step 3 — Payment succeeds
+### Step 3 — Payment succeeds (one-time setup fee)
 Stripe redirects them to `/checkout/success` (a "thanks, check your email" page).
 
 In the background, Stripe sends a **webhook** to your site. The webhook does:
 1. **Creates the customer's WordPress account** automatically (with their email).
 2. **Sends a welcome email** with a link to set their password.
-3. **Records the subscription** in your database.
-4. **Converts the subscription into a 2-phase schedule** in Stripe (see Section 4 below).
-5. **Sends you an admin email** ("New purchase: …").
+3. **Records the one-time payment** in WordPress with status **`pending_approval`**.
+4. **Sends you an admin email** ("New purchase — needs scan + approval").
+
+**The Stripe Subscription is NOT created yet.** That happens later, in Step 9, when you click "Approve access" after the scan is done. This gives you (and your scan/Matterport team) up to **8 hours** to deliver the tour before the customer's Year 1 access clock starts.
 
 ### Step 4 — Customer clicks the email link
 The link goes to `/welcome/<token>`. They pick their password. Now they can log in.
@@ -62,23 +63,35 @@ WP Admin → Memory Lane → Bookings → click **Confirm**. The customer gets a
 ### Step 8 — Your scan team visits and scans the house
 After the scan, you upload it to Matterport (your existing workflow — outside this system).
 
-### Step 9 — You assign the tour to the customer in WP
-WP Admin → Memory Lane (sidebar) → Tours → **Add new tour**:
+### Step 9 — You assign the tour AND approve access (the new gate)
+
+Two sub-steps, normally done together:
+
+**a) Add the tour:** WP Admin → Memory Lane (sidebar) → Tours → **Add new tour**:
 - Title (e.g. address)
 - Pick the customer from the dropdown
 - Paste the **Matterport iframe embed code**
 - Set status to **Active**
 - Save
 
-The customer instantly sees the tour at `/dashboard/tours` and can view it at `/dashboard/tour/<slug>` (embedded as iframe).
+**b) Approve access:** WP Admin → Memory Lane → Customers → find the customer (will show **"Pending"** in the Access state column) → click **"✓ Approve access"**.
 
-The customer also gets a "Your virtual tour is ready" email.
+This is the moment the **Stripe Subscription is created**:
+- A new Stripe Subscription is created via API with `trial_period_days = 365`
+- During the 365-day trial, no monthly charges (customer already paid the setup fee that covers Year 1)
+- After 365 days, monthly billing kicks in automatically
 
-### Step 10 — 12 months pass
+The customer's status flips to **Approved**. They get a "Your access is now active" email. They can now view the tour at `/dashboard/tour/<slug>`.
+
+**Why the gate?** It means the customer's "Year 1" only starts when the tour is actually ready. If you take 3 days to deliver the scan, they don't lose 3 days of access.
+
+**SLA reminder:** If a customer has been in `pending_approval` for more than 8 hours, an hourly cron sends you a reminder email listing all overdue customers (sent at most once per 12 hours to avoid spam).
+
+### Step 10 — 12 months pass (from approval, not from payment)
 A week before the 12-month mark, the customer automatically gets a "Your first year is ending soon" email explaining that monthly billing is about to start.
 
 ### Step 11 — Stripe automatically switches to monthly
-At the exact moment Year 1 ends, Stripe automatically charges the customer the **monthly amount** and continues to do so every month. **No cron job, no manual action — Stripe handles it.** This is the "subscription schedule" we set up at purchase.
+At the end of the 365-day trial, Stripe automatically charges the customer the **monthly amount** and continues to do so every month. **No cron job, no manual action — Stripe handles it.**
 
 The customer keeps seeing the tour. They get a "Payment received" email each month.
 
@@ -152,20 +165,24 @@ That's the whole setup. Maybe 10 minutes total.
 When a customer pays Year 1, here's what happens behind the scenes:
 
 ```
-Day 0          Day 365         Day 395         Day 425         …
-│              │               │               │
-│  €299        │  €9           €9              €9              €9
-│ ─paid───┐    │ ──auto────────────────────────────────────────────►
-│         │    │
-│ Phase A │    │ Phase B (monthly forever, until customer cancels)
-└─Year 1──┘    └─Monthly hosting──────────────────────────────────►
+Payment    Approval    Day 0          Day 365         Day 395         …
+│          │           │              │               │
+│ €299     │           │ trial ───┐   │  €9           €9              €9
+│ one-time │ ←── you click "Approve" │ ──auto──────────────────────────►
+│ paid     │           │ (Year 1) │   │ monthly
+│ (Stripe  │           │ access   │   │ (forever, until customer cancels)
+│  Payment)│           │ active   │   │
+└──────────┴───────────┴──────────┘   └────────────────────────────────►
+   ≤ 8h SLA window
 ```
 
-In Stripe terms this is a **Subscription Schedule** with two phases:
-- **Phase A:** one yearly invoice for the setup amount, runs for 1 cycle (12 months)
-- **Phase B:** monthly recurring at the hosting amount, runs forever (until cancelled)
+**Stripe model:**
+- The **setup fee** is a **one-time payment** (Stripe Checkout in `mode=payment`)
+- The **Subscription** is created only when admin clicks "Approve access" — via the Stripe API with `trial_period_days = 365`
+- During the 365-day trial the customer has full access but Stripe doesn't charge them (they already paid the setup fee)
+- After the trial ends, Stripe automatically transitions the subscription to `active` and starts charging the monthly amount
 
-The transition between Phase A and Phase B happens automatically at the Stripe side at the exact 12-month mark. We don't need a cron job watching the clock — Stripe does that.
+This **one-subscription-with-trial** approach is simpler than a multi-phase Subscription Schedule and gives you the approval gate naturally — no subscription exists in Stripe until you approve.
 
 ---
 

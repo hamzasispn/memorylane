@@ -23,6 +23,25 @@ define( 'ML_META_PHONE',           '_ml_phone' );
 define( 'ML_META_LANG',            '_ml_language' );
 define( 'ML_META_LAST_LOGIN',      '_ml_last_login_at' );
 
+// Setup approval lifecycle.
+define( 'ML_META_SETUP_STATE',      '_ml_setup_state' );
+define( 'ML_META_SETUP_PAID_AT',    '_ml_setup_paid_at' );
+define( 'ML_META_SETUP_PAYMENT',    '_ml_setup_payment_intent_id' );
+define( 'ML_META_SETUP_AMOUNT',     '_ml_setup_amount' );
+define( 'ML_META_SETUP_CURRENCY',   '_ml_setup_currency' );
+define( 'ML_META_SETUP_APPROVED_AT','_ml_setup_approved_at' );
+define( 'ML_META_SETUP_APPROVED_BY','_ml_setup_approved_by' );
+
+define( 'ML_SETUP_STATE_PENDING',  'pending_approval' );
+define( 'ML_SETUP_STATE_APPROVED', 'approved' );
+define( 'ML_SETUP_STATE_REFUNDED', 'refunded' );
+
+// Approval SLA shown to customer.
+define( 'ML_APPROVAL_SLA_HOURS', 8 );
+
+// Year 1 length (trial days on the monthly subscription).
+define( 'ML_YEAR_ONE_DAYS', 365 );
+
 // Tour CPT + meta keys.
 define( 'ML_CPT_TOUR',           'ml_tour' );
 define( 'ML_META_TOUR_USER',     '_ml_tour_user_id' );

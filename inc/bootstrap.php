@@ -59,6 +59,7 @@ require_once __DIR__ . '/admin/subscriptions-page.php';
 require_once __DIR__ . '/admin/notifications-log.php';
 require_once __DIR__ . '/admin/webhooks-log.php';
 require_once __DIR__ . '/admin/manual-actions.php';
+require_once __DIR__ . '/admin/approve-access.php';
 
 // Emails + Cron (Phase 6).
 require_once __DIR__ . '/emails/mailer.php';
@@ -69,6 +70,7 @@ require_once __DIR__ . '/cron/retry-failed-webhooks.php';
 require_once __DIR__ . '/cron/orphan-payment-check.php';
 require_once __DIR__ . '/cron/booking-reminders.php';
 require_once __DIR__ . '/cron/finalize-schedules.php';
+require_once __DIR__ . '/cron/pending-approval-reminder.php';
 
 /**
  * Theme activation hook — runs once when theme is switched in.

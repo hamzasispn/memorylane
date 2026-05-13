@@ -32,7 +32,7 @@ add_action( 'admin_post_ml_booking_request', function () {
     check_admin_referer( 'ml_booking_request' );
 
     $user = wp_get_current_user();
-    if ( ! ml_user_has_access( $user->ID ) ) {
+    if ( ! ml_user_can_book( $user->ID ) ) {
         ml_flash_set( 'error', ml_t( 'error.access_denied' ) );
         wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
     }

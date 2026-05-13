@@ -94,7 +94,9 @@ function ml_plan_sync_to_stripe() {
             ml_plan_save_raw( array( 'product_id' => $product_id ) );
         }
 
-        // 2. Yearly setup price (€XX, recurring yearly, 1 iteration via the Schedule).
+        // 2. Setup + Year 1 price — ONE-TIME (customer pays once for scan + first year).
+        // The recurring monthly subscription is created later via admin approval
+        // (with trial_period_days=365 so monthly billing starts after Year 1).
         if ( $plan['year_one_amount'] > 0 ) {
             $price_id = ml_plan_ensure_price(
                 $stripe,
@@ -102,7 +104,7 @@ function ml_plan_sync_to_stripe() {
                 $plan['setup_price_id'],
                 $plan['year_one_amount'],
                 $plan['currency'],
-                array( 'interval' => 'year', 'interval_count' => 1 ),
+                null, // one-time
                 'Memory Lane Setup + Year 1'
             );
             if ( $price_id !== $plan['setup_price_id'] ) {

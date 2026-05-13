@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 $user = wp_get_current_user();
-if ( ! ml_user_has_access( $user->ID ) ) {
+if ( ! ml_user_can_book( $user->ID ) ) {
     echo '<div class="ml-card ml-card--lg" style="text-align: center; max-width: 540px; margin: 32px auto;">';
     echo '<h1 class="ml-h2">' . esc_html( ml_t( 'tours.access_expired.title' ) ) . '</h1>';
     echo '<p class="ml-sub">' . esc_html( ml_t( 'tours.access_expired.body' ) ) . '</p>';

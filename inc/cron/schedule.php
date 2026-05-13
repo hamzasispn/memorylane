@@ -29,14 +29,15 @@ add_action( 'admin_init', 'ml_cron_schedule_all' );
 
 function ml_cron_schedule_all() {
     $jobs = array(
-        'ml_cron_check_expirations'      => 'hourly',
-        'ml_cron_renewal_warnings'       => 'daily',
-        'ml_cron_retry_webhooks'         => 'ml_quarter_hour',
-        'ml_cron_retry_emails'           => 'ml_quarter_hour',
-        'ml_cron_orphan_payment_check'   => 'daily',
-        'ml_cron_booking_reminders'      => 'hourly',
-        'ml_cron_overdue_tour_archive'   => 'daily',
-        'ml_cron_finalize_schedules'     => 'hourly',
+        'ml_cron_check_expirations'         => 'hourly',
+        'ml_cron_renewal_warnings'          => 'daily',
+        'ml_cron_retry_webhooks'            => 'ml_quarter_hour',
+        'ml_cron_retry_emails'              => 'ml_quarter_hour',
+        'ml_cron_orphan_payment_check'      => 'daily',
+        'ml_cron_booking_reminders'         => 'hourly',
+        'ml_cron_overdue_tour_archive'      => 'daily',
+        'ml_cron_finalize_schedules'        => 'hourly',
+        'ml_cron_pending_approval_reminder' => 'hourly',
     );
     foreach ( $jobs as $hook => $recur ) {
         if ( ! wp_next_scheduled( $hook ) ) {
