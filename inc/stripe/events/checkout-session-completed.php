@@ -19,10 +19,17 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
     $stripe = ml_stripe();
     if ( ! $stripe ) throw new \RuntimeException( 'Stripe client unavailable' );
 
-    // Retrieve full session expanded.
+    // Retrieve full session expanded. Different fields for payment vs subscription mode.
     $session = $stripe->checkout->sessions->retrieve( $session_obj->id, array(
-        'expand' => array( 'customer', 'payment_intent', 'customer_details' ),
+        'expand' => array( 'customer', 'payment_intent', 'customer_details', 'subscription' ),
     ) );
+
+    // Branch: reactivation Checkout (mode=subscription, metadata.ml_intent=reactivation).
+    $intent = $session->metadata->ml_intent ?? '';
+    if ( $session->mode === 'subscription' && $intent === 'reactivation' ) {
+        ml_stripe_event_reactivation_completed( $session );
+        return;
+    }
 
     // Only handle mode=payment initial purchases here.
     if ( $session->mode !== 'payment' ) {

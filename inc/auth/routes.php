@@ -40,6 +40,7 @@ add_action( 'init', function () {
     add_rewrite_rule( '^dashboard/tour/([^/]+)/?$',             'index.php?ml_route=dashboard&ml_subroute=tour-viewer&ml_slug=$matches[1]', 'top' );
     add_rewrite_rule( '^dashboard/booking/?$',                  'index.php?ml_route=dashboard&ml_subroute=booking',    'top' );
     add_rewrite_rule( '^dashboard/subscription/?$',             'index.php?ml_route=dashboard&ml_subroute=subscription','top' );
+    add_rewrite_rule( '^dashboard/reactivate/?$',               'index.php?ml_route=dashboard&ml_subroute=reactivate', 'top' );
     add_rewrite_rule( '^dashboard/settings/?$',                 'index.php?ml_route=dashboard&ml_subroute=settings',   'top' );
 } );
 

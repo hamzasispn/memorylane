@@ -2,7 +2,10 @@
 defined( 'ABSPATH' ) || exit;
 $user       = wp_get_current_user();
 $row        = ml_get_subscription_row( $user->ID );
-$is_pending = ml_user_is_pending_approval( $user->ID );
+$is_pending     = ml_user_is_pending_approval( $user->ID );
+$pending_react  = ml_reactivation_open_for_user( $user->ID );
+$is_cancelled   = $row && in_array( $row->status, array( 'cancelled', 'canceled', 'incomplete_expired', 'unpaid' ), true );
+$is_react_state = $row && $row->status === ML_SUB_STATUS_PENDING_REACTIVATION;
 $paid_at    = get_user_meta( $user->ID, ML_META_SETUP_PAID_AT, true );
 $paid_amt   = (int) get_user_meta( $user->ID, ML_META_SETUP_AMOUNT, true );
 $paid_cur   = strtoupper( (string) get_user_meta( $user->ID, ML_META_SETUP_CURRENCY, true ) );
@@ -27,6 +30,18 @@ $paid_cur   = strtoupper( (string) get_user_meta( $user->ID, ML_META_SETUP_CURRE
             </div>
             <hr class="ml-divider">
             <p style="color:#78350F;margin:0;"><?php echo esc_html( sprintf( ml_t( 'sub.pending.body', 'Je toegang wordt geactiveerd binnen %d uur. Het maandabonnement start automatisch na 12 maanden vanaf de activering en is dan op elk moment opzegbaar.' ), ML_APPROVAL_SLA_HOURS ) ); ?></p>
+        </div>
+    <?php elseif ( $pending_react || $is_react_state ) : ?>
+        <div class="ml-card ml-card--lg" style="background:#FEF3C7;border-color:#FCD34D;">
+            <p class="ml-card__title" style="color:#92400E;"><?php echo esc_html( ml_t( 'reactivate.processing.title', 'Reactivatie wordt verwerkt' ) ); ?></p>
+            <p style="color:#78350F;margin-top:8px;"><?php echo esc_html( sprintf( ml_t( 'reactivate.processing.body', 'We hebben je betaling ontvangen. Je tour is binnen %d uur opnieuw beschikbaar.' ), ML_REACTIVATION_SLA_HOURS ) ); ?></p>
+        </div>
+    <?php elseif ( $is_cancelled ) : ?>
+        <div class="ml-card ml-card--lg" style="background:#FEE2E2;border-color:#FCA5A5;">
+            <p class="ml-card__title" style="color:#B91C1C;"><?php echo esc_html( ml_t( 'sub.archived.title', 'Tour gearchiveerd' ) ); ?></p>
+            <p style="color:#7F1D1D;margin-top:8px;"><?php echo esc_html( ml_t( 'sub.archived.body', 'Je abonnement is beëindigd en je tour is gearchiveerd. Je kan op elk moment opnieuw activeren tegen de activatiekost.' ) ); ?></p>
+            <hr class="ml-divider">
+            <a class="ml-btn ml-btn--primary" href="<?php echo esc_url( home_url( '/dashboard/reactivate' ) ); ?>"><?php echo esc_html( ml_t( 'sub.archived.cta', 'Heractiveer mijn tour' ) ); ?></a>
         </div>
     <?php elseif ( ! $row ) : ?>
         <div class="ml-empty">

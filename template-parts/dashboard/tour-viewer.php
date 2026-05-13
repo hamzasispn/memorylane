@@ -16,12 +16,18 @@ if ( $tour_user !== $user->ID && ! current_user_can( ML_CAP_MANAGE ) ) {
 $status = get_post_meta( $tour->ID, ML_META_TOUR_STATUS, true );
 $embed  = get_post_meta( $tour->ID, ML_META_TOUR_EMBED, true );
 
-if ( ! ml_user_has_access( $user->ID ) || $status !== ML_TOUR_STATUS_ACTIVE ) :
+if ( $status === ML_TOUR_STATUS_PENDING_REACTIVATION ) : ?>
+<div class="ml-card ml-card--lg" style="text-align: center; max-width: 540px; margin: 32px auto; background:#FEF3C7; border-color:#FCD34D;">
+    <h1 class="ml-h2" style="color:#92400E;"><?php echo esc_html( ml_t( 'reactivate.processing.title', 'Reactivatie wordt verwerkt' ) ); ?></h1>
+    <p class="ml-sub" style="color:#78350F;"><?php echo esc_html( sprintf( ml_t( 'reactivate.processing.body', 'Je tour is binnen %d uur opnieuw beschikbaar.' ), ML_REACTIVATION_SLA_HOURS ) ); ?></p>
+    <a class="ml-btn ml-btn--secondary" href="<?php echo esc_url( home_url( '/dashboard/subscription' ) ); ?>"><?php ml_e( 'common.back' ); ?></a>
+</div>
+<?php elseif ( ! ml_user_has_access( $user->ID ) || $status !== ML_TOUR_STATUS_ACTIVE ) :
 ?>
 <div class="ml-card ml-card--lg" style="text-align: center; max-width: 540px; margin: 32px auto;">
     <h1 class="ml-h2"><?php ml_e( 'tours.access_expired.title' ); ?></h1>
     <p class="ml-sub"><?php ml_e( 'tours.access_expired.body' ); ?></p>
-    <a class="ml-btn ml-btn--primary" href="<?php echo esc_url( home_url( '/dashboard/subscription' ) ); ?>"><?php ml_e( 'tours.access_expired.cta' ); ?></a>
+    <a class="ml-btn ml-btn--primary" href="<?php echo esc_url( home_url( '/dashboard/subscription' ) ); ?>"><?php echo esc_html( ml_t( 'sub.archived.cta', 'Heractiveer mijn tour' ) ); ?></a>
 </div>
 <?php else : ?>
 <div>

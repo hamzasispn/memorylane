@@ -17,6 +17,7 @@ add_action( 'admin_menu', function () {
     add_submenu_page( 'memorylane', __( 'Overview', 'memorylane' ),       __( 'Overview', 'memorylane' ),       ML_CAP_MANAGE, 'memorylane',                'ml_admin_render_overview' );
     add_submenu_page( 'memorylane', __( 'Customers', 'memorylane' ),      __( 'Customers', 'memorylane' ),      ML_CAP_MANAGE, 'memorylane-customers',      'ml_admin_render_customers' );
     add_submenu_page( 'memorylane', __( 'Subscriptions', 'memorylane' ),  __( 'Subscriptions', 'memorylane' ),  ML_CAP_MANAGE, 'memorylane-subscriptions',  'ml_admin_render_subscriptions' );
+    add_submenu_page( 'memorylane', __( 'Reactivations', 'memorylane' ),  __( 'Reactivations', 'memorylane' ),  ML_CAP_MANAGE, 'memorylane-reactivations',  'ml_admin_render_reactivations' );
     add_submenu_page( 'memorylane', __( 'Bookings', 'memorylane' ),       __( 'Bookings', 'memorylane' ),       ML_CAP_MANAGE, 'memorylane-bookings',       'ml_admin_render_bookings' );
     add_submenu_page( 'memorylane', __( 'Webhooks log', 'memorylane' ),   __( 'Webhooks log', 'memorylane' ),   ML_CAP_MANAGE, 'memorylane-webhooks',       'ml_admin_render_webhooks_log' );
     add_submenu_page( 'memorylane', __( 'Notifications', 'memorylane' ),  __( 'Notifications', 'memorylane' ),  ML_CAP_MANAGE, 'memorylane-notifications',  'ml_admin_render_notifications_log' );
@@ -42,6 +43,11 @@ function ml_admin_render_overview() {
     ml_admin_kpi( __( 'Pending cancellations', 'memorylane' ), $cancelling );
     ml_admin_kpi( __( 'Past due', 'memorylane' ), $past_due );
     ml_admin_kpi( __( 'Webhook failures (24h)', 'memorylane' ), $wh_failed );
+
+    $pending_react = ml_count_pending_reactivations();
+    $oldest_hrs    = ml_oldest_pending_reactivation_hours();
+    $react_label   = $pending_react ? sprintf( __( 'Reactivations pending (oldest %sh)', 'memorylane' ), $oldest_hrs ) : __( 'Reactivations pending', 'memorylane' );
+    ml_admin_kpi( $react_label, $pending_react );
     echo '</div>';
 
     if ( ! ml_stripe_is_connected() ) {

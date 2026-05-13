@@ -22,10 +22,12 @@ function ml_plan_get() {
         'currency'               => strtolower( ml_stripe_opt( 'plan_currency', 'eur' ) ),
         'year_one_amount'        => (int) ml_stripe_opt( 'plan_year_one_amount',    0 ),
         'monthly_amount'         => (int) ml_stripe_opt( 'plan_monthly_amount',     0 ),
+        'annual_amount'          => (int) ml_stripe_opt( 'plan_annual_amount',      0 ),
         'reactivation_amount'    => (int) ml_stripe_opt( 'plan_reactivation_amount', 0 ),
         'product_id'             => ml_stripe_opt( 'product_id',          '' ),
         'setup_price_id'         => ml_stripe_opt( 'setup_price_id',       '' ),
         'monthly_price_id'       => ml_stripe_opt( 'monthly_price_id',     '' ),
+        'annual_price_id'        => ml_stripe_opt( 'annual_price_id',      '' ),
         'reactivation_price_id'  => ml_stripe_opt( 'reactivation_price_id', '' ),
         'synced_at'              => (int) ml_stripe_opt( 'plan_synced_at',  0 ),
     );
@@ -134,6 +136,25 @@ function ml_plan_sync_to_stripe() {
             }
         }
 
+        // 3b. Annual recurring price (used at reactivation only).
+        if ( $plan['annual_amount'] > 0 ) {
+            $price_id = ml_plan_ensure_price(
+                $stripe,
+                $product_id,
+                $plan['annual_price_id'],
+                $plan['annual_amount'],
+                $plan['currency'],
+                array( 'interval' => 'year', 'interval_count' => 1 ),
+                'Memory Lane Annual Hosting'
+            );
+            if ( $price_id !== $plan['annual_price_id'] ) {
+                ml_plan_save_raw( array( 'annual_price_id' => $price_id ) );
+                $changes[] = 'annual_price:created';
+            } else {
+                $changes[] = 'annual_price:unchanged';
+            }
+        }
+
         // 4. Reactivation one-time price.
         if ( $plan['reactivation_amount'] > 0 ) {
             $price_id = ml_plan_ensure_price(
@@ -224,6 +245,7 @@ function ml_plan_fetch_state() {
     foreach ( array(
         'setup'        => $plan['setup_price_id'],
         'monthly'      => $plan['monthly_price_id'],
+        'annual'       => $plan['annual_price_id'],
         'reactivation' => $plan['reactivation_price_id'],
     ) as $k => $pid ) {
         if ( ! $pid ) continue;

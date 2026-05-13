@@ -40,6 +40,8 @@ foreach ( glob( __DIR__ . '/stripe/events/*.php' ) as $event_file ) {
 require_once __DIR__ . '/subscriptions/access-gate.php';
 require_once __DIR__ . '/subscriptions/status.php';
 require_once __DIR__ . '/subscriptions/sync.php';
+require_once __DIR__ . '/subscriptions/reactivation.php';
+require_once __DIR__ . '/subscriptions/reactivation-routes.php';
 
 // Tours (Phase 3).
 require_once __DIR__ . '/tours/cpt.php';
@@ -60,6 +62,7 @@ require_once __DIR__ . '/admin/notifications-log.php';
 require_once __DIR__ . '/admin/webhooks-log.php';
 require_once __DIR__ . '/admin/manual-actions.php';
 require_once __DIR__ . '/admin/approve-access.php';
+require_once __DIR__ . '/admin/reactivations-page.php';
 
 // Emails + Cron (Phase 6).
 require_once __DIR__ . '/emails/mailer.php';
@@ -71,6 +74,7 @@ require_once __DIR__ . '/cron/orphan-payment-check.php';
 require_once __DIR__ . '/cron/booking-reminders.php';
 require_once __DIR__ . '/cron/finalize-schedules.php';
 require_once __DIR__ . '/cron/pending-approval-reminder.php';
+require_once __DIR__ . '/cron/reactivation-overdue.php';
 
 /**
  * Theme activation hook — runs once when theme is switched in.

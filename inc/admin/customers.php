@@ -53,10 +53,16 @@ function ml_admin_render_customers() {
                     $paid_at   = get_user_meta( $u->ID, ML_META_SETUP_PAID_AT, true );
                     $amount    = (int) get_user_meta( $u->ID, ML_META_SETUP_AMOUNT, true );
                     $currency  = strtoupper( (string) get_user_meta( $u->ID, ML_META_SETUP_CURRENCY, true ) );
+                    $react_row = ml_reactivation_open_for_user( $u->ID );
 
                     $pill_class = 'background:#F4F4F5;color:#3F3F46';
                     $pill_text  = '—';
-                    if ( $setup === ML_SETUP_STATE_PENDING ) {
+                    if ( $react_row ) {
+                        $hours_react = round( ( time() - strtotime( $react_row->requested_at . ' UTC' ) ) / HOUR_IN_SECONDS, 1 );
+                        $overdue_r   = $hours_react > ML_REACTIVATION_SLA_HOURS;
+                        $pill_class  = $overdue_r ? 'background:#FEE2E2;color:#B91C1C' : 'background:#FED7AA;color:#9A3412';
+                        $pill_text   = sprintf( __( 'Pending reactivation (%sh)', 'memorylane' ), $hours_react );
+                    } elseif ( $setup === ML_SETUP_STATE_PENDING ) {
                         $hours_since_paid = $paid_at ? round( ( time() - strtotime( $paid_at . ' UTC' ) ) / HOUR_IN_SECONDS, 1 ) : 0;
                         $overdue = $hours_since_paid > ML_APPROVAL_SLA_HOURS;
                         $pill_class = $overdue ? 'background:#FEE2E2;color:#B91C1C' : 'background:#FEF3C7;color:#92400E';
@@ -94,13 +100,22 @@ function ml_admin_render_customers() {
                         <td><?php echo (int) $tour_n; ?></td>
                         <td><?php echo esc_html( $u->user_registered ); ?></td>
                         <td>
-                            <?php if ( $setup === ML_SETUP_STATE_PENDING ) : ?>
+                            <?php if ( $setup === ML_SETUP_STATE_PENDING && ! $react_row ) : ?>
                                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;"
                                       onsubmit="return confirm('<?php echo esc_js( __( 'Approve access and create Stripe subscription (365-day trial then monthly)?', 'memorylane' ) ); ?>')">
                                     <?php wp_nonce_field( 'ml_approve_access' ); ?>
                                     <input type="hidden" name="action" value="ml_approve_access">
                                     <input type="hidden" name="user_id" value="<?php echo (int) $u->ID; ?>">
                                     <button class="button button-small button-primary" style="background:#10B981;border-color:#10B981;">✓ <?php esc_html_e( 'Approve access', 'memorylane' ); ?></button>
+                                </form>
+                            <?php endif; ?>
+                            <?php if ( $react_row ) : ?>
+                                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;"
+                                      onsubmit="return confirm('<?php echo esc_js( __( 'Mark reactivation complete? This activates tours for the customer.', 'memorylane' ) ); ?>')">
+                                    <?php wp_nonce_field( 'ml_reactivation_complete' ); ?>
+                                    <input type="hidden" name="action" value="ml_reactivation_complete">
+                                    <input type="hidden" name="row_id" value="<?php echo (int) $react_row->id; ?>">
+                                    <button class="button button-small button-primary" style="background:#F97316;border-color:#F97316;">✓ <?php esc_html_e( 'Reactivation done', 'memorylane' ); ?></button>
                                 </form>
                             <?php endif; ?>
                             <a class="button button-small" href="<?php echo esc_url( get_edit_user_link( $u->ID ) ); ?>"><?php esc_html_e( 'Edit', 'memorylane' ); ?></a>

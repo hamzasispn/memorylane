@@ -151,7 +151,7 @@ function ml_admin_settings_stripe() {
                         <?php endif; ?>
                     </td>
                 </tr>
-                <?php foreach ( array( 'setup' => 'Setup + Year 1 (yearly)', 'monthly' => 'Monthly hosting', 'reactivation' => 'Reactivation (one-time)' ) as $k => $label ) : ?>
+                <?php foreach ( array( 'setup' => 'Setup + Year 1 (one-time)', 'monthly' => 'Monthly hosting', 'annual' => 'Annual hosting (reactivation only)', 'reactivation' => 'Reactivation fee (one-time)' ) as $k => $label ) : ?>
                 <tr>
                     <td style="padding:4px 0;color:#71717A;"><?php echo esc_html( $label ); ?></td>
                     <td>
@@ -211,6 +211,13 @@ function ml_admin_settings_stripe() {
                 </td>
             </tr>
             <tr>
+                <th scope="row"><label><?php esc_html_e( 'Annual hosting amount', 'memorylane' ); ?></label></th>
+                <td>
+                    <input type="text" name="plan_annual_amount" value="<?php echo esc_attr( $plan['annual_amount'] ? ml_from_minor_units( $plan['annual_amount'] ) : '' ); ?>" placeholder="99.00" class="small-text" style="width:140px;">
+                    <p class="description"><?php esc_html_e( 'Yearly prepay option, offered only at reactivation. Leave empty to disable annual prepay.', 'memorylane' ); ?></p>
+                </td>
+            </tr>
+            <tr>
                 <th scope="row"><label><?php esc_html_e( 'Reactivation fee', 'memorylane' ); ?></label></th>
                 <td>
                     <input type="text" name="plan_reactivation_amount" value="<?php echo esc_attr( $plan['reactivation_amount'] ? ml_from_minor_units( $plan['reactivation_amount'] ) : '' ); ?>" placeholder="49.00" class="small-text" style="width:140px;">
@@ -258,7 +265,7 @@ function ml_handle_stripe_save() {
 
     if ( $action === 'disconnect' ) {
         // Clear all per-mode keys (including plan IDs).
-        $clear = array( 'publishable_key', 'secret_key', 'webhook_secret', 'product_id', 'setup_price_id', 'monthly_price_id', 'reactivation_price_id', 'plan_synced_at' );
+        $clear = array( 'publishable_key', 'secret_key', 'webhook_secret', 'product_id', 'setup_price_id', 'monthly_price_id', 'annual_price_id', 'reactivation_price_id', 'plan_synced_at' );
         foreach ( $clear as $k ) {
             delete_option( "ml_stripe_{$mode}_{$k}" );
         }
@@ -312,6 +319,7 @@ function ml_handle_plan_save() {
         'plan_currency'             => strtolower( sanitize_text_field( wp_unslash( $_POST['plan_currency'] ?? 'eur' ) ) ),
         'plan_year_one_amount'      => ml_to_minor_units( wp_unslash( $_POST['plan_year_one_amount']     ?? '' ) ),
         'plan_monthly_amount'       => ml_to_minor_units( wp_unslash( $_POST['plan_monthly_amount']      ?? '' ) ),
+        'plan_annual_amount'        => ml_to_minor_units( wp_unslash( $_POST['plan_annual_amount']       ?? '' ) ),
         'plan_reactivation_amount'  => ml_to_minor_units( wp_unslash( $_POST['plan_reactivation_amount'] ?? '' ) ),
     ) );
 

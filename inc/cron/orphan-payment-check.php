@@ -21,17 +21,39 @@ function ml_cron_run_orphan_payment_check() {
         return;
     }
 
+    global $wpdb;
+    $react_tbl = ml_table( 'reactivations' );
+
     $orphans = array();
     foreach ( $sessions->data as $s ) {
-        if ( $s->payment_status !== 'paid' && $s->status !== 'complete' ) continue;
+        if ( $s->status !== 'complete' && $s->payment_status !== 'paid' ) continue;
         if ( empty( $s->customer ) ) continue;
-        $uid = ml_user_id_by_stripe_customer( $s->customer );
+        $cust_id = is_object( $s->customer ) ? $s->customer->id : (string) $s->customer;
+        $intent  = $s->metadata->ml_intent ?? '';
+
+        if ( $intent === 'reactivation' || $s->mode === 'subscription' ) {
+            // Reactivation orphan: paid Checkout with no matching wp_ml_reactivations row.
+            $exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$react_tbl} WHERE stripe_checkout_session_id=%s", $s->id ) );
+            if ( ! $exists ) {
+                $orphans[] = array(
+                    'session' => $s->id,
+                    'customer'=> $cust_id,
+                    'email'   => $s->customer_details->email ?? '',
+                    'amount'  => $s->amount_total,
+                    'intent'  => 'reactivation',
+                );
+            }
+            continue;
+        }
+
+        $uid = ml_user_id_by_stripe_customer( $cust_id );
         if ( ! $uid ) {
             $orphans[] = array(
                 'session' => $s->id,
-                'customer'=> $s->customer,
+                'customer'=> $cust_id,
                 'email'   => $s->customer_details->email ?? '',
                 'amount'  => $s->amount_total,
+                'intent'  => 'initial_purchase',
             );
         }
     }

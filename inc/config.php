@@ -5,8 +5,8 @@
 defined( 'ABSPATH' ) || exit;
 
 // Versioning.
-define( 'ML_VERSION',    '0.1.0' );
-define( 'ML_DB_VERSION', '0.1.0' );
+define( 'ML_VERSION',    '0.2.0' );
+define( 'ML_DB_VERSION', '0.2.0' );
 
 // Paths.
 define( 'ML_PATH', get_template_directory() . '/' );
@@ -55,6 +55,14 @@ define( 'ML_META_TOUR_ADDRESS',  '_ml_tour_address' );
 define( 'ML_TOUR_STATUS_ACTIVE',  'active' );
 define( 'ML_TOUR_STATUS_ARCHIVED', 'archived' );
 define( 'ML_TOUR_STATUS_PENDING_ARCHIVE', 'pending_archive' );
+define( 'ML_TOUR_STATUS_PENDING_REACTIVATION', 'pending_reactivation' );
+
+// Reactivation cycle.
+define( 'ML_REACTIVATION_SLA_HOURS',    8 );
+define( 'ML_REACTIVATION_STATUS_PENDING',   'pending' );
+define( 'ML_REACTIVATION_STATUS_COMPLETED', 'completed' );
+define( 'ML_REACTIVATION_STATUS_REFUNDED',  'refunded' );
+define( 'ML_SUB_STATUS_PENDING_REACTIVATION', 'pending_reactivation' );
 
 // Subscription statuses we treat as access-granting.
 function ml_active_subscription_statuses() {

@@ -80,6 +80,7 @@ function ml_stripe_dispatch_event( \Stripe\Event $event ) {
         'invoice.payment_succeeded'       => 'ml_stripe_event_invoice_payment_succeeded',
         'invoice.payment_failed'          => 'ml_stripe_event_invoice_payment_failed',
         'invoice.upcoming'                => 'ml_stripe_event_invoice_upcoming',
+        'charge.refunded'                 => 'ml_stripe_event_charge_refunded',
     );
     $fn = $map[ $type ] ?? null;
     if ( $fn && function_exists( $fn ) ) {

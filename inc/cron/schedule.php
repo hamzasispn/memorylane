@@ -38,6 +38,7 @@ function ml_cron_schedule_all() {
         'ml_cron_overdue_tour_archive'      => 'daily',
         'ml_cron_finalize_schedules'        => 'hourly',
         'ml_cron_pending_approval_reminder' => 'hourly',
+        'ml_cron_reactivation_overdue'      => 'hourly',
     );
     foreach ( $jobs as $hook => $recur ) {
         if ( ! wp_next_scheduled( $hook ) ) {

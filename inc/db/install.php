@@ -130,6 +130,32 @@ function ml_db_install() {
         KEY idx_when (attempted_at)
     ) $charset;";
 
+    // Reactivation cycles — one row per customer-driven reactivation.
+    // Unique stripe_checkout_session_id provides webhook idempotency.
+    $sql_reactivations = "CREATE TABLE {$p}ml_reactivations (
+        id                            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        user_id                       BIGINT UNSIGNED NOT NULL,
+        cycle_number                  INT          NOT NULL DEFAULT 1,
+        plan_chosen                   VARCHAR(20)  NOT NULL DEFAULT 'monthly',
+        activation_fee_paid_cents     INT          NOT NULL DEFAULT 0,
+        activation_fee_currency       VARCHAR(3)   NOT NULL DEFAULT 'eur',
+        stripe_checkout_session_id    VARCHAR(191) NOT NULL,
+        stripe_payment_intent_id      VARCHAR(191) NULL,
+        stripe_subscription_id        VARCHAR(191) NULL,
+        requested_at                  DATETIME     NOT NULL,
+        completed_at                  DATETIME     NULL,
+        completed_by                  BIGINT UNSIGNED NULL,
+        status                        VARCHAR(20)  NOT NULL DEFAULT 'pending',
+        raw_json                      LONGTEXT     NULL,
+        created_at                    DATETIME     NOT NULL,
+        updated_at                    DATETIME     NOT NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY uk_session (stripe_checkout_session_id),
+        KEY idx_user (user_id),
+        KEY idx_status (status),
+        KEY idx_requested (requested_at)
+    ) $charset;";
+
     dbDelta( $sql_webhook_events );
     dbDelta( $sql_subscriptions );
     dbDelta( $sql_slots );
@@ -137,6 +163,7 @@ function ml_db_install() {
     dbDelta( $sql_email_log );
     dbDelta( $sql_admin_actions );
     dbDelta( $sql_login_attempts );
+    dbDelta( $sql_reactivations );
 
     update_option( ML_OPT_DB_VERSION, ML_DB_VERSION, false );
 }
