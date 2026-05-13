@@ -34,6 +34,8 @@ Public marketing pages already exist in the theme (`/`, `/waarom`, `/hoe-werkt-h
 | Language | NL + EN with cookie switcher | NL primary; EN for broader reach |
 | Dashboard look | Clean SaaS (Linear / Stripe vibe) | Intentionally distinct from emotional public site |
 | Stripe model | **Subscription Schedule** with two phases (yearly → monthly) | Stripe-native; no cron risk for billing transition |
+| Stripe admin connection | **Manual key-paste with "Connect with Stripe" verify button** (not Stripe Connect OAuth) | Single-merchant business; OAuth adds Connect-account complexity for no real benefit. See §5.2.1 |
+| Matterport integration | **Embed code only** (Path A; no Matterport Cloud API in MVP) | Brief explicitly marks API as optional; Path B requires recurring Matterport Business plan cost. See §6 |
 
 ---
 
@@ -237,7 +239,70 @@ Customer can register (later auto-created by webhook), log in, reset password, s
 | ML Monthly Hosting | `ml_stripe_monthly_price_id` | recurring | monthly, indefinite |
 | ML Reactivation Fee | `ml_stripe_reactivation_price_id` | one-time | n/a |
 
-All four pieces of Stripe config (keys + price IDs) live in WP options table, written via Settings page (Phase 5; for Phase 2 a temporary `wp-cli option set` or admin filter is acceptable). `option_autoload = no`. Never logged.
+All Stripe config (keys + price IDs) lives in WP options table, written via the Stripe Settings page (§5.2.1). `option_autoload = no`. Never logged.
+
+### 5.2.1 "Connect with Stripe" admin Settings page
+
+**Model chosen: single-merchant key-paste, NOT Stripe Connect OAuth.**
+
+Memory Lane is a single merchant; Stripe Connect OAuth would add webhook + API-call complexity for no real benefit. We use a manual key-paste flow with a verification handshake.
+
+**Location:** WP admin → Memory Lane → Settings → Stripe tab (built in Phase 2 — minimum viable version; expanded in Phase 5 with other settings tabs).
+
+**UI sections:**
+
+1. **Mode toggle:** `Test mode` / `Live mode` radio. Each mode has its own set of keys + price IDs (stored as separate options: `ml_stripe_test_secret_key`, `ml_stripe_live_secret_key`, etc.). One mode active at a time, set by `ml_stripe_active_mode` option.
+
+2. **Status card (top of page):**
+   - 🔴 Not connected — shown when no keys saved
+   - 🟢 Connected — shown after verification succeeds; displays Stripe account name, account ID (truncated), country, default currency
+   - ⚠️ Connected, last verified > 24h ago — shows "Re-verify" link
+   - 🔴 Connection failed — shows the Stripe error message + "Reconnect" CTA
+
+3. **Key entry fields (per mode):**
+   - Publishable key (`pk_test_...` / `pk_live_...`)
+   - Secret key (`sk_test_...` / `sk_live_...`) — masked input, "show" toggle
+   - Webhook signing secret (`whsec_...`) — masked
+   - Helper link below each field: "Where do I find this?" → opens Stripe docs URL in new tab
+
+4. **Price ID fields (per mode):**
+   - Setup + Year 1 price ID (`price_...`)
+   - Monthly Hosting price ID (`price_...`)
+   - Reactivation Fee price ID (`price_...`)
+   - Each with a "Verify" link that pings `\Stripe\Price::retrieve($id)` and shows the price's nickname + amount inline (sanity check that admin pasted the right ID)
+
+5. **"Connect with Stripe" button (primary CTA):**
+   - Disabled until all required fields filled
+   - On click:
+     1. Save options via WP `update_option`
+     2. Initialize Stripe client with the saved secret key
+     3. Call `\Stripe\Account::retrieve()` — verifies key is valid + has account access
+     4. Call `\Stripe\Price::retrieve()` for each of the three price IDs — verifies they exist and are in correct mode
+     5. Optionally: register or update the webhook endpoint via `\Stripe\WebhookEndpoint::create` for `SITE/wp-json/memorylane/v1/stripe-webhook` — capture returned `secret` and pre-fill the webhook signing secret field (so admin doesn't have to copy/paste it manually)
+     6. Save `ml_stripe_connected_at = now`, `ml_stripe_account_id`, `ml_stripe_account_name`
+   - On success: status card flips to green, success toast
+   - On failure: status card shows the error, fields stay editable, no save of `connected_at`
+
+6. **"Test webhook" button (after connected):**
+   - Triggers Stripe CLI-style: `\Stripe\WebhookEndpoint::retrieve()` + sends a `ping` event simulation by inserting a synthetic test event into `wp_ml_webhook_events` and verifying our dispatcher reads it correctly
+   - Reports green/red. Helps admin confirm the webhook URL is reachable from Stripe (the actual Stripe-side test is done via Stripe Dashboard → Webhooks → "Send test webhook", linked from this section)
+
+7. **"Disconnect" button (destructive, secondary style):**
+   - Confirmation dialog
+   - Clears keys + price IDs for the active mode, sets `ml_stripe_connected_at = null`
+   - Does NOT cancel existing subscriptions in Stripe; just severs WP's ability to talk to Stripe
+   - Logged in `wp_ml_admin_actions_log`
+
+**Storage / security:**
+- All key options have `option_autoload = no`
+- All key options never written to `error_log` even on exception (wrap Stripe calls so exception messages are sanitized of any echo'd key fragments)
+- Secret key field uses POST with `wp_nonce_field` + admin capability check
+- Display: secret key is shown as `sk_test_***•••***xxxx` (last 4 chars only) after save
+- AJAX endpoint that verifies a key never echoes the key back in response
+
+**REST endpoint helpers (Phase 2):**
+- `/wp-json/memorylane/v1/admin/stripe/verify` — admin capability required, takes mode, returns `{ ok: bool, account: {...} | error: '...' }`
+- `/wp-json/memorylane/v1/admin/stripe/register-webhook` — registers or updates the webhook endpoint with Stripe and returns the signing secret
 
 ### 5.3 Checkout flow
 
@@ -376,17 +441,25 @@ function ml_user_has_access(int $user_id): bool {
 
 ## 6. Phase 3 — Tour assignment + viewing (outline)
 
-**Data model:** Custom post type `ml_tour`. Meta: `_ml_tour_user_id`, `_ml_tour_provider`, `_ml_tour_url`, `_ml_tour_embed_code`, `_ml_tour_status` ∈ {active, archived, pending_archive}, `_ml_tour_address`, `_ml_tour_assigned_at`.
+**Integration depth chosen: Path A — Matterport embed-only.** No Matterport Cloud API integration in MVP. Brief explicitly says "API integration experience is a plus but not mandatory." Path B (Matterport Cloud API) would require Matterport Business plan + token + ongoing maintenance code; deferred unless business decides recurring cost is justified.
+
+**What admin needs to set up (one-time, non-code):**
+- A Matterport Cloud login (any tier that lets you embed publicly-hosted spaces; Starter plan is enough for the embed code)
+- For each scanned property: open the space in Matterport → Share → copy iframe embed code → paste into WP
+
+**Data model:** Custom post type `ml_tour`. Meta: `_ml_tour_user_id`, `_ml_tour_provider` (`matterport` by default; enum extensible later), `_ml_tour_url`, `_ml_tour_embed_code`, `_ml_tour_status` ∈ {active, archived, pending_archive}, `_ml_tour_address`, `_ml_tour_assigned_at`.
 
 **Admin:** meta box (assign user, paste embed code, status toggle). List table shows status + assignee.
 
 **Customer:** `/dashboard/tours` lists their tours. `/dashboard/tour/{slug}` renders iframe — only if access gate passes AND tour assigned to this user AND status=`active`.
 
-**Embed sanitization:** allowlist for iframe `src` (`my.matterport.com` by default; admin can extend in Settings).
+**Embed sanitization:** allowlist for iframe `src` (`my.matterport.com` and `matterport.com` by default; admin can extend list in Settings — useful when a future provider is added). Embed code paste field is stripped through `wp_kses` with an allowlist that only permits `<iframe>` with these attributes: `src`, `width`, `height`, `frameborder`, `allowfullscreen`, `allow`, `loading`, `referrerpolicy`. All other tags/attrs removed. `src` must match the domain allowlist or the embed is rejected at save time with a clear error.
 
-**Subscription-inactive behavior:** tour viewer page shows "Toegang verlopen — verleng abonnement" with renew CTA instead of iframe; tours flagged `pending_archive`; admin notified.
+**Subscription-inactive behavior:** tour viewer page shows "Toegang verlopen — verleng abonnement" with renew CTA instead of iframe. Tours owned by the deactivated user are flagged `pending_archive` automatically; admin gets an email with the list of tour IDs and direct Matterport URLs so they can log into Matterport Cloud and toggle the space to private (manual step — that's the Path A trade-off).
 
-**Reactivation:** Phase 3 admin action triggers one-time Stripe Invoice using `ml_stripe_reactivation_price_id`; on payment success → flip tour status back to `active`.
+**Reactivation:** Phase 3 admin action triggers one-time Stripe Invoice using `ml_stripe_reactivation_price_id`; on payment success → flip tour status back to `active`. (Admin still has to un-toggle the space at Matterport manually — same manual step in reverse.)
+
+**Future Path B note (not in scope):** If business later decides to integrate Matterport Cloud API, the work would be: add `_ml_matterport_space_id` meta, a Matterport Settings tab (Bundle ID + API token), and a `inc/matterport/client.php` wrapping the Cloud API. On `pending_archive` flag we'd call `PUT /spaces/{id}` with `private=true`. This is a self-contained add-on; the rest of the architecture doesn't change.
 
 Full spec for Phase 3 to be written before implementation starts.
 
@@ -421,7 +494,7 @@ Top-level WP admin menu **Memory Lane**:
 | Subscriptions | mirror of `wp_ml_subscriptions`, force-sync from Stripe, manual override |
 | Notifications log | last 200 emails + delivery status, retry button |
 | Webhooks log | event_id, type, status, retry failed |
-| Settings | Stripe keys, price IDs, grace days, booking rules, email sender, admin notification recipients |
+| Settings (tabbed) | **Stripe tab** (see §5.2.1 — built in Phase 2), Matterport tab (embed-domain allowlist), Access tab (past-due grace days, access policy), Booking tab (lead times, auto-confirm), Emails tab (sender name + reply-to, admin recipients list), General tab (default language, brand color) |
 
 Manual access toggles write to `wp_ml_admin_actions_log` (who/when/why/before/after).
 
@@ -541,8 +614,19 @@ These do not block the spec, but should be settled before the **implementation p
 3. Past-due grace period default (proposed 7 days)
 4. Reschedule / cancel lead-time defaults for bookings (proposed 48h / 24h)
 5. Brand voice for NL emails (formal "u" vs. informal "je" — public site uses "je", we'll match unless told otherwise)
-6. Stripe account access (test mode keys) — needed to actually wire up Phase 2
-7. Memberport / Matterport admin access for the team (operational, not code)
+6. Stripe **test mode** keys + 3 test-mode price IDs (setup, monthly, reactivation) — needed to wire up Phase 2 and verify the "Connect with Stripe" flow end-to-end
+7. Matterport Cloud login for admin team (operational, not code)
+
+**Resolved during spec review:**
+- ~~Stripe connection model~~ → manual key-paste with "Connect with Stripe" verify button (§5.2.1)
+- ~~Matterport integration depth~~ → embed-only Path A (§6)
+
+---
+
+## Changelog
+
+- **2026-05-13** — Initial spec drafted from brainstorming session
+- **2026-05-13** — Added §5.2.1 "Connect with Stripe" admin Settings page; clarified §6 Matterport embed-only path; updated §2 decisions table; expanded §8 Settings tabs
 
 ---
 
