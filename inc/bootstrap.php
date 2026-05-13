@@ -30,6 +30,7 @@ require_once __DIR__ . '/stripe/checkout.php';
 require_once __DIR__ . '/stripe/webhooks.php';
 require_once __DIR__ . '/stripe/schedule.php';
 require_once __DIR__ . '/stripe/customer-portal.php';
+require_once __DIR__ . '/stripe/plans.php';
 
 foreach ( glob( __DIR__ . '/stripe/events/*.php' ) as $event_file ) {
     require_once $event_file;

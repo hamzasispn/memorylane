@@ -50,13 +50,13 @@ function ml_admin_settings_stripe() {
     $publishable   = ml_stripe_publishable();
     $secret        = ml_stripe_secret();
     $webhook       = ml_stripe_webhook_secret();
-    $setup_id      = ml_stripe_setup_price_id();
-    $monthly_id    = ml_stripe_monthly_price_id();
-    $react_id      = ml_stripe_reactivation_price_id();
+    $plan          = ml_plan_get();
 
     $is_connected  = ml_stripe_is_connected();
     $msg           = $_GET['ml_msg']   ?? '';
     $err           = $_GET['ml_err']   ?? '';
+    $plan_msg      = $_GET['ml_plan_msg'] ?? '';
+    $plan_err      = $_GET['ml_plan_err'] ?? '';
     ?>
     <h2><?php esc_html_e( 'Connect with Stripe', 'memorylane' ); ?></h2>
     <p class="description"><?php esc_html_e( 'Memory Lane uses Stripe to handle payments. Enter your API keys + price IDs below, then click "Connect with Stripe" to verify the connection.', 'memorylane' ); ?></p>
@@ -113,30 +113,122 @@ function ml_admin_settings_stripe() {
             </tr>
         </table>
 
-        <h3 style="margin-top:24px;"><?php esc_html_e( 'Price IDs', 'memorylane' ); ?></h3>
-        <table class="form-table" role="presentation">
-            <tr>
-                <th scope="row"><label><?php esc_html_e( 'Setup + Year 1 (yearly)', 'memorylane' ); ?></label></th>
-                <td><input type="text" name="setup_price_id" class="regular-text" value="<?php echo esc_attr( $setup_id ); ?>" placeholder="price_..."></td>
-            </tr>
-            <tr>
-                <th scope="row"><label><?php esc_html_e( 'Monthly hosting', 'memorylane' ); ?></label></th>
-                <td><input type="text" name="monthly_price_id" class="regular-text" value="<?php echo esc_attr( $monthly_id ); ?>" placeholder="price_..."></td>
-            </tr>
-            <tr>
-                <th scope="row"><label><?php esc_html_e( 'Reactivation (one-time)', 'memorylane' ); ?></label></th>
-                <td><input type="text" name="reactivation_price_id" class="regular-text" value="<?php echo esc_attr( $react_id ); ?>" placeholder="price_..."></td>
-            </tr>
-        </table>
-
         <p style="margin-top:24px;">
-            <button type="submit" name="ml_action" value="save" class="button button-secondary"><?php esc_html_e( 'Save', 'memorylane' ); ?></button>
+            <button type="submit" name="ml_action" value="save" class="button button-secondary"><?php esc_html_e( 'Save keys', 'memorylane' ); ?></button>
             <button type="submit" name="ml_action" value="connect" class="button button-primary" style="margin-left:8px;">
                 ⚡ <?php esc_html_e( 'Connect with Stripe', 'memorylane' ); ?>
             </button>
             <?php if ( $is_connected ) : ?>
                 <button type="submit" name="ml_action" value="disconnect" class="button" style="margin-left:8px;color:#B91C1C;border-color:#FCA5A5;" onclick="return confirm('<?php echo esc_js( __( 'Disconnect Stripe? Existing subscriptions in Stripe are unaffected.', 'memorylane' ) ); ?>')"><?php esc_html_e( 'Disconnect', 'memorylane' ); ?></button>
             <?php endif; ?>
+        </p>
+    </form>
+
+    <?php /* ─────────────────────── PLAN SECTION ─────────────────────── */ ?>
+    <hr style="margin:32px 0;">
+    <h2><?php esc_html_e( 'Subscription plan', 'memorylane' ); ?></h2>
+    <p class="description"><?php esc_html_e( 'Define your plan amounts here. Click "Sync with Stripe" to create or update the Stripe Product + Prices automatically. No need to paste price IDs manually.', 'memorylane' ); ?></p>
+
+    <?php if ( $plan_msg ) : ?><div class="notice notice-success"><p><?php echo esc_html( wp_unslash( $plan_msg ) ); ?></p></div><?php endif; ?>
+    <?php if ( $plan_err ) : ?><div class="notice notice-error"><p><?php echo esc_html( wp_unslash( $plan_err ) ); ?></p></div><?php endif; ?>
+
+    <?php if ( $plan['synced_at'] ) :
+        $state = ml_plan_fetch_state();
+    ?>
+        <div style="background:#F4F4F5;border:1px solid #E4E4E7;border-radius:8px;padding:14px 16px;margin:16px 0;max-width:760px;">
+            <strong><?php esc_html_e( 'Synced status', 'memorylane' ); ?></strong>
+            <span style="color:#71717A;">· <?php esc_html_e( 'Last sync:', 'memorylane' ); ?> <?php echo esc_html( ml_format_datetime( $plan['synced_at'] ) ); ?></span>
+
+            <table style="margin-top:8px;font-size:13px;width:100%;">
+                <tr>
+                    <td style="padding:4px 0;color:#71717A;width:200px;"><?php esc_html_e( 'Product', 'memorylane' ); ?></td>
+                    <td>
+                        <?php if ( ! empty( $state['product'] ) ) : ?>
+                            <strong><?php echo esc_html( $state['product']->name ); ?></strong>
+                            <code style="font-size:11px;color:#71717A;"><?php echo esc_html( $state['product']->id ); ?></code>
+                        <?php else : ?>
+                            <em style="color:#B91C1C;"><?php esc_html_e( 'Not in Stripe yet', 'memorylane' ); ?></em>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php foreach ( array( 'setup' => 'Setup + Year 1 (yearly)', 'monthly' => 'Monthly hosting', 'reactivation' => 'Reactivation (one-time)' ) as $k => $label ) : ?>
+                <tr>
+                    <td style="padding:4px 0;color:#71717A;"><?php echo esc_html( $label ); ?></td>
+                    <td>
+                        <?php if ( ! empty( $state['prices'][ $k ] ) ) :
+                            $pr = $state['prices'][ $k ];
+                            $amt = number_format( $pr->unit_amount / 100, 2 );
+                        ?>
+                            <strong><?php echo esc_html( strtoupper( $pr->currency ) . ' ' . $amt ); ?></strong>
+                            <code style="font-size:11px;color:#71717A;"><?php echo esc_html( $pr->id ); ?></code>
+                            <?php if ( ! $pr->active ) : ?><span style="color:#B91C1C;"> (archived)</span><?php endif; ?>
+                        <?php else : ?>
+                            <em style="color:#71717A;">—</em>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+    <?php endif; ?>
+
+    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="max-width:760px;">
+        <?php wp_nonce_field( 'ml_plan_save' ); ?>
+        <input type="hidden" name="action" value="ml_plan_save">
+
+        <table class="form-table" role="presentation">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Product name', 'memorylane' ); ?></label></th>
+                <td><input type="text" name="plan_name" class="regular-text" value="<?php echo esc_attr( $plan['product_name'] ); ?>" placeholder="Memory Lane"></td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Description (optional)', 'memorylane' ); ?></label></th>
+                <td><textarea name="plan_description" rows="2" class="large-text"><?php echo esc_textarea( $plan['product_description'] ); ?></textarea>
+                <p class="description"><?php esc_html_e( 'Shown to customers on Stripe receipts and Customer Portal.', 'memorylane' ); ?></p></td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Currency', 'memorylane' ); ?></label></th>
+                <td>
+                    <select name="plan_currency">
+                        <?php foreach ( array( 'eur' => 'EUR — Euro', 'usd' => 'USD — US Dollar', 'gbp' => 'GBP — British Pound' ) as $code => $label ) : ?>
+                            <option value="<?php echo esc_attr( $code ); ?>" <?php selected( $plan['currency'], $code ); ?>><?php echo esc_html( $label ); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Setup + Year 1 amount', 'memorylane' ); ?></label></th>
+                <td>
+                    <input type="text" name="plan_year_one_amount" value="<?php echo esc_attr( $plan['year_one_amount'] ? ml_from_minor_units( $plan['year_one_amount'] ) : '' ); ?>" placeholder="299.00" class="small-text" style="width:140px;">
+                    <p class="description"><?php esc_html_e( 'Charged once up front; includes 12 months of access.', 'memorylane' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Monthly hosting amount', 'memorylane' ); ?></label></th>
+                <td>
+                    <input type="text" name="plan_monthly_amount" value="<?php echo esc_attr( $plan['monthly_amount'] ? ml_from_minor_units( $plan['monthly_amount'] ) : '' ); ?>" placeholder="9.00" class="small-text" style="width:140px;">
+                    <p class="description"><?php esc_html_e( 'Recurring monthly charge after Year 1.', 'memorylane' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Reactivation fee', 'memorylane' ); ?></label></th>
+                <td>
+                    <input type="text" name="plan_reactivation_amount" value="<?php echo esc_attr( $plan['reactivation_amount'] ? ml_from_minor_units( $plan['reactivation_amount'] ) : '' ); ?>" placeholder="49.00" class="small-text" style="width:140px;">
+                    <p class="description"><?php esc_html_e( 'One-time fee to reactivate an archived tour.', 'memorylane' ); ?></p>
+                </td>
+            </tr>
+        </table>
+
+        <p style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:6px;padding:10px 14px;color:#78350F;font-size:13px;max-width:760px;">
+            <strong><?php esc_html_e( 'How it works:', 'memorylane' ); ?></strong>
+            <?php esc_html_e( 'Stripe Prices are immutable. When you change an amount and re-sync, a NEW Price is created and the old one is archived. Existing customer subscriptions keep their old price — only new checkouts use the new one.', 'memorylane' ); ?>
+        </p>
+
+        <p style="margin-top:20px;">
+            <button type="submit" name="plan_action" value="save" class="button button-secondary"><?php esc_html_e( 'Save (no sync)', 'memorylane' ); ?></button>
+            <button type="submit" name="plan_action" value="sync" class="button button-primary" style="margin-left:8px;">
+                ⇅ <?php esc_html_e( 'Sync with Stripe', 'memorylane' ); ?>
+            </button>
         </p>
     </form>
     <?php
@@ -154,12 +246,9 @@ function ml_handle_stripe_save() {
     update_option( ML_OPT_STRIPE_MODE, $mode, false );
 
     $fields = array(
-        'publishable_key'        => sanitize_text_field( wp_unslash( $_POST['publishable_key'] ?? '' ) ),
-        'secret_key'             => sanitize_text_field( wp_unslash( $_POST['secret_key'] ?? '' ) ),
-        'webhook_secret'         => sanitize_text_field( wp_unslash( $_POST['webhook_secret'] ?? '' ) ),
-        'setup_price_id'         => sanitize_text_field( wp_unslash( $_POST['setup_price_id'] ?? '' ) ),
-        'monthly_price_id'       => sanitize_text_field( wp_unslash( $_POST['monthly_price_id'] ?? '' ) ),
-        'reactivation_price_id'  => sanitize_text_field( wp_unslash( $_POST['reactivation_price_id'] ?? '' ) ),
+        'publishable_key' => sanitize_text_field( wp_unslash( $_POST['publishable_key'] ?? '' ) ),
+        'secret_key'      => sanitize_text_field( wp_unslash( $_POST['secret_key'] ?? '' ) ),
+        'webhook_secret'  => sanitize_text_field( wp_unslash( $_POST['webhook_secret'] ?? '' ) ),
     );
     foreach ( $fields as $k => $v ) {
         update_option( "ml_stripe_{$mode}_{$k}", $v, false );
@@ -168,7 +257,9 @@ function ml_handle_stripe_save() {
     $redirect = admin_url( 'admin.php?page=memorylane-settings&tab=stripe' );
 
     if ( $action === 'disconnect' ) {
-        foreach ( array_keys( $fields ) as $k ) {
+        // Clear all per-mode keys (including plan IDs).
+        $clear = array( 'publishable_key', 'secret_key', 'webhook_secret', 'product_id', 'setup_price_id', 'monthly_price_id', 'reactivation_price_id', 'plan_synced_at' );
+        foreach ( $clear as $k ) {
             delete_option( "ml_stripe_{$mode}_{$k}" );
         }
         delete_option( ML_OPT_STRIPE_CONNECTED_AT );
@@ -179,27 +270,19 @@ function ml_handle_stripe_save() {
     }
 
     if ( $action === 'connect' ) {
-        if ( ! ml_stripe_is_configured() ) {
-            wp_safe_redirect( add_query_arg( 'ml_err', rawurlencode( __( 'Please fill in all keys and price IDs first.', 'memorylane' ) ), $redirect ) );
+        if ( ! ml_stripe_secret() ) {
+            wp_safe_redirect( add_query_arg( 'ml_err', rawurlencode( __( 'Please fill in publishable + secret keys first.', 'memorylane' ) ), $redirect ) );
             exit;
         }
         try {
             $stripe  = ml_stripe();
             $account = $stripe->accounts->retrieve();
 
-            // Verify each price ID exists.
-            foreach ( array( 'setup_price_id', 'monthly_price_id', 'reactivation_price_id' ) as $p ) {
-                $pid = $fields[ $p ];
-                if ( $pid ) {
-                    $stripe->prices->retrieve( $pid );
-                }
-            }
-
             update_option( ML_OPT_STRIPE_CONNECTED_AT, time(), false );
             update_option( ML_OPT_STRIPE_ACCOUNT_ID, $account->id, false );
             update_option( ML_OPT_STRIPE_ACCOUNT_NAME, $account->business_profile->name ?? $account->email ?? $account->id, false );
 
-            wp_safe_redirect( add_query_arg( 'ml_msg', rawurlencode( __( 'Connected to Stripe successfully.', 'memorylane' ) ), $redirect ) );
+            wp_safe_redirect( add_query_arg( 'ml_msg', rawurlencode( __( 'Connected to Stripe successfully. Now define your plan below and click "Sync with Stripe".', 'memorylane' ) ), $redirect ) );
             exit;
         } catch ( \Throwable $e ) {
             delete_option( ML_OPT_STRIPE_CONNECTED_AT );
@@ -209,6 +292,46 @@ function ml_handle_stripe_save() {
     }
 
     wp_safe_redirect( add_query_arg( 'ml_msg', rawurlencode( __( 'Saved.', 'memorylane' ) ), $redirect ) );
+    exit;
+}
+
+/* ─────────────── PLAN SAVE / SYNC HANDLER ─────────────── */
+
+add_action( 'admin_post_ml_plan_save', 'ml_handle_plan_save' );
+
+function ml_handle_plan_save() {
+    if ( ! current_user_can( ML_CAP_MANAGE ) ) wp_die();
+    check_admin_referer( 'ml_plan_save' );
+
+    $action = sanitize_key( $_POST['plan_action'] ?? 'save' );
+
+    // Save plan fields (amounts as cents).
+    ml_plan_save_raw( array(
+        'plan_name'                 => sanitize_text_field( wp_unslash( $_POST['plan_name']        ?? '' ) ),
+        'plan_description'          => sanitize_textarea_field( wp_unslash( $_POST['plan_description'] ?? '' ) ),
+        'plan_currency'             => strtolower( sanitize_text_field( wp_unslash( $_POST['plan_currency'] ?? 'eur' ) ) ),
+        'plan_year_one_amount'      => ml_to_minor_units( wp_unslash( $_POST['plan_year_one_amount']     ?? '' ) ),
+        'plan_monthly_amount'       => ml_to_minor_units( wp_unslash( $_POST['plan_monthly_amount']      ?? '' ) ),
+        'plan_reactivation_amount'  => ml_to_minor_units( wp_unslash( $_POST['plan_reactivation_amount'] ?? '' ) ),
+    ) );
+
+    $redirect = admin_url( 'admin.php?page=memorylane-settings&tab=stripe' );
+
+    if ( $action === 'sync' ) {
+        $result = ml_plan_sync_to_stripe();
+        if ( ! $result['ok'] ) {
+            wp_safe_redirect( add_query_arg( 'ml_plan_err', rawurlencode( $result['error'] ?? 'sync failed' ), $redirect ) );
+            exit;
+        }
+        $msg = __( 'Plan synced to Stripe.', 'memorylane' );
+        if ( ! empty( $result['changes'] ) ) {
+            $msg .= ' (' . implode( ', ', $result['changes'] ) . ')';
+        }
+        wp_safe_redirect( add_query_arg( 'ml_plan_msg', rawurlencode( $msg ), $redirect ) );
+        exit;
+    }
+
+    wp_safe_redirect( add_query_arg( 'ml_plan_msg', rawurlencode( __( 'Plan saved (not yet synced).', 'memorylane' ) ), $redirect ) );
     exit;
 }
 
