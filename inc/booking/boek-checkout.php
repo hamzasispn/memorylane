@@ -29,7 +29,7 @@ function ml_rest_boek( WP_REST_Request $req ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'bad_nonce' ), 403 );
     }
 
-    if ( ! ml_stripe_is_configured() || ! ml_stripe_setup_price_id() ) {
+    if ( ! ml_stripe_is_configured() || ! ml_stripe_setup_price_id() || ! ml_stripe_reactivation_price_id() ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'payments_not_configured' ), 503 );
     }
 
@@ -76,7 +76,10 @@ function ml_rest_boek( WP_REST_Request $req ) {
         $stripe = ml_stripe();
         $session = $stripe->checkout->sessions->create( array(
             'mode'        => 'payment',
-            'line_items'  => array( array( 'price' => ml_stripe_setup_price_id(), 'quantity' => 1 ) ),
+            'line_items'  => array(
+                array( 'price' => ml_stripe_setup_price_id(),        'quantity' => 1 ),
+                array( 'price' => ml_stripe_reactivation_price_id(), 'quantity' => 1 ),
+            ),
             'customer_creation'          => 'always',
             'customer_email'             => $email,
             'billing_address_collection' => 'required',
@@ -86,13 +89,14 @@ function ml_rest_boek( WP_REST_Request $req ) {
             'cancel_url'                 => home_url( '/boek?cancelled=1' ),
             'payment_intent_data'        => array( 'metadata' => array( 'ml_intent' => 'memory_lane_setup_year_one' ) ),
             'metadata' => array(
-                'ml_intent'   => 'initial_purchase_with_slot',
-                'ml_lang'     => ml_current_lang(),
-                'ml_slot_id'  => (string) $slot_id,
-                'ml_name'     => substr( $name, 0, 200 ),
-                'ml_phone'    => substr( $phone, 0, 80 ),
-                'ml_address'  => substr( $address, 0, 200 ),
-                'ml_notes'    => substr( $notes, 0, 400 ),
+                'ml_intent'              => 'initial_purchase_with_slot',
+                'ml_includes_matterport' => '1',
+                'ml_lang'                => ml_current_lang(),
+                'ml_slot_id'             => (string) $slot_id,
+                'ml_name'                => substr( $name, 0, 200 ),
+                'ml_phone'               => substr( $phone, 0, 80 ),
+                'ml_address'             => substr( $address, 0, 200 ),
+                'ml_notes'                => substr( $notes, 0, 400 ),
             ),
             'allow_promotion_codes' => true,
         ) );

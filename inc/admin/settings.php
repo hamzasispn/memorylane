@@ -151,7 +151,7 @@ function ml_admin_settings_stripe() {
                         <?php endif; ?>
                     </td>
                 </tr>
-                <?php foreach ( array( 'setup' => 'Setup + Year 1 (one-time)', 'monthly' => 'Monthly hosting', 'annual' => 'Annual hosting (reactivation only)', 'reactivation' => 'Reactivation fee (one-time)' ) as $k => $label ) : ?>
+                <?php foreach ( array( 'setup' => 'Setup + Year 1 (one-time)', 'monthly' => 'Monthly hosting', 'annual' => 'Annual hosting (reactivation only)', 'reactivation' => 'Matterport activation fee (one-time)' ) as $k => $label ) : ?>
                 <tr>
                     <td style="padding:4px 0;color:#71717A;"><?php echo esc_html( $label ); ?></td>
                     <td>
@@ -218,10 +218,10 @@ function ml_admin_settings_stripe() {
                 </td>
             </tr>
             <tr>
-                <th scope="row"><label><?php esc_html_e( 'Reactivation fee', 'memorylane' ); ?></label></th>
+                <th scope="row"><label><?php esc_html_e( 'Matterport activation fee', 'memorylane' ); ?></label></th>
                 <td>
                     <input type="text" name="plan_reactivation_amount" value="<?php echo esc_attr( $plan['reactivation_amount'] ? ml_from_minor_units( $plan['reactivation_amount'] ) : '' ); ?>" placeholder="49.00" class="small-text" style="width:140px;">
-                    <p class="description"><?php esc_html_e( 'One-time fee to reactivate an archived tour.', 'memorylane' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'One-time fee charged at first purchase and at every reactivation. Covers Matterport activation cost.', 'memorylane' ); ?></p>
                 </td>
             </tr>
         </table>

@@ -54,6 +54,7 @@ function ml_stripe_is_configured() {
         && ml_stripe_publishable()
         && ml_stripe_setup_price_id()
         && ml_stripe_monthly_price_id()
+        && ml_stripe_reactivation_price_id()
     );
 }
 
