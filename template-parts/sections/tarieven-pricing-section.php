@@ -97,6 +97,13 @@ $pricingCards = [
                         </p>
                     <?php endif; ?>
 
+                    <?php if ($card['highlight']) : ?>
+                        <a href="<?= esc_url(home_url('/checkout/start')) ?>"
+                           class="btn-primary mt-4 md:mt-[1vw] text-center inline-block w-full !py-3 !px-6 !text-base md:!text-[1.05vw] bg-primary text-white rounded-full font-semibold hover:opacity-90 transition">
+                            <?php echo function_exists('ml_t') ? esc_html(ml_t('tarieven.cta_start', 'Start je tour')) : 'Start je tour'; ?>
+                        </a>
+                    <?php endif; ?>
+
                 </div>
             <?php endforeach; ?>
         </div>
