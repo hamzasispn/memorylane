@@ -49,10 +49,13 @@ require_once __DIR__ . '/tours/admin-meta.php';
 require_once __DIR__ . '/tours/viewer.php';
 
 // Booking (Phase 4).
+require_once __DIR__ . '/booking/working-hours.php';
+require_once __DIR__ . '/booking/availability.php';
 require_once __DIR__ . '/booking/slots.php';
 require_once __DIR__ . '/booking/bookings.php';
 require_once __DIR__ . '/booking/admin.php';
 require_once __DIR__ . '/booking/boek-checkout.php';
+require_once __DIR__ . '/booking/booking-rest.php';
 
 // Admin (Phase 5).
 require_once __DIR__ . '/admin/menu.php';

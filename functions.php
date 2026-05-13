@@ -75,4 +75,19 @@ add_action( 'wp_enqueue_scripts', function () {
     );
 } );
 
+// Standalone CSS for the booking date+time picker (not bundled by Vite so
+// edits go live without a rebuild).
+add_action( 'wp_enqueue_scripts', function () {
+    $rel = '/assets/css/booking-picker.css';
+    $abs = get_template_directory() . $rel;
+    if ( file_exists( $abs ) ) {
+        wp_enqueue_style(
+            'ml-booking-picker',
+            get_template_directory_uri() . $rel,
+            array(),
+            (string) filemtime( $abs )
+        );
+    }
+} );
+
 require_once get_template_directory() . '/inc/bootstrap.php';

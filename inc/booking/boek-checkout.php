@@ -41,14 +41,15 @@ function ml_rest_boek( WP_REST_Request $req ) {
     }
     set_transient( $rl_key, $count + 1, 15 * MINUTE_IN_SECONDS );
 
-    $slot_id = (int) $req->get_param( 'slot_id' );
+    $date    = sanitize_text_field( (string) $req->get_param( 'date' ) );
+    $time    = sanitize_text_field( (string) $req->get_param( 'time' ) );
     $email   = sanitize_email( (string) $req->get_param( 'email' ) );
     $name    = sanitize_text_field( (string) $req->get_param( 'name' ) );
     $phone   = sanitize_text_field( (string) $req->get_param( 'phone' ) );
     $address = sanitize_text_field( (string) $req->get_param( 'address' ) );
     $notes   = sanitize_textarea_field( (string) $req->get_param( 'notes' ) );
 
-    if ( ! $slot_id || ! $email || ! $name || ! $phone || ! $address ) {
+    if ( ! $date || ! $time || ! $email || ! $name || ! $phone || ! $address ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'missing_fields' ), 400 );
     }
     if ( ! is_email( $email ) ) {
@@ -61,14 +62,18 @@ function ml_rest_boek( WP_REST_Request $req ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'already_customer' ), 409 );
     }
 
-    $slot = ml_get_slot( $slot_id );
-    if ( ! $slot || $slot->status !== 'open' || $slot->booked_count >= $slot->capacity ) {
+    $slot = ml_booking_find_or_create_slot( $date, $time );
+    if ( ! $slot ) {
+        return new WP_REST_Response( array( 'ok' => false, 'error' => 'slot_invalid' ), 400 );
+    }
+    if ( $slot->status !== 'open' || $slot->booked_count >= $slot->capacity ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'slot_unavailable' ), 409 );
     }
     if ( strtotime( $slot->slot_start_datetime . ' UTC' ) <= time() ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'slot_in_past' ), 409 );
     }
 
+    $slot_id = (int) $slot->id;
     // Soft-hold the slot so two visitors don't grab it.
     ml_increment_slot_booked( $slot_id );
 

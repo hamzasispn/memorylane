@@ -9,7 +9,6 @@ if ( ! ml_user_can_book( $user->ID ) ) {
     echo '</div>';
     return;
 }
-$slots         = ml_get_open_slots( 60 );
 $user_bookings = ml_get_user_bookings( $user->ID );
 ?>
 <div>
@@ -56,30 +55,23 @@ $user_bookings = ml_get_user_bookings( $user->ID );
         </div>
     <?php endif; ?>
 
-    <h2 class="ml-h2"><?php echo esc_html__( 'Available slots', 'memorylane' ); ?></h2>
-    <?php if ( empty( $slots ) ) : ?>
-        <div class="ml-empty"><div class="ml-empty__title"><?php ml_e( 'booking.no_slots' ); ?></div></div>
-    <?php else : ?>
-        <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" x-data="{ slot: null }">
-            <?php wp_nonce_field( 'ml_booking_request' ); ?>
-            <input type="hidden" name="action" value="ml_booking_request">
-            <input type="hidden" name="slot_id" :value="slot">
+    <h2 class="ml-h2"><?php echo esc_html__( 'Pick your appointment', 'memorylane' ); ?></h2>
+    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="ml-mt-2">
+        <?php wp_nonce_field( 'ml_booking_request' ); ?>
+        <input type="hidden" name="action" value="ml_booking_request">
+        <input type="hidden" name="date" value="">
+        <input type="hidden" name="time" value="">
 
-            <div class="ml-slots">
-                <?php foreach ( $slots as $s ) : ?>
-                    <label class="ml-slot" :class="{'is-selected': slot == <?php echo (int) $s->id; ?>}" @click="slot = <?php echo (int) $s->id; ?>">
-                        <div class="ml-slot__date"><?php echo esc_html( ml_format_date( $s->slot_start_datetime ) ); ?></div>
-                        <div class="ml-slot__time"><?php echo esc_html( wp_date( 'H:i', strtotime( $s->slot_start_datetime ) ) ); ?></div>
-                    </label>
-                <?php endforeach; ?>
-            </div>
+        <?php
+            $picker_id = 'ml-dash-picker';
+            include ML_PATH . 'template-parts/booking/picker.php';
+        ?>
 
-            <div class="ml-mt-3">
-                <label class="ml-label"><?php echo esc_html__( 'Notes (optional)', 'memorylane' ); ?></label>
-                <textarea name="notes" class="ml-input" rows="3"></textarea>
-            </div>
+        <div class="ml-mt-3">
+            <label class="ml-label"><?php echo esc_html__( 'Notes (optional)', 'memorylane' ); ?></label>
+            <textarea name="notes" class="ml-input" rows="3"></textarea>
+        </div>
 
-            <button class="ml-btn ml-btn--primary ml-mt-2" type="submit" :disabled="!slot"><?php ml_e( 'common.confirm' ); ?></button>
-        </form>
-    <?php endif; ?>
+        <button class="ml-btn ml-btn--primary ml-mt-2" type="submit" disabled><?php ml_e( 'common.confirm' ); ?></button>
+    </form>
 </div>

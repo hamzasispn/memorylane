@@ -72,6 +72,8 @@ return array(
     'booking.title'               => 'Schedule a scan',
     'booking.subtitle'            => 'Pick a date and time for your 3D scan.',
     'booking.no_slots'            => 'No free slots right now. Please check back later or contact us.',
+    'booking.pick_date_first'     => 'Pick a date first',
+    'booking.no_times'            => 'No times available on this day.',
     'booking.confirm.title'       => 'Confirm your appointment',
     'booking.confirm.body'        => 'We will send you a confirmation email once the appointment is approved.',
     'booking.status.requested'    => 'Requested',

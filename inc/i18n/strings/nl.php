@@ -72,6 +72,8 @@ return array(
     'booking.title'               => 'Een opname inplannen',
     'booking.subtitle'            => 'Kies een datum en tijd voor jouw 3D-scan.',
     'booking.no_slots'            => 'Op dit moment zijn er geen vrije momenten. Kom later terug of contacteer ons.',
+    'booking.pick_date_first'     => 'Kies eerst een datum',
+    'booking.no_times'            => 'Geen vrije uren op deze dag.',
     'booking.confirm.title'       => 'Bevestig je afspraak',
     'booking.confirm.body'        => 'We sturen je een bevestigingsmail zodra de afspraak is goedgekeurd.',
     'booking.status.requested'    => 'Aangevraagd',

@@ -1,41 +1,34 @@
 <?php
 /**
  * /boek — public booking + setup-fee payment in one flow.
- * Visitor picks a slot, fills name/email/phone/address, gets redirected to Stripe.
- * On payment success, webhook creates user + booking row.
+ * Visitor picks date + time, fills name/email/phone/address, gets redirected
+ * to Stripe. On payment success, webhook creates user + booking row.
  */
 defined( 'ABSPATH' ) || exit;
 
 $page_title = ml_t( 'boek.title', 'Boek jouw opname' );
 include ML_PATH . 'template-parts/auth/_layout-head.php';
 
-$slots = ml_get_open_slots( 60 );
-$plan  = ml_plan_get();
-$fee   = $plan['year_one_amount'] ? ml_from_minor_units( (int) $plan['year_one_amount'] ) : '';
-$cur   = strtoupper( $plan['currency'] );
+$plan = ml_plan_get();
+$fee  = $plan['year_one_amount'] ? ml_from_minor_units( (int) $plan['year_one_amount'] ) : '';
+$cur  = strtoupper( $plan['currency'] );
 ?>
-<main class="ml-main" style="max-width:900px;margin:48px auto;padding:0 24px;">
+<main class="ml-main" style="max-width:1100px;margin:48px auto;padding:0 24px;">
 
     <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ml-text-sm">← <?php ml_e( 'common.back' ); ?></a>
     <h1 class="ml-h1 ml-mt-1"><?php echo esc_html( ml_t( 'boek.title', 'Boek jouw opname' ) ); ?></h1>
     <p class="ml-sub"><?php echo esc_html( ml_t( 'boek.subtitle', 'Kies een datum, vul je gegevens in en betaal. Je klantenzone wordt automatisch aangemaakt.' ) ); ?></p>
 
-    <?php if ( empty( $slots ) ) : ?>
-        <div class="ml-empty ml-mt-3"><div class="ml-empty__title"><?php ml_e( 'booking.no_slots' ); ?></div></div>
-        <p><?php echo esc_html( ml_t( 'boek.no_slots_contact', 'Geen vrije momenten beschikbaar. Neem contact met ons op.' ) ); ?></p>
-    <?php else : ?>
-
     <form id="ml-boek-form" class="ml-mt-3">
-        <input type="hidden" name="slot_id" id="ml-slot-input" value="">
+        <input type="hidden" name="date" value="">
+        <input type="hidden" name="time" value="">
 
         <h2 class="ml-h2 ml-mt-3"><?php echo esc_html( ml_t( 'boek.pick_slot', '1. Kies je opname-moment' ) ); ?></h2>
-        <div class="ml-slots ml-mt-2" id="ml-slots">
-            <?php foreach ( $slots as $s ) : ?>
-                <button type="button" class="ml-slot" data-slot-id="<?php echo (int) $s->id; ?>">
-                    <div class="ml-slot__date"><?php echo esc_html( ml_format_date( $s->slot_start_datetime ) ); ?></div>
-                    <div class="ml-slot__time"><?php echo esc_html( wp_date( 'H:i', strtotime( $s->slot_start_datetime ) ) ); ?></div>
-                </button>
-            <?php endforeach; ?>
+        <div class="ml-mt-2">
+            <?php
+                $picker_id = 'ml-boek-picker';
+                include ML_PATH . 'template-parts/booking/picker.php';
+            ?>
         </div>
 
         <h2 class="ml-h2 ml-mt-3"><?php echo esc_html( ml_t( 'boek.your_info', '2. Jouw gegevens' ) ); ?></h2>
@@ -67,7 +60,7 @@ $cur   = strtoupper( $plan['currency'] );
             <div class="ml-row-between">
                 <div>
                     <p class="ml-card__title"><?php echo esc_html( ml_t( 'boek.total', 'Te betalen nu' ) ); ?></p>
-                    <p class="ml-text-sm ml-text-muted"><?php echo esc_html( ml_t( 'boek.includes', 'Opname + virtuele tour + 1 jaar online beschikbaarheid.' ) ); ?></p>
+                    <p class="ml-text-sm ml-text-muted"><?php echo esc_html( ml_t( 'boek.includes', 'Opname + virtuele tour + 1 jaar online beschikbaarheid + Matterport-activatiekost.' ) ); ?></p>
                 </div>
                 <p class="ml-h2"><?php echo esc_html( $fee ? $cur . ' ' . $fee : '€ —' ); ?></p>
             </div>
@@ -81,26 +74,21 @@ $cur   = strtoupper( $plan['currency'] );
 
     <script>
     (function () {
-        var slotInput = document.getElementById('ml-slot-input');
-        var submit    = document.getElementById('ml-boek-submit');
-        var errBox    = document.getElementById('ml-boek-error');
+        var form   = document.getElementById('ml-boek-form');
+        var submit = document.getElementById('ml-boek-submit');
+        var errBox = document.getElementById('ml-boek-error');
 
-        document.querySelectorAll('#ml-slots .ml-slot').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('#ml-slots .ml-slot').forEach(function (b) { b.classList.remove('is-selected'); });
-                btn.classList.add('is-selected');
-                slotInput.value = btn.dataset.slotId;
-                submit.disabled = false;
-            });
-        });
-
-        document.getElementById('ml-boek-form').addEventListener('submit', function (e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
             errBox.style.display = 'none';
-            var data = new FormData(e.target);
+            var data = new FormData(form);
             var payload = {};
             data.forEach(function (v, k) { payload[k] = v; });
-            if (!payload.slot_id) { errBox.textContent = '<?php echo esc_js( ml_t( 'boek.err.pick_slot', 'Kies eerst een moment.' ) ); ?>'; errBox.style.display = 'block'; return; }
+            if (!payload.date || !payload.time) {
+                errBox.textContent = '<?php echo esc_js( ml_t( 'boek.err.pick_slot', 'Kies eerst een datum en uur.' ) ); ?>';
+                errBox.style.display = 'block';
+                return;
+            }
             submit.disabled = true;
             submit.textContent = '<?php echo esc_js( ml_t( 'common.loading', 'Laden...' ) ); ?>';
             fetch('<?php echo esc_url_raw( rest_url( 'memorylane/v1/boek' ) ); ?>', {
@@ -108,14 +96,11 @@ $cur   = strtoupper( $plan['currency'] );
                 headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>' },
                 body: JSON.stringify(payload)
             }).then(function (r) { return r.json(); }).then(function (out) {
-                if (out && out.ok && out.url) {
-                    window.location = out.url;
-                } else {
-                    errBox.textContent = (out && out.error) || '<?php echo esc_js( ml_t( 'common.error_generic' ) ); ?>';
-                    errBox.style.display = 'block';
-                    submit.disabled = false;
-                    submit.textContent = '<?php echo esc_js( ml_t( 'boek.cta', 'Bevestig en betaal' ) ); ?>';
-                }
+                if (out && out.ok && out.url) { window.location = out.url; return; }
+                errBox.textContent = (out && out.error) || '<?php echo esc_js( ml_t( 'common.error_generic', 'Er ging iets mis.' ) ); ?>';
+                errBox.style.display = 'block';
+                submit.disabled = false;
+                submit.textContent = '<?php echo esc_js( ml_t( 'boek.cta', 'Bevestig en betaal' ) ); ?>';
             }).catch(function () {
                 errBox.textContent = 'Network error.';
                 errBox.style.display = 'block';
@@ -126,7 +111,6 @@ $cur   = strtoupper( $plan['currency'] );
     })();
     </script>
 
-    <?php endif; ?>
 </main>
 <?php wp_footer(); ?>
 </body>

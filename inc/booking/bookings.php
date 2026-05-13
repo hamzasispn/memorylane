@@ -37,11 +37,21 @@ add_action( 'admin_post_ml_booking_request', function () {
         wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
     }
 
-    $slot_id = (int) ( $_POST['slot_id'] ?? 0 );
-    $notes   = sanitize_textarea_field( wp_unslash( $_POST['notes'] ?? '' ) );
+    $date  = sanitize_text_field( wp_unslash( $_POST['date']  ?? '' ) );
+    $time  = sanitize_text_field( wp_unslash( $_POST['time']  ?? '' ) );
+    $notes = sanitize_textarea_field( wp_unslash( $_POST['notes'] ?? '' ) );
 
-    $slot = ml_get_slot( $slot_id );
-    if ( ! $slot || $slot->status !== 'open' || $slot->booked_count >= $slot->capacity ) {
+    if ( ! $date || ! $time ) {
+        ml_flash_set( 'error', __( 'Please pick a date and time.', 'memorylane' ) );
+        wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
+    }
+
+    $slot = ml_booking_find_or_create_slot( $date, $time );
+    if ( ! $slot ) {
+        ml_flash_set( 'error', __( 'This date and time is not available.', 'memorylane' ) );
+        wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
+    }
+    if ( $slot->status !== 'open' || $slot->booked_count >= $slot->capacity ) {
         ml_flash_set( 'error', __( 'This slot is no longer available.', 'memorylane' ) );
         wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
     }
@@ -49,6 +59,7 @@ add_action( 'admin_post_ml_booking_request', function () {
         ml_flash_set( 'error', __( 'Slot is in the past.', 'memorylane' ) );
         wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
     }
+    $slot_id = (int) $slot->id;
 
     global $wpdb;
     $now = current_time( 'mysql', true );
