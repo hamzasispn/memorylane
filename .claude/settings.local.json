@@ -4,7 +4,8 @@
       "Bash(npm run *)",
       "Bash(git add *)",
       "Bash(git -c commit.gpgsign=false commit -m ' *)",
-      "PowerShell($php = \\(Get-ChildItem 'C:\\\\laragon\\\\bin\\\\php' -Directory | Select-Object -First 1\\).FullName + '\\\\php.exe'; $files = @\\('inc/admin/settings.php','inc/stripe/plans.php','inc/bootstrap.php'\\); $bad = 0; foreach \\($f in $files\\) { $out = & $php -l $f 2>&1; if \\($out -notmatch 'No syntax errors'\\) { Write-Output \"FAIL: $f\"; Write-Output $out; $bad++ } }; if \\($bad -eq 0\\) { Write-Output 'All files lint clean.' })"
+      "PowerShell($php = \\(Get-ChildItem 'C:\\\\laragon\\\\bin\\\\php' -Directory | Select-Object -First 1\\).FullName + '\\\\php.exe'; $files = @\\('inc/admin/settings.php','inc/stripe/plans.php','inc/bootstrap.php'\\); $bad = 0; foreach \\($f in $files\\) { $out = & $php -l $f 2>&1; if \\($out -notmatch 'No syntax errors'\\) { Write-Output \"FAIL: $f\"; Write-Output $out; $bad++ } }; if \\($bad -eq 0\\) { Write-Output 'All files lint clean.' })",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
