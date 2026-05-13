@@ -14,10 +14,12 @@ function ml_admin_render_bookings() {
     if ( isset( $_POST['ml_create_slots'] ) && check_admin_referer( 'ml_admin_slots' ) ) {
         $date_from = sanitize_text_field( $_POST['date_from'] ?? '' );
         $date_to   = sanitize_text_field( $_POST['date_to']   ?? '' );
-        $time      = sanitize_text_field( $_POST['time']      ?? '09:00' );
+        $times_raw = (array) ( $_POST['times']  ?? array( '09:00' ) );
+        $times     = array_values( array_filter( array_map( 'sanitize_text_field', $times_raw ) ) );
+        if ( empty( $times ) ) $times = array( '09:00' );
         $duration  = max( 30, (int) ( $_POST['duration']      ?? 60 ) );
         $weekdays  = array_map( 'intval', (array) ( $_POST['weekdays'] ?? array() ) );
-        $count = ml_admin_create_slots_bulk( $date_from, $date_to, $time, $duration, $weekdays );
+        $count = ml_admin_create_slots_bulk( $date_from, $date_to, $times, $duration, $weekdays );
         echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Created %d slots.', 'memorylane' ), $count ) ) . '</p></div>';
     }
     if ( isset( $_GET['ml_action'], $_GET['id'] ) && check_admin_referer( 'ml_booking_action' ) ) {
@@ -51,7 +53,16 @@ function ml_admin_render_bookings() {
             <table class="form-table">
                 <tr><th><?php esc_html_e( 'Date from', 'memorylane' ); ?></th><td><input type="date" name="date_from" required></td></tr>
                 <tr><th><?php esc_html_e( 'Date to', 'memorylane' ); ?></th><td><input type="date" name="date_to" required></td></tr>
-                <tr><th><?php esc_html_e( 'Time of day', 'memorylane' ); ?></th><td><input type="time" name="time" value="09:00" required></td></tr>
+                <tr><th><?php esc_html_e( 'Time slots (per day)', 'memorylane' ); ?></th><td>
+                    <div id="ml-times-wrap" style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <input type="time" name="times[]" value="09:00" required>
+                        <input type="time" name="times[]" value="11:00">
+                        <input type="time" name="times[]" value="14:00">
+                        <input type="time" name="times[]" value="16:00">
+                    </div>
+                    <button type="button" class="button button-small" style="margin-top:6px;" onclick="var w=document.getElementById('ml-times-wrap');var i=document.createElement('input');i.type='time';i.name='times[]';w.appendChild(i);">+ <?php esc_html_e( 'Add slot', 'memorylane' ); ?></button>
+                    <p class="description"><?php esc_html_e( 'Add as many start times as you like — one slot per time per matching weekday.', 'memorylane' ); ?></p>
+                </td></tr>
                 <tr><th><?php esc_html_e( 'Duration (minutes)', 'memorylane' ); ?></th><td><input type="number" name="duration" value="60" min="30" max="480"></td></tr>
                 <tr><th><?php esc_html_e( 'Weekdays', 'memorylane' ); ?></th><td>
                     <?php $labels = array( __( 'Mon', 'memorylane' ), __( 'Tue', 'memorylane' ), __( 'Wed', 'memorylane' ), __( 'Thu', 'memorylane' ), __( 'Fri', 'memorylane' ), __( 'Sat', 'memorylane' ), __( 'Sun', 'memorylane' ) );
@@ -110,36 +121,40 @@ function ml_admin_render_bookings() {
     <?php
 }
 
-function ml_admin_create_slots_bulk( $date_from, $date_to, $time, $duration_min, $weekdays ) {
+function ml_admin_create_slots_bulk( $date_from, $date_to, $times, $duration_min, $weekdays ) {
     global $wpdb;
     $tbl = ml_table( 'availability_slots' );
     $count = 0;
     if ( ! $date_from || ! $date_to ) return 0;
+    if ( ! is_array( $times ) ) $times = array( $times );
 
     $start = strtotime( $date_from );
     $end   = strtotime( $date_to );
     if ( $end < $start ) return 0;
 
     for ( $t = $start; $t <= $end; $t += DAY_IN_SECONDS ) {
-        $iso_dow = (int) wp_date( 'N', $t ); // 1..7
+        $iso_dow = (int) wp_date( 'N', $t );
         if ( ! empty( $weekdays ) && ! in_array( $iso_dow, $weekdays, true ) ) continue;
-        $slot_start = gmdate( 'Y-m-d', $t ) . ' ' . $time . ':00';
-        $slot_end   = gmdate( 'Y-m-d H:i:s', strtotime( $slot_start ) + $duration_min * 60 );
 
-        // Skip duplicates.
-        $existing = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$tbl} WHERE slot_start_datetime=%s", $slot_start ) );
-        if ( $existing ) continue;
+        foreach ( $times as $time ) {
+            $time = preg_match( '/^\d{2}:\d{2}$/', $time ) ? $time : '09:00';
+            $slot_start = gmdate( 'Y-m-d', $t ) . ' ' . $time . ':00';
+            $slot_end   = gmdate( 'Y-m-d H:i:s', strtotime( $slot_start ) + $duration_min * 60 );
 
-        $wpdb->insert( $tbl, array(
-            'slot_start_datetime' => $slot_start,
-            'slot_end_datetime'   => $slot_end,
-            'capacity'            => 1,
-            'booked_count'        => 0,
-            'status'              => 'open',
-            'created_by'          => get_current_user_id(),
-            'created_at'          => current_time( 'mysql', true ),
-        ) );
-        $count++;
+            $existing = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$tbl} WHERE slot_start_datetime=%s", $slot_start ) );
+            if ( $existing ) continue;
+
+            $wpdb->insert( $tbl, array(
+                'slot_start_datetime' => $slot_start,
+                'slot_end_datetime'   => $slot_end,
+                'capacity'            => 1,
+                'booked_count'        => 0,
+                'status'              => 'open',
+                'created_by'          => get_current_user_id(),
+                'created_at'          => current_time( 'mysql', true ),
+            ) );
+            $count++;
+        }
     }
     return $count;
 }

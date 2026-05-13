@@ -41,7 +41,7 @@ function ml_handle_checkout_start() {
             'allow_promotion_codes' => true,
         ) );
 
-        wp_safe_redirect( $session->url, 303 );
+        wp_redirect( $session->url, 303 );
         exit;
     } catch ( \Throwable $e ) {
         error_log( '[memorylane] Checkout session creation failed: ' . $e->getMessage() );

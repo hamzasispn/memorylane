@@ -22,7 +22,7 @@ function ml_handle_portal() {
             'customer'   => $cust,
             'return_url' => home_url( '/dashboard/subscription' ),
         ) );
-        wp_safe_redirect( $session->url, 303 );
+        wp_redirect( $session->url, 303 );
         exit;
     } catch ( \Throwable $e ) {
         error_log( '[memorylane] Customer portal failed: ' . $e->getMessage() );

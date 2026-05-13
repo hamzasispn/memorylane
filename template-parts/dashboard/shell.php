@@ -98,6 +98,15 @@ function ml_nav_icon( $name ) {
 
     <main class="ml-main">
         <?php
+        $flash_success = ml_flash_take( 'success' );
+        $flash_error   = ml_flash_take( 'error' );
+        if ( $flash_success ) : ?>
+            <div class="ml-alert ml-alert--success ml-mb-2" style="background:#D1FAE5;border:1px solid #6EE7B7;color:#065F46;padding:12px 16px;border-radius:8px;">✓ <?php echo esc_html( $flash_success ); ?></div>
+        <?php endif;
+        if ( $flash_error ) : ?>
+            <div class="ml-alert ml-alert--danger ml-mb-2" style="background:#FEE2E2;border:1px solid #FCA5A5;color:#7F1D1D;padding:12px 16px;border-radius:8px;">⚠ <?php echo esc_html( $flash_error ); ?></div>
+        <?php endif; ?>
+        <?php
         $sub_file = ML_PATH . 'template-parts/dashboard/' . preg_replace( '/[^a-z0-9\-]/', '', $subroute ) . '.php';
         if ( file_exists( $sub_file ) ) {
             include $sub_file;
