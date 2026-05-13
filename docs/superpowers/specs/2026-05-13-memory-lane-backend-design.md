@@ -623,11 +623,149 @@ These do not block the spec, but should be settled before the **implementation p
 
 ---
 
+---
+
+## 13. Customer-driven reactivation cycle (post-cancellation)
+
+This section was added 2026-05-13 to make the backend match the public-pricing-page promise *"Heractivatie binnen de 8 uur"* and to capture the **reactivation cycle** as a first-class concept distinct from the one-shot Phase 3 reactivation outlined earlier. Where Section 7 (Phase 3 outline) said "admin triggers a one-time invoice", this section takes precedence: reactivation is **customer-initiated** and self-service.
+
+### 13.1 Business rules
+
+- After a customer's subscription is cancelled and their tour archived, they can reactivate **at any time, an unlimited number of times**. Each reactivation costs the activation fee on top of a fresh subscription.
+- At reactivation checkout, the customer **picks monthly or annual** prepay. Annual is **only available at reactivation** — not at year-1-end and not as a mid-stream upgrade (out of scope for MVP).
+- The activation fee is always paid in the same Stripe Checkout as the first invoice of the new subscription (Stripe `subscription_data.add_invoice_items`). Single charge, single receipt.
+- Activation is not instant. Admin manually flips the Matterport space to public (Path A is unchanged from §6); SLA is **8h**, mirroring the initial-approval SLA.
+- After year 1 the customer auto-rolls into monthly billing (Section 1 Q1 decision — no opt-in prompt at trial end). Cancellation is via the Stripe Customer Portal or the dashboard cancel button; nothing new there.
+
+### 13.2 Data model
+
+**New table `wp_ml_reactivations`** — one row per reactivation cycle. UNIQUE index on `stripe_checkout_session_id` provides webhook idempotency.
+
+| Column | Type | Purpose |
+|---|---|---|
+| `id` | bigint PK | |
+| `user_id` | bigint | FK to wp_users |
+| `cycle_number` | int | 1 = first reactivation for this user, monotonic |
+| `plan_chosen` | enum(`monthly`,`annual`) | What the customer picked at checkout |
+| `activation_fee_paid_cents` | int | Snapshot at time of payment (immutable) |
+| `activation_fee_currency` | varchar(3) | |
+| `stripe_checkout_session_id` | varchar(120) UNIQUE | Idempotency key |
+| `stripe_payment_intent_id` | varchar(120) NULL | The activation-fee charge |
+| `stripe_subscription_id` | varchar(120) NULL | The new sub Stripe creates from the Checkout |
+| `requested_at` | datetime | SLA clock start — set when webhook lands |
+| `completed_at` | datetime NULL | When admin clicks "Reactivation done" |
+| `completed_by` | bigint NULL | Admin user_id |
+| `status` | enum(`pending`,`completed`,`refunded`) | |
+| `created_at`, `updated_at` | timestamps | |
+
+**New state values:**
+- `wp_ml_subscriptions.status`: add `pending_reactivation` (Stripe sub exists and is paid, tours still gated until admin enables Matterport).
+- `_ml_tour_status` meta: add `pending_reactivation` (the tour viewer renders a "wordt verwerkt" message instead of the iframe).
+
+**New WP options (per active Stripe mode):**
+- `ml_stripe_{mode}_plan_annual_amount` — cents
+- `ml_stripe_{mode}_annual_price_id` — Stripe Price ID for the recurring yearly price
+
+**New constants** (in `inc/config.php`):
+- `ML_REACTIVATION_SLA_HOURS` = 8 (matches `ML_APPROVAL_SLA_HOURS`)
+- `ML_TOUR_STATUS_PENDING_REACTIVATION` = `'pending_reactivation'`
+- `ML_REACTIVATION_STATUS_PENDING` / `_COMPLETED` / `_REFUNDED`
+
+### 13.3 Reactivation flow
+
+1. **Trigger surface:** `/dashboard/subscription` shows a red "Tour gearchiveerd" card with a **"Heractiveer mijn tour"** CTA whenever `wp_ml_subscriptions.status ∈ {cancelled, canceled}` AND no `wp_ml_reactivations` row is `pending` for this user.
+2. **Plan picker:** clicking the CTA navigates to `/dashboard/reactivate`, which renders both options (monthly / annual) with prices pulled from the Stripe settings. Submission is a POST to `/wp-json/memorylane/v1/reactivate` with `{ plan: 'monthly'|'annual' }`.
+3. **REST handler:** verifies nonce + login + that no pending reactivation row exists (409 otherwise). Creates a Stripe Checkout Session:
+   - `mode: 'subscription'`
+   - `customer: <existing stripe_customer_id>` (reuse, don't create a duplicate)
+   - `line_items: [{ price: <monthly_or_annual_price_id>, quantity: 1 }]`
+   - `subscription_data.add_invoice_items: [{ price: <reactivation_price_id> }]`
+   - `metadata: { ml_intent: 'reactivation', ml_plan: 'monthly'|'annual', ml_user_id: <id> }`
+   - `locale`, `success_url=/dashboard/subscription?reactivation=pending`, `cancel_url=/dashboard/subscription`.
+4. **Webhook lands** (`checkout.session.completed` with `mode=subscription`). New branch in `inc/stripe/events/checkout-session-completed.php`:
+   - If `metadata.ml_intent === 'reactivation'` → handler `ml_stripe_event_reactivation_completed(session)`:
+     - Re-derive `user_id` from `stripe_customer` (never trust client metadata).
+     - `INSERT IGNORE INTO wp_ml_reactivations` with `status=pending, requested_at=now`, the session/PI/sub IDs, the plan, the fee snapshot, and `cycle_number = (max for this user) + 1`.
+     - Upsert `wp_ml_subscriptions` with `status=pending_reactivation`, the new `stripe_sub_id`, `current_period_end` from the Stripe subscription, raw JSON.
+     - For every tour owned by the user that is currently `archived` or `pending_archive`, flip to `pending_reactivation`.
+     - Email customer `reactivation_pending` (NL/EN), email admin `admin_reactivation_request` (digest with the tour IDs + direct Matterport links).
+5. **Admin completes:** WP Admin → Memory Lane → Customers (or new "Reactivations" sub-page) → "Reactivation done" button. Handler `ml_handle_reactivation_complete`:
+   - Verifies the row is still `pending` (idempotent).
+   - Sets `wp_ml_reactivations.status=completed, completed_at=now, completed_by=current_user_id`.
+   - Sets `wp_ml_subscriptions.status='active'`.
+   - Flips every tour from `pending_reactivation` → `active`.
+   - Inserts `wp_ml_admin_actions_log` audit row.
+   - Emails customer `reactivation_completed`.
+   - Invalidates access cache.
+
+### 13.4 Failure modes & idempotency
+
+| Failure | Behaviour |
+|---|---|
+| Customer pays, webhook fails | Stripe retries 3 days. Daily orphan-payment cron extended to flag `mode=subscription` sessions with `metadata.ml_intent=reactivation` that have no matching `wp_ml_reactivations` row. |
+| Admin doesn't click "Done" within SLA | Hourly cron `ml_cron_reactivation_overdue` selects pending rows with `requested_at < NOW() - INTERVAL 8 HOUR`, rolls them up into one digest email per 12h (mirror of `ml_cron_pending_approval_reminder`). After 24h overdue the subject gets a "URGENT" prefix. |
+| Customer pays then is refunded | `charge.refunded` handler (new) → set row `status=refunded`, cancel the Stripe subscription, flip tours back to `archived`, email customer + admin. |
+| First monthly/annual payment fails after reactivation | Existing `invoice.payment_failed` flow handles it (past-due, retries, grace). No new code. |
+| Customer double-submits | DB `UNIQUE(stripe_checkout_session_id)` blocks duplicate webhook insert; pending-row check at REST endpoint returns 409 before opening a second Checkout. |
+
+### 13.5 Admin UI
+
+- **Customers page**: extend Access-state column with two new pills:
+  - 🟠 **Pending reactivation (Xh)** — shown when an open `wp_ml_reactivations` row exists for the user
+  - row action **"✓ Reactivation done"** mirrors the existing **"✓ Approve access"** style and opens a confirmation dialog listing every affected tour with its Matterport URL.
+- **New sub-page "Reactivations"** (`inc/admin/reactivations-page.php`): operational queue list table — columns: customer, cycle #, plan, fee, requested, hours waiting, tour count, action. Default filter `pending`, sorted oldest-first.
+- **Overview KPI** card: "Reactivations awaiting Matterport: N (oldest Xh)" — red border when any row exceeds SLA.
+- **Settings → Stripe tab**: a fourth amount field "Annual hosting amount" (placed below "Monthly hosting amount"). Existing **Sync with Stripe** button picks it up and creates/maintains the recurring-yearly price the same way it handles the other three.
+
+### 13.6 Customer dashboard UI
+
+- `/dashboard/subscription`:
+  - Replace the existing "No subscription yet" empty state with a context-aware block:
+    - If `ml_user_access_state() === 'cancelled'` and no pending reactivation: show "Tour gearchiveerd" card + Reactivate CTA.
+    - If a pending reactivation row exists: show "Reactivatie wordt verwerkt — binnen X uur weer beschikbaar" with the timestamp.
+  - Otherwise unchanged.
+- **New page `/dashboard/reactivate`** (`template-parts/dashboard/reactivate.php`): two pricing cards, NL/EN labels via `ml_t()`. Submission posts to the REST endpoint and browser navigates to Stripe Checkout on success.
+- `/dashboard/tour/{slug}`:
+  - Existing branch covers `active` (iframe) and "access expired" (CTA).
+  - New branches: tour status `pending_reactivation` → "Reactivatie wordt verwerkt"; tour status `archived` with cancelled sub → same Reactivate CTA.
+
+### 13.7 Cron
+
+- **New**: `ml_cron_reactivation_overdue` (hourly), registered in `inc/cron/schedule.php`. Mirror of `ml_cron_pending_approval_reminder`. Once-per-12h rate limit via `ml_last_reactivation_reminder` option.
+- **Extended**: `ml_cron_orphan_payment_check` widens to include `mode=subscription` sessions in addition to `mode=payment`, and cross-references both `wp_users` (existing) and `wp_ml_reactivations` (new).
+
+### 13.8 i18n
+
+New string keys under `reactivate.*` and `sub.archived.*` in both `inc/i18n/strings/nl.php` and `en.php`. Email subjects + bodies in `inc/emails/templates/{nl,en}/`.
+
+### 13.9 Acceptance criteria
+
+1. Cancelled customer's `/dashboard/subscription` shows the Reactivate CTA.
+2. `/dashboard/reactivate` renders both plan cards with prices from Stripe; submitting either opens Stripe Checkout.
+3. Pay (test card) → Stripe redirects → webhook lands → `wp_ml_reactivations` row inserted with the correct cycle number; tours flip to `pending_reactivation`; customer + admin emails sent.
+4. Tour viewer page shows the pending-reactivation message during the SLA window.
+5. Admin "Reactivation done" → tours flip to `active`, sub to `active`, customer email sent, audit row written. Second click is a no-op.
+6. Hourly cron with >8h pending row → one admin digest email sent, suppressed for the next 12h.
+7. Customer cannot start a second reactivation while one is pending — UI hides CTA + REST returns 409.
+8. Annual prepay: Stripe shows yearly recurring price + `current_period_end` ~1 year out.
+9. Refund via Stripe Dashboard → `wp_ml_reactivations.status=refunded`, tours archived, sub cancelled.
+10. Cycle counter increments correctly across multiple deactivate→reactivate loops.
+
+### 13.10 Out of scope
+
+- Plan switching for active subscribers (monthly ↔ annual) — reactivation-only.
+- Year-1-end opt-in prompt — auto-roll into monthly is unchanged.
+- Per-tour independent reactivation — single subscription gates all tours together.
+- Matterport API auto-toggle — admin still manually flips the space.
+
+---
+
 ## Changelog
 
 - **2026-05-13** — Initial spec drafted from brainstorming session
 - **2026-05-13** — Added §5.2.1 "Connect with Stripe" admin Settings page; clarified §6 Matterport embed-only path; updated §2 decisions table; expanded §8 Settings tabs
 - **2026-05-13** — **Major: replaced Subscription Schedule model with one-time-payment + admin-approval-creates-subscription**. Setup fee is now `mode=payment` (one-time price). On checkout the user is created in `pending_approval` state; no Stripe Subscription exists yet. Admin "Approve access" button in Customers page calls `Subscription.create(items=[monthly], trial_period_days=365)` — Year 1 is free (covered by the setup payment), then monthly billing starts automatically at trial end. Reasons: aligns with the 8-hour SLA on the public Tarieven page; the Year 1 access clock should start when the tour is actually deliverable, not when payment lands; simpler than multi-phase Subscription Schedule. Added new user-meta `_ml_setup_state` (pending_approval / approved / refunded), `_ml_setup_paid_at`, `_ml_setup_payment_intent_id`, `_ml_setup_amount`, `_ml_setup_currency`, `_ml_setup_approved_at`, `_ml_setup_approved_by`. Access gate now requires `_ml_setup_state = approved` AND active/trialing subscription. New helper `ml_user_can_book()` lets pending-approval customers book a scan (so they can pick a date in the dashboard while waiting). New hourly cron `ml_cron_pending_approval_reminder` emails admin if any customer waits longer than `ML_APPROVAL_SLA_HOURS` (default 8). New emails: `access_approved` (NL+EN); `purchase_confirmation` updated to mention the 8h SLA. Admin Customers list now shows Access state pill (Pending Xh / Approved / Refunded) with one-click Approve button.
+- **2026-05-13** — **Added §13 Customer-driven reactivation cycle.** New `wp_ml_reactivations` table; new subscription status `pending_reactivation`; new tour status `pending_reactivation`. Annual prepay price added (reactivation-only). Customer-initiated reactivation via `/dashboard/reactivate` → Stripe Checkout (mode=subscription with `add_invoice_items` for the fee) → 8h SLA → admin "Reactivation done" button completes. New REST endpoint `/reactivate`, new admin Reactivations sub-page + KPI, new hourly cron, new email set (`reactivation_pending`, `reactivation_completed`, `admin_reactivation_request`, `admin_reactivation_overdue`, `reactivation_refunded`). Supersedes Phase 3's admin-only reactivation outline. Customers can deactivate/reactivate unlimited times; the cycle counter is per-user, monotonic, append-only.
 
 ---
 
