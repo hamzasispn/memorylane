@@ -23,7 +23,8 @@ function ml_admin_render_bookings() {
         echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Created %d slots.', 'memorylane' ), $count ) ) . '</p></div>';
     }
     if ( isset( $_GET['ml_action'], $_GET['id'] ) && check_admin_referer( 'ml_booking_action' ) ) {
-        $id = (int) $_GET['id'];
+        $id  = (int) $_GET['id'];
+        $msg = '';
         switch ( $_GET['ml_action'] ) {
             case 'confirm':
                 $wpdb->update( $book_tbl, array( 'status' => 'confirmed', 'updated_at' => current_time( 'mysql', true ) ), array( 'id' => $id ) );
@@ -32,17 +33,24 @@ function ml_admin_render_bookings() {
                     $user = get_user_by( 'id', $row->user_id );
                     if ( $user ) ml_mail_send( $user->user_email, 'booking_confirmed', array( 'user' => $user, 'booking' => $row ), $user->ID );
                 }
+                $msg = 'confirmed';
                 break;
             case 'complete':
                 $wpdb->update( $book_tbl, array( 'status' => 'completed', 'completed_at' => current_time( 'mysql', true ), 'updated_at' => current_time( 'mysql', true ) ), array( 'id' => $id ) );
+                $msg = 'completed';
                 break;
             case 'cancel':
                 $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$book_tbl} WHERE id=%d", $id ) );
                 $wpdb->update( $book_tbl, array( 'status' => 'cancelled', 'cancelled_at' => current_time( 'mysql', true ), 'updated_at' => current_time( 'mysql', true ) ), array( 'id' => $id ) );
                 if ( $row && $row->slot_id ) ml_decrement_slot_booked( $row->slot_id );
+                $msg = 'cancelled';
                 break;
         }
+        // PRG: redirect to clean URL so refresh doesn't replay the action and cache sees a fresh request.
+        wp_safe_redirect( add_query_arg( 'ml_msg', rawurlencode( $msg ), admin_url( 'admin.php?page=memorylane-bookings' ) ) );
+        exit;
     }
+    $action_msg = isset( $_GET['ml_msg'] ) ? sanitize_key( wp_unslash( $_GET['ml_msg'] ) ) : '';
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( 'Bookings', 'memorylane' ); ?></h1>
