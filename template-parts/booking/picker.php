@@ -56,15 +56,28 @@ $rest_url  = rest_url( 'memorylane/v1/booking/slots' );
     var hint   = root.querySelector('.ml-picker__times-hint');
     var listEl = root.querySelector('.ml-picker__times-list');
     var form   = root.closest('form');
-    var dateIn = form ? form.querySelector('input[name="date"]') : null;
-    var timeIn = form ? form.querySelector('input[name="time"]') : null;
-    var submit = form ? form.querySelector('[type="submit"]') : null;
+
+    // Lazy lookups — submit button may not exist yet at script-execute time
+    // because the picker partial is rendered above its containing form's
+    // submit button. Re-query on each call so the toggle works once parsed.
+    function getDateIn() { return form ? form.querySelector('input[name="date"]') : null; }
+    function getTimeIn() { return form ? form.querySelector('input[name="time"]') : null; }
+    function getSubmit() { return form ? form.querySelector('[type="submit"]') : null; }
 
     function setSubmitEnabled() {
+        var dateIn = getDateIn();
+        var timeIn = getTimeIn();
+        var submit = getSubmit();
         if (!submit) return;
         submit.disabled = !(dateIn && dateIn.value && timeIn && timeIn.value);
     }
-    setSubmitEnabled();
+    // First call: after the rest of the form has been parsed. If DOM is
+    // already past 'loading', call immediately.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setSubmitEnabled);
+    } else {
+        setSubmitEnabled();
+    }
 
     function showHint(text) {
         hint.textContent = text;
@@ -92,6 +105,7 @@ $rest_url  = rest_url( 'memorylane/v1/booking/slots' );
             btn.addEventListener('click', function () {
                 listEl.querySelectorAll('.ml-picker__time').forEach(function (b) { b.classList.remove('is-selected'); });
                 btn.classList.add('is-selected');
+                var timeIn = getTimeIn();
                 if (timeIn) timeIn.value = t.time;
                 setSubmitEnabled();
             });
@@ -104,6 +118,8 @@ $rest_url  = rest_url( 'memorylane/v1/booking/slots' );
         d.addEventListener('click', function () {
             dates.forEach(function (x) { x.classList.remove('is-selected'); });
             d.classList.add('is-selected');
+            var dateIn = getDateIn();
+            var timeIn = getTimeIn();
             if (dateIn) dateIn.value = d.dataset.date;
             if (timeIn) timeIn.value = '';
             setSubmitEnabled();
