@@ -139,12 +139,31 @@ add_action( 'admin_post_ml_ap_customer_approve', function () {
     ml_ap_assert_admin();
     check_admin_referer( 'ml_ap_customer_approve' );
     $user_id = (int) ( $_POST['user_id'] ?? 0 );
-    if ( function_exists( 'ml_approve_access' ) ) {
-        ml_approve_access( $user_id );
-    } else {
-        update_user_meta( $user_id, ML_META_SETUP_STATE, ML_SETUP_STATE_APPROVED );
-        update_user_meta( $user_id, ML_META_SETUP_APPROVED_AT, current_time( 'mysql', true ) );
+    $user    = $user_id ? get_user_by( 'id', $user_id ) : null;
+    if ( ! $user ) ml_ap_back( 'customers', array( 'msg' => 'not_found' ) );
+
+    $state = get_user_meta( $user_id, ML_META_SETUP_STATE, true );
+    if ( $state !== ML_SETUP_STATE_PENDING ) {
+        ml_ap_back( 'customers/' . $user_id, array( 'msg' => 'approved' ) );
     }
+
+    if ( function_exists( 'ml_create_subscription_on_approval' ) ) {
+        $result = ml_create_subscription_on_approval( $user_id );
+        if ( empty( $result['ok'] ) ) {
+            error_log( '[memorylane] approve_access failed: ' . ( $result['error'] ?? 'unknown' ) );
+            ml_ap_back( 'customers/' . $user_id, array( 'msg' => 'save_failed' ) );
+        }
+    }
+
+    update_user_meta( $user_id, ML_META_SETUP_STATE,       ML_SETUP_STATE_APPROVED );
+    update_user_meta( $user_id, ML_META_SETUP_APPROVED_AT, current_time( 'mysql', true ) );
+    update_user_meta( $user_id, ML_META_SETUP_APPROVED_BY, get_current_user_id() );
+    wp_cache_delete( 'ml_access_' . $user_id, 'ml' );
+
+    if ( function_exists( 'ml_mail_send' ) ) {
+        ml_mail_send( $user->user_email, 'access_approved', array( 'user' => $user ), $user_id );
+    }
+
     ml_ap_back( 'customers/' . $user_id, array( 'msg' => 'approved' ) );
 } );
 
