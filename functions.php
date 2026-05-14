@@ -27,6 +27,9 @@ add_action( 'wp_enqueue_scripts', function () {
     wp_deregister_script( 'jquery' );
 }, 100 );
 
+// Hide the WP admin bar on the front-end (does not affect wp-admin chrome).
+add_filter( 'show_admin_bar', '__return_false' );
+
 // Remove RSD, wlwmanifest, shortlink, etc. from <head>
 remove_action( 'wp_head', 'rsd_link' );
 remove_action( 'wp_head', 'wlwmanifest_link' );
