@@ -23,6 +23,15 @@ define( 'ML_META_PHONE',           '_ml_phone' );
 define( 'ML_META_LANG',            '_ml_language' );
 define( 'ML_META_LAST_LOGIN',      '_ml_last_login_at' );
 
+// Billing details mirror (also synced into the Stripe Customer object).
+define( 'ML_META_BILLING_COMPANY',  '_ml_billing_company' );
+define( 'ML_META_BILLING_VAT',      '_ml_billing_vat' );
+define( 'ML_META_BILLING_LINE1',    '_ml_billing_line1' );
+define( 'ML_META_BILLING_LINE2',    '_ml_billing_line2' );
+define( 'ML_META_BILLING_CITY',     '_ml_billing_city' );
+define( 'ML_META_BILLING_POSTAL',   '_ml_billing_postal' );
+define( 'ML_META_BILLING_COUNTRY',  '_ml_billing_country' );
+
 // Setup approval lifecycle.
 define( 'ML_META_SETUP_STATE',      '_ml_setup_state' );
 define( 'ML_META_SETUP_PAID_AT',    '_ml_setup_paid_at' );

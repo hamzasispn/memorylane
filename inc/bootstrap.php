@@ -42,6 +42,7 @@ require_once __DIR__ . '/subscriptions/status.php';
 require_once __DIR__ . '/subscriptions/sync.php';
 require_once __DIR__ . '/subscriptions/reactivation.php';
 require_once __DIR__ . '/subscriptions/reactivation-routes.php';
+require_once __DIR__ . '/subscriptions/billing.php';
 
 // Tours (Phase 3).
 require_once __DIR__ . '/tours/cpt.php';
