@@ -14,6 +14,8 @@ add_filter( 'query_vars', function ( $vars ) {
     $vars[] = 'ml_token';
     $vars[] = 'ml_subroute';
     $vars[] = 'ml_slug';
+    $vars[] = 'ml_admin_section';
+    $vars[] = 'ml_admin_id';
     return $vars;
 } );
 
@@ -43,6 +45,23 @@ add_action( 'init', function () {
     add_rewrite_rule( '^dashboard/subscription/?$',             'index.php?ml_route=dashboard&ml_subroute=subscription','top' );
     add_rewrite_rule( '^dashboard/reactivate/?$',               'index.php?ml_route=dashboard&ml_subroute=reactivate', 'top' );
     add_rewrite_rule( '^dashboard/settings/?$',                 'index.php?ml_route=dashboard&ml_subroute=settings',   'top' );
+
+    // Admin panel (V2-6/V2-7).
+    add_rewrite_rule( '^admin/?$',                                  'index.php?ml_route=admin_panel&ml_admin_section=overview',                              'top' );
+    add_rewrite_rule( '^admin/([a-z0-9\-]+)/?$',                    'index.php?ml_route=admin_panel&ml_admin_section=$matches[1]',                           'top' );
+    add_rewrite_rule( '^admin/([a-z0-9\-]+)/([a-z0-9\-]+)/?$',      'index.php?ml_route=admin_panel&ml_admin_section=$matches[1]&ml_admin_id=$matches[2]',   'top' );
+} );
+
+/**
+ * One-time rewrite-flush when routes change. Bumped manually when new rules
+ * are added so customers' hosts don't need to re-save permalinks.
+ */
+define( 'ML_REWRITE_VERSION', '0.3.0-v2-6' );
+add_action( 'admin_init', function () {
+    if ( get_option( 'ml_rewrite_version' ) !== ML_REWRITE_VERSION ) {
+        flush_rewrite_rules( false );
+        update_option( 'ml_rewrite_version', ML_REWRITE_VERSION, false );
+    }
 } );
 
 /**
@@ -109,6 +128,21 @@ add_action( 'template_redirect', function () {
             }
             $sub = get_query_var( 'ml_subroute' ) ?: 'overview';
             ml_render_template( 'dashboard/shell', array( 'subroute' => $sub ) );
+            break;
+
+        case 'admin_panel':
+            if ( ! is_user_logged_in() ) {
+                $r = rawurlencode( $_SERVER['REQUEST_URI'] ?? '/admin' );
+                wp_safe_redirect( home_url( "/login?redirect_to={$r}" ) );
+                exit;
+            }
+            if ( ! current_user_can( ML_CAP_MANAGE ) && ! current_user_can( 'manage_options' ) ) {
+                status_header( 403 );
+                wp_die( esc_html__( 'You do not have permission to access this page.', 'memorylane' ), 403 );
+            }
+            $section = get_query_var( 'ml_admin_section' ) ?: 'overview';
+            $id      = get_query_var( 'ml_admin_id' ) ?: '';
+            ml_render_template( 'admin-panel/shell', array( 'section' => $section, 'id' => $id ) );
             break;
     }
 } );

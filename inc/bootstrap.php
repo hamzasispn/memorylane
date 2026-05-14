@@ -69,6 +69,10 @@ require_once __DIR__ . '/admin/manual-actions.php';
 require_once __DIR__ . '/admin/approve-access.php';
 require_once __DIR__ . '/admin/reactivations-page.php';
 
+// Custom admin panel (V2-6/V2-7).
+require_once __DIR__ . '/admin-panel/pagination.php';
+require_once __DIR__ . '/admin-panel/handlers.php';
+
 // Emails + Cron (Phase 6).
 require_once __DIR__ . '/emails/mailer.php';
 require_once __DIR__ . '/cron/schedule.php';
