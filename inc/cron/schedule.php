@@ -40,6 +40,7 @@ function ml_cron_schedule_all() {
         'ml_cron_pending_approval_reminder' => 'hourly',
         'ml_cron_reactivation_overdue'      => 'hourly',
         'ml_cron_release_stale_holds'       => 'hourly',
+        'ml_cron_revoke_overdue'            => 'hourly',
     );
     foreach ( $jobs as $hook => $recur ) {
         if ( ! wp_next_scheduled( $hook ) ) {

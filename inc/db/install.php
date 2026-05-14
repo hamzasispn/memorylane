@@ -40,13 +40,15 @@ function ml_db_install() {
         current_period_end     DATETIME     NULL,
         year_one_end_date      DATETIME     NULL,
         cancel_at_period_end   TINYINT(1)   NOT NULL DEFAULT 0,
+        payment_failed_at      DATETIME     NULL,
         raw_json               LONGTEXT     NULL,
         created_at             DATETIME     NOT NULL,
         updated_at             DATETIME     NOT NULL,
         PRIMARY KEY (id),
         KEY idx_user (user_id),
         UNIQUE KEY uk_sub (stripe_sub_id),
-        KEY idx_status (status)
+        KEY idx_status (status),
+        KEY idx_payment_failed_at (payment_failed_at)
     ) $charset;";
 
     // Availability slots.

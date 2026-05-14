@@ -80,6 +80,7 @@ require_once __DIR__ . '/cron/booking-reminders.php';
 require_once __DIR__ . '/cron/finalize-schedules.php';
 require_once __DIR__ . '/cron/pending-approval-reminder.php';
 require_once __DIR__ . '/cron/reactivation-overdue.php';
+require_once __DIR__ . '/cron/revoke-overdue.php';
 
 /**
  * Theme activation hook — runs once when theme is switched in.

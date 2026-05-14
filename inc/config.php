@@ -5,8 +5,8 @@
 defined( 'ABSPATH' ) || exit;
 
 // Versioning.
-define( 'ML_VERSION',    '0.2.0' );
-define( 'ML_DB_VERSION', '0.2.0' );
+define( 'ML_VERSION',    '0.3.0' );
+define( 'ML_DB_VERSION', '0.3.0' );
 
 // Paths.
 define( 'ML_PATH', get_template_directory() . '/' );
