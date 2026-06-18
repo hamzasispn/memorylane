@@ -229,6 +229,7 @@ add_action( 'admin_post_ml_ap_settings_save', function () {
     update_option( ML_OPT_EMAIL_FROM_ADDRESS,   sanitize_email( wp_unslash( $_POST['email_from_address']      ?? '' ) ), false );
     update_option( ML_OPT_BOOKING_CANCEL_HOURS, max( 0, (int) ( $_POST['cancel_hours']      ?? 24 ) ), false );
     update_option( ML_OPT_BOOKING_RESCHED_HOURS,max( 0, (int) ( $_POST['reschedule_hours']  ?? 24 ) ), false );
+    update_option( ML_OPT_BOOKING_REQUIRE_PAYMENT, empty( $_POST['booking_require_payment'] ) ? 0 : 1, false );
 
     if ( ! empty( $_POST['sync_with_stripe'] ) ) {
         $res = ml_plan_sync_to_stripe();

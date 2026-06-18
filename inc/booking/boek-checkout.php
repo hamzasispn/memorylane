@@ -29,7 +29,8 @@ function ml_rest_boek( WP_REST_Request $req ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'bad_nonce' ), 403 );
     }
 
-    if ( ! ml_stripe_is_configured() || ! ml_stripe_setup_price_id() || ! ml_stripe_reactivation_price_id() ) {
+    $payment_required = ml_booking_payment_required();
+    if ( $payment_required && ( ! ml_stripe_is_configured() || ! ml_stripe_setup_price_id() || ! ml_stripe_reactivation_price_id() ) ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'payments_not_configured' ), 503 );
     }
 
@@ -77,6 +78,24 @@ function ml_rest_boek( WP_REST_Request $req ) {
     // Soft-hold the slot so two visitors don't grab it.
     ml_increment_slot_booked( $slot_id );
 
+    // No-payment flow: provision the customer + booking directly, skip Stripe.
+    if ( ! $payment_required ) {
+        try {
+            ml_boek_provision_no_payment( array(
+                'email'   => $email,
+                'name'    => $name,
+                'phone'   => $phone,
+                'address' => $address,
+                'notes'   => $notes,
+            ), $slot );
+            return array( 'ok' => true, 'url' => home_url( '/checkout/success?booking=1' ) );
+        } catch ( \Throwable $e ) {
+            ml_decrement_slot_booked( $slot_id );
+            error_log( '[memorylane] /boek no-payment booking failed: ' . $e->getMessage() );
+            return new WP_REST_Response( array( 'ok' => false, 'error' => 'booking_failed' ), 500 );
+        }
+    }
+
     try {
         $stripe = ml_stripe();
         $session = $stripe->checkout->sessions->create( array(
@@ -111,6 +130,85 @@ function ml_rest_boek( WP_REST_Request $req ) {
         ml_decrement_slot_booked( $slot_id );
         error_log( '[memorylane] /boek checkout failed: ' . $e->getMessage() );
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'stripe_error' ), 500 );
+    }
+}
+
+/**
+ * No-payment booking: create/find the WP user + insert the booking row, without
+ * any Stripe charge. Mirrors what the checkout.session.completed webhook does on
+ * the paid path, minus the money. The customer is left in pending_approval and
+ * receives a booking-confirmation email; the admin is notified. No set-password
+ * welcome email is sent — the admin grants access manually at approval time.
+ *
+ * @param array{email:string,name:string,phone:string,address:string,notes:string} $data
+ * @param object $slot  Slot row (must have id + slot_start_datetime).
+ */
+function ml_boek_provision_no_payment( array $data, $slot ) {
+    $email = $data['email'];
+
+    $user = get_user_by( 'email', $email );
+    if ( ! $user ) {
+        $username = ml_unique_username( $email );
+        $user_id  = wp_insert_user( array(
+            'user_login'   => $username,
+            'user_email'   => $email,
+            'user_pass'    => wp_generate_password( 24, true, true ),
+            'display_name' => $data['name'] ?: $username,
+            'role'         => ML_ROLE_CUSTOMER,
+        ) );
+        if ( is_wp_error( $user_id ) ) {
+            throw new \RuntimeException( 'WP user creation failed: ' . $user_id->get_error_message() );
+        }
+        $user = get_user_by( 'id', $user_id );
+    } elseif ( ! in_array( ML_ROLE_CUSTOMER, (array) $user->roles, true ) && ! user_can( $user, 'administrator' ) ) {
+        $user->add_role( ML_ROLE_CUSTOMER );
+    }
+
+    // Contact details from the /boek form.
+    if ( $data['phone'] )   update_user_meta( $user->ID, ML_META_PHONE, $data['phone'] );
+    if ( $data['address'] ) update_user_meta( $user->ID, '_ml_address_line1', $data['address'] );
+    update_user_meta( $user->ID, ML_META_LANG, ml_current_lang() );
+
+    // Pending approval, no payment recorded.
+    $plan = ml_plan_get();
+    update_user_meta( $user->ID, ML_META_SETUP_STATE,    ML_SETUP_STATE_PENDING );
+    update_user_meta( $user->ID, ML_META_SETUP_AMOUNT,   0 );
+    update_user_meta( $user->ID, ML_META_SETUP_CURRENCY, strtolower( (string) $plan['currency'] ) );
+
+    // Insert the booking row — idempotent per (user, slot, service_type).
+    global $wpdb;
+    $book_tbl = ml_table( 'bookings' );
+    $slot_id  = (int) $slot->id;
+    $exists = $wpdb->get_var( $wpdb->prepare(
+        "SELECT id FROM {$book_tbl} WHERE user_id=%d AND slot_id=%d AND service_type=%s",
+        $user->ID, $slot_id, 'initial_scan'
+    ) );
+    if ( ! $exists ) {
+        $now_db = current_time( 'mysql', true );
+        $wpdb->insert( $book_tbl, array(
+            'user_id'        => $user->ID,
+            'slot_id'        => $slot_id,
+            'service_type'   => 'initial_scan',
+            'status'         => 'requested',
+            'customer_notes' => (string) $data['notes'],
+            'scheduled_for'  => $slot->slot_start_datetime,
+            'created_at'     => $now_db,
+            'updated_at'     => $now_db,
+        ) );
+        // booked_count already incremented by the soft-hold — don't double-count.
+    }
+
+    // Confirm to the customer (no password link) + notify admins.
+    ml_mail_send( $user->user_email, 'booking_requested', array(
+        'user' => $user,
+        'slot' => $slot,
+    ), $user->ID );
+    foreach ( ml_admin_recipients() as $to ) {
+        ml_mail_send( $to, 'admin_booking_requested', array(
+            'user'  => $user,
+            'slot'  => $slot,
+            'notes' => (string) $data['notes'],
+        ) );
     }
 }
 

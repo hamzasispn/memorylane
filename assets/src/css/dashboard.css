@@ -16,6 +16,16 @@ body.ml-app {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Brand display font (shared with the public marketing site) */
+@font-face {
+    font-family: 'AdleryPro';
+    src: url('../../fonts/Adlery-Pro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0041-005A, U+0061-007A, U+00C0-024F, U+0020-002F, U+003A-0040, U+005B-0060, U+007B-007E;
+}
+
 /* Tokens */
 :root {
     --ml-bg:        #FAFAFA;
@@ -26,9 +36,12 @@ body.ml-app {
     --ml-muted:     #71717A;
     --ml-border:    #E4E4E7;
     --ml-border-2:  #D4D4D8;
-    --ml-accent:    #2563EB;
-    --ml-accent-h:  #1D4ED8;
-    --ml-accent-2:  #DBEAFE;
+    /* Brand: navy primary + soft lavender tint, matching the marketing site. */
+    --ml-accent:    #152751;
+    --ml-accent-h:  #0E1A38;
+    --ml-accent-2:  #E7E2F2;
+    --ml-font-brand: 'AdleryPro', 'Inter', sans-serif;
+    --ml-brand-grad: linear-gradient(to bottom, #cabee2, #cad7dd);
     --ml-success:   #10B981;
     --ml-success-2: #D1FAE5;
     --ml-warning:   #F59E0B;
@@ -94,9 +107,11 @@ a:hover { text-decoration: underline; }
     text-decoration: none;
 }
 .ml-auth__logo svg { width: 28px; height: 28px; }
+.ml-auth__logo span { font-family: var(--ml-font-brand); font-size: 22px; font-weight: 400; letter-spacing: .01em; color: var(--ml-accent); }
+.ml-auth .ml-h1 { font-family: var(--ml-font-brand); font-weight: 400; letter-spacing: .01em; }
 .ml-auth__aside {
     display: none;
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    background: linear-gradient(135deg, #152751 0%, #0E1A38 100%);
     color: #E2E8F0;
     padding: 60px;
     align-items: center;
@@ -260,6 +275,7 @@ a:hover { text-decoration: underline; }
     text-decoration: none;
 }
 .ml-sidebar__brand svg { width: 24px; height: 24px; }
+.ml-sidebar__brand span { font-family: var(--ml-font-brand); font-size: 19px; font-weight: 400; letter-spacing: .01em; color: var(--ml-accent); }
 .ml-sidebar__nav { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
 .ml-sidebar__nav a {
     display: flex;

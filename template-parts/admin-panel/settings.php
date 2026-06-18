@@ -89,6 +89,14 @@ $grace = (int) get_option( ML_OPT_PAST_DUE_GRACE_DAYS, 7 );
             <div class="help">After Stripe gives up retrying, how many days before we archive the tour.</div>
         </div>
     </div>
+    <h2 style="margin-top:24px;">Booking</h2>
+    <div class="mla-form-row">
+        <label>Require online payment</label>
+        <div>
+            <label><input type="checkbox" name="booking_require_payment" value="1" <?php checked( ml_booking_payment_required() ); ?>> Send new bookings through Stripe Checkout</label>
+            <div class="help">Off = visitors book on /boek for free (no price shown, no payment). On = the current paid flow.</div>
+        </div>
+    </div>
     <div class="mla-form-row">
         <label>Booking cancel notice (hours)</label>
         <div><input type="number" name="cancel_hours" value="<?php echo (int) get_option( ML_OPT_BOOKING_CANCEL_HOURS, 24 ); ?>" min="0" style="max-width:120px;"></div>

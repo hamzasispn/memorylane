@@ -5,7 +5,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Versioning.
-define( 'ML_VERSION',    '0.3.0' );
+define( 'ML_VERSION',    '0.3.1' );
 define( 'ML_DB_VERSION', '0.3.0' );
 
 // Paths.
@@ -89,6 +89,7 @@ define( 'ML_OPT_ADMIN_RECIPIENTS',     'ml_admin_recipients' );
 define( 'ML_OPT_EMBED_DOMAIN_ALLOW',   'ml_embed_domain_allowlist' );
 define( 'ML_OPT_BOOKING_RESCHED_HOURS','ml_booking_reschedule_hours' );
 define( 'ML_OPT_BOOKING_CANCEL_HOURS', 'ml_booking_cancel_hours' );
+define( 'ML_OPT_BOOKING_REQUIRE_PAYMENT', 'ml_booking_require_payment' );
 define( 'ML_OPT_EMAIL_FROM_NAME',      'ml_email_from_name' );
 define( 'ML_OPT_EMAIL_FROM_ADDRESS',   'ml_email_from_address' );
 
@@ -124,4 +125,12 @@ function ml_email_from() {
         'name'    => get_option( ML_OPT_EMAIL_FROM_NAME, 'Memory Lane' ),
         'address' => get_option( ML_OPT_EMAIL_FROM_ADDRESS, 'no-reply@' . wp_parse_url( home_url(), PHP_URL_HOST ) ),
     );
+}
+
+/**
+ * Whether the public /boek flow requires online payment (Stripe Checkout).
+ * Default false — payment removed "for now"; flip the admin toggle to restore it.
+ */
+function ml_booking_payment_required() {
+    return (bool) get_option( ML_OPT_BOOKING_REQUIRE_PAYMENT, 0 );
 }

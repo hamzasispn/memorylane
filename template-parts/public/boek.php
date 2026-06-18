@@ -12,12 +12,20 @@ include ML_PATH . 'template-parts/auth/_layout-head.php';
 $plan = ml_plan_get();
 $fee  = $plan['year_one_amount'] ? ml_from_minor_units( (int) $plan['year_one_amount'] ) : '';
 $cur  = strtoupper( $plan['currency'] );
+
+$ml_pay      = ml_booking_payment_required();
+$ml_cta      = $ml_pay
+    ? ml_t( 'boek.cta', 'Bevestig en betaal' )
+    : ml_t( 'boek.cta_no_pay', 'Bevestig je boeking' );
+$ml_subtitle = $ml_pay
+    ? ml_t( 'boek.subtitle', 'Kies een datum, vul je gegevens in en betaal. Je klantenzone wordt automatisch aangemaakt.' )
+    : ml_t( 'boek.subtitle_no_pay', 'Kies een datum en vul je gegevens in. We nemen contact op om je opname te bevestigen.' );
 ?>
 <main class="ml-main" style="max-width:1100px;margin:48px auto;padding:0 24px;">
 
     <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ml-text-sm">← <?php ml_e( 'common.back' ); ?></a>
     <h1 class="ml-h1 ml-mt-1"><?php echo esc_html( ml_t( 'boek.title', 'Boek jouw opname' ) ); ?></h1>
-    <p class="ml-sub"><?php echo esc_html( ml_t( 'boek.subtitle', 'Kies een datum, vul je gegevens in en betaal. Je klantenzone wordt automatisch aangemaakt.' ) ); ?></p>
+    <p class="ml-sub"><?php echo esc_html( $ml_subtitle ); ?></p>
 
     <form id="ml-boek-form" class="ml-mt-3">
         <input type="hidden" name="date" value="">
@@ -56,6 +64,7 @@ $cur  = strtoupper( $plan['currency'] );
             <textarea name="notes" rows="3" class="ml-input"></textarea>
         </div>
 
+<?php if ( $ml_pay ) : ?>
         <div class="ml-card ml-card--lg ml-mt-3" style="background:#F4F4F5;">
             <div class="ml-row-between">
                 <div>
@@ -65,9 +74,10 @@ $cur  = strtoupper( $plan['currency'] );
                 <p class="ml-h2"><?php echo esc_html( $fee ? $cur . ' ' . $fee : '€ —' ); ?></p>
             </div>
         </div>
+<?php endif; ?>
 
         <button type="submit" class="ml-btn ml-btn--primary ml-btn--block ml-mt-3" id="ml-boek-submit" disabled>
-            <?php echo esc_html( ml_t( 'boek.cta', 'Bevestig en betaal' ) ); ?>
+            <?php echo esc_html( $ml_cta ); ?>
         </button>
         <div id="ml-boek-error" class="ml-alert ml-alert--danger ml-mt-2" style="display:none;"></div>
     </form>
@@ -100,12 +110,12 @@ $cur  = strtoupper( $plan['currency'] );
                 errBox.textContent = (out && out.error) || '<?php echo esc_js( ml_t( 'common.error_generic', 'Er ging iets mis.' ) ); ?>';
                 errBox.style.display = 'block';
                 submit.disabled = false;
-                submit.textContent = '<?php echo esc_js( ml_t( 'boek.cta', 'Bevestig en betaal' ) ); ?>';
+                submit.textContent = '<?php echo esc_js( $ml_cta ); ?>';
             }).catch(function () {
                 errBox.textContent = 'Network error.';
                 errBox.style.display = 'block';
                 submit.disabled = false;
-                submit.textContent = '<?php echo esc_js( ml_t( 'boek.cta', 'Bevestig en betaal' ) ); ?>';
+                submit.textContent = '<?php echo esc_js( $ml_cta ); ?>';
             });
         });
     })();

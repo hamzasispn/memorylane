@@ -86,7 +86,9 @@ webhook's user+booking creation, minus money:
   double-increment `booked_count` (the soft-hold already did).
 - Emails: send **`booking_requested`** to the customer (confirms the slot, no
   password link) and **`admin_booking_requested`** to `ml_admin_recipients()`.
-  Do **not** send `welcome_set_password` or `purchase_confirmation`.
+  Do **not** send `welcome_set_password` or `purchase_confirmation` — the user
+  row is created under the hood, but no usable login is provisioned now; the
+  admin grants access manually at approval time.
 
 The duplicated user-creation block between this helper and the webhook is small;
 if it reads cleanly we may extract a shared `ml_find_or_create_customer()` later,
