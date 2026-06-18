@@ -10,7 +10,8 @@
       "Bash(php -l inc/booking/availability.php)",
       "Bash(php -l inc/booking/booking-rest.php)",
       "Bash(php -l inc/booking/slots.php)",
-      "Bash(php -l inc/booking/boek-checkout.php)"
+      "Bash(php -l inc/booking/boek-checkout.php)",
+      "Bash(git commit -q -m 'docs: spec for toggle-able payment removal in /boek booking flow *)"
     ]
   }
 }
