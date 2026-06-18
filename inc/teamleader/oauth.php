@@ -127,7 +127,6 @@ add_action( 'rest_api_init', function () {
 function ml_tl_oauth_callback( WP_REST_Request $req ) {
     $code  = (string) $req->get_param( 'code' );
     $state = (string) $req->get_param( 'state' );
-    $admin = admin_url( 'admin.php' ); // fallback
     $back  = home_url( '/admin/settings' );
 
     if ( ! $code || $state !== get_transient( 'ml_tl_oauth_state' ) ) {
@@ -142,6 +141,9 @@ function ml_tl_oauth_callback( WP_REST_Request $req ) {
             'code'       => $code,
         ) );
         ml_tl_store_tokens( $tok );
+        // Resolve a default deal phase + flush any leads captured while offline.
+        if ( function_exists( 'ml_tl_default_phase_id' ) ) ml_tl_default_phase_id();
+        if ( function_exists( 'ml_tl_process_queue' ) )    ml_tl_process_queue();
         wp_safe_redirect( add_query_arg( 'tl', 'connected', $back ) );
     } catch ( \Throwable $e ) {
         error_log( '[memorylane] Teamleader OAuth callback failed: ' . $e->getMessage() );

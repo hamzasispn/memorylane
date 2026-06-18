@@ -28,9 +28,10 @@ add_action( 'after_switch_theme', 'ml_cron_schedule_all' );
 add_action( 'admin_init', 'ml_cron_schedule_all' );
 
 function ml_cron_schedule_all() {
-    // Booking-only site: only the booking-reminder job remains.
+    // Booking-only site: booking reminders + Teamleader retry queue.
     $jobs = array(
         'ml_cron_booking_reminders' => 'hourly',
+        'ml_cron_tl_retry'          => 'ml_quarter_hour',
     );
     foreach ( $jobs as $hook => $recur ) {
         if ( ! wp_next_scheduled( $hook ) ) {
