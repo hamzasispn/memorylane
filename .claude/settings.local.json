@@ -11,7 +11,27 @@
       "Bash(php -l inc/booking/booking-rest.php)",
       "Bash(php -l inc/booking/slots.php)",
       "Bash(php -l inc/booking/boek-checkout.php)",
-      "Bash(git commit -q -m 'docs: spec for toggle-able payment removal in /boek booking flow *)"
+      "Bash(git commit -q -m 'docs: spec for toggle-able payment removal in /boek booking flow *)",
+      "PowerShell($php = Get-ChildItem \"C:\\\\laragon\\\\bin\\\\php\" -Directory | Select-Object -First 1; $exe = Join-Path $php.FullName \"php.exe\"; $files = @\\(\"inc/config.php\",\"inc/booking/boek-checkout.php\",\"template-parts/public/boek.php\",\"template-parts/auth/checkout-success.php\",\"template-parts/admin-panel/settings.php\",\"inc/admin-panel/handlers.php\"\\); foreach \\($f in $files\\) { & $exe -l $f })",
+      "Read(//c/laragon/www/memory-lane/**)",
+      "Bash(grep -iE \"WP_HOME|WP_SITEURL\" wp-config.php)",
+      "Bash(ls -d /c/laragon/www/memory-lane)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://memory-lane.test/boek)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://memory-lane.test/)",
+      "Bash(git commit -q -m 'feat\\(booking\\): toggle-able payment removal + brand-accent app pages *)",
+      "Bash(git push *)",
+      "PowerShell(Get-Process -Name \"httpd\",\"nginx\",\"mysqld\" -ErrorAction SilentlyContinue)",
+      "PowerShell(\"---check exe---\")",
+      "PowerShell(try { Start-Process \"C:\\\\laragon\\\\laragon.exe\" -ArgumentList \"start\" -ErrorAction Stop } catch { \"start err: $_\" }; Start-Sleep -Seconds 12; $p = Get-Process -Name \"httpd\",\"nginx\",\"mysqld\" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name -Unique; if \\($p\\) { \"running: $\\($p -join ', '\\)\" } else { \"no services up yet\" })",
+      "Bash(git commit -q -m 'docs: spec for booking-only site with Teamleader hand-off *)",
+      "Bash(git checkout *)",
+      "Bash(git commit -q -m 'feat\\(booking\\): structured address + intl phone + autocomplete, marketing wrap *)",
+      "Bash(rm -rf inc/stripe-php-master inc/stripe inc/admin)",
+      "Bash(rm -f inc/subscriptions/status.php inc/subscriptions/sync.php inc/subscriptions/reactivation.php inc/subscriptions/reactivation-routes.php inc/subscriptions/billing.php)",
+      "Bash(rm -f inc/cron/check-expirations.php inc/cron/send-renewal-warnings.php inc/cron/retry-failed-webhooks.php inc/cron/orphan-payment-check.php inc/cron/finalize-schedules.php inc/cron/pending-approval-reminder.php inc/cron/reactivation-overdue.php inc/cron/revoke-overdue.php)",
+      "Bash(rm -f template-parts/admin-panel/invoices.php template-parts/admin-panel/subscriptions.php template-parts/admin-panel/customers.php template-parts/admin-panel/customers-detail.php template-parts/admin-panel/slots.php template-parts/admin-panel/logs.php)",
+      "Bash(rm -f template-parts/dashboard/subscription.php template-parts/dashboard/reactivate.php)",
+      "Bash(git commit -q -m 'feat: strip payment/subscription/admin to booking-only + Teamleader \\(Phase 1\\) *)"
     ]
   }
 }

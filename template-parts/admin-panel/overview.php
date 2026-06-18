@@ -1,20 +1,18 @@
 <?php defined( 'ABSPATH' ) || exit;
 global $wpdb;
-$sub_tbl  = ml_table( 'subscriptions' );
 $book_tbl = ml_table( 'bookings' );
-$wh_tbl   = ml_table( 'webhook_events' );
-
-$kpi = array(
-    'active'   => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$sub_tbl} WHERE status IN ('active','trialing')" ),
-    'pending'  => count( get_users( array( 'meta_key' => ML_META_SETUP_STATE, 'meta_value' => ML_SETUP_STATE_PENDING, 'fields' => 'ID' ) ) ),
-    'past_due' => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$sub_tbl} WHERE status IN ('past_due','unpaid')" ),
-    'wh_fail'  => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wh_tbl} WHERE status='failed' AND received_at >= %s", gmdate( 'Y-m-d H:i:s', time() - DAY_IN_SECONDS ) ) ),
-);
 
 $today_local_start = wp_date( 'Y-m-d 00:00:00' );
 $today_local_end   = wp_date( 'Y-m-d 23:59:59' );
 $today_utc_start   = ( new DateTime( $today_local_start, wp_timezone() ) )->setTimezone( new DateTimeZone( 'UTC' ) )->format( 'Y-m-d H:i:s' );
 $today_utc_end     = ( new DateTime( $today_local_end,   wp_timezone() ) )->setTimezone( new DateTimeZone( 'UTC' ) )->format( 'Y-m-d H:i:s' );
+
+$kpi = array(
+    'today'    => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$book_tbl} WHERE scheduled_for BETWEEN %s AND %s AND status IN ('requested','confirmed')", $today_utc_start, $today_utc_end ) ),
+    'upcoming' => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$book_tbl} WHERE scheduled_for > UTC_TIMESTAMP() AND status IN ('requested','confirmed')" ),
+    'pending'  => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$book_tbl} WHERE status = 'requested'" ),
+    'total'    => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$book_tbl}" ),
+);
 
 $todays = $wpdb->get_results( $wpdb->prepare(
     "SELECT b.*, u.user_email, u.display_name
@@ -28,10 +26,10 @@ $todays = $wpdb->get_results( $wpdb->prepare(
 ?>
 
 <div class="mla-grid mla-grid--4">
-    <div class="mla-kpi"><p class="mla-kpi__label">Active subs</p><p class="mla-kpi__value"><?php echo (int) $kpi['active']; ?></p></div>
-    <div class="mla-kpi"><p class="mla-kpi__label">Pending approval</p><p class="mla-kpi__value"><?php echo (int) $kpi['pending']; ?></p></div>
-    <div class="mla-kpi"><p class="mla-kpi__label">Past due</p><p class="mla-kpi__value"><?php echo (int) $kpi['past_due']; ?></p></div>
-    <div class="mla-kpi"><p class="mla-kpi__label">Webhook failures (24h)</p><p class="mla-kpi__value"><?php echo (int) $kpi['wh_fail']; ?></p></div>
+    <div class="mla-kpi"><p class="mla-kpi__label">Today's bookings</p><p class="mla-kpi__value"><?php echo (int) $kpi['today']; ?></p></div>
+    <div class="mla-kpi"><p class="mla-kpi__label">Upcoming</p><p class="mla-kpi__value"><?php echo (int) $kpi['upcoming']; ?></p></div>
+    <div class="mla-kpi"><p class="mla-kpi__label">Awaiting confirmation</p><p class="mla-kpi__value"><?php echo (int) $kpi['pending']; ?></p></div>
+    <div class="mla-kpi"><p class="mla-kpi__label">Total bookings</p><p class="mla-kpi__value"><?php echo (int) $kpi['total']; ?></p></div>
 </div>
 
 <div class="mla-card" style="margin-top:24px;">

@@ -14,15 +14,10 @@ $section      = $section ?? 'overview';
 $id           = $id      ?? '';
 
 $nav = array(
-    'overview'      => array( 'label' => 'Overview',      'icon' => 'home'     ),
-    'customers'     => array( 'label' => 'Customers',     'icon' => 'users'    ),
-    'tours'         => array( 'label' => 'Tours',         'icon' => 'view'     ),
-    'bookings'      => array( 'label' => 'Bookings',      'icon' => 'calendar' ),
-    'subscriptions' => array( 'label' => 'Subscriptions', 'icon' => 'card'     ),
-    'invoices'      => array( 'label' => 'Invoices',      'icon' => 'invoice'  ),
-    'slots'         => array( 'label' => 'Slots & hours', 'icon' => 'clock'    ),
-    'settings'      => array( 'label' => 'Settings',      'icon' => 'gear'     ),
-    'logs'          => array( 'label' => 'Logs',          'icon' => 'list'     ),
+    'overview' => array( 'label' => 'Overview', 'icon' => 'home'     ),
+    'bookings' => array( 'label' => 'Bookings', 'icon' => 'calendar' ),
+    'tours'    => array( 'label' => 'Tours',    'icon' => 'view'     ),
+    'settings' => array( 'label' => 'Settings', 'icon' => 'gear'     ),
 );
 
 function ml_ap_icon( $name ) {
@@ -41,15 +36,10 @@ function ml_ap_icon( $name ) {
 }
 
 $titles = array(
-    'overview'      => 'Overview',
-    'customers'     => $id ? 'Customer detail' : 'Customers',
-    'tours'         => $id === 'new' ? 'Add tour' : ( $id ? 'Edit tour' : 'Tours' ),
-    'bookings'      => 'Bookings',
-    'subscriptions' => 'Subscriptions',
-    'invoices'      => 'Invoices',
-    'slots'         => 'Slots & working hours',
-    'settings'      => 'Settings',
-    'logs'          => 'Logs',
+    'overview' => 'Overview',
+    'tours'    => $id === 'new' ? 'Add tour' : ( $id ? 'Edit tour' : 'Tours' ),
+    'bookings' => 'Bookings',
+    'settings' => 'Settings',
 );
 $page_title = $titles[ $section ] ?? 'Memory Lane Admin';
 
@@ -123,9 +113,9 @@ $page_title = $titles[ $section ] ?? 'Memory Lane Admin';
             }
         }
 
-        // Stripe-not-configured banner.
-        if ( ! ml_stripe_is_configured() ) {
-            echo '<div class="mla-banner">Stripe is not fully configured. Open <a href="' . esc_url( home_url( '/admin/settings' ) ) . '">Settings</a> to connect.</div>';
+        // Teamleader-not-connected reminder.
+        if ( function_exists( 'ml_tl_is_connected' ) && ! ml_tl_is_connected() ) {
+            echo '<div class="mla-banner">Teamleader is not connected. Open <a href="' . esc_url( home_url( '/admin/settings' ) ) . '">Settings</a> to connect so bookings sync to your CRM.</div>';
         }
 
         $page_file_slug = preg_replace( '/[^a-z0-9\-]/', '', $section );

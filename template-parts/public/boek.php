@@ -7,17 +7,8 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$plan = ml_plan_get();
-$fee  = $plan['year_one_amount'] ? ml_from_minor_units( (int) $plan['year_one_amount'] ) : '';
-$cur  = strtoupper( $plan['currency'] );
-
-$ml_pay      = ml_booking_payment_required();
-$ml_cta      = $ml_pay
-    ? ml_t( 'boek.cta', 'Bevestig en betaal' )
-    : ml_t( 'boek.cta_no_pay', 'Bevestig je boeking' );
-$ml_subtitle = $ml_pay
-    ? ml_t( 'boek.subtitle', 'Kies een datum, vul je gegevens in en betaal. Je klantenzone wordt automatisch aangemaakt.' )
-    : ml_t( 'boek.subtitle_no_pay', 'Kies een datum en vul je gegevens in. We nemen contact op om je opname te bevestigen.' );
+$ml_cta       = ml_t( 'boek.cta_no_pay', 'Bevestig je boeking' );
+$ml_subtitle  = ml_t( 'boek.subtitle_no_pay', 'Kies een datum en vul je gegevens in. We nemen contact op om je opname te bevestigen.' );
 $ml_countries = ml_iso_countries();
 
 get_header();
@@ -121,18 +112,6 @@ get_header();
                 <label class="ml-label"><?php echo esc_html( ml_t( 'boek.notes', 'Opmerkingen (optioneel)' ) ); ?></label>
                 <textarea name="notes" rows="3" class="ml-input"></textarea>
             </div>
-
-<?php if ( $ml_pay ) : ?>
-            <div class="ml-card ml-card--lg ml-mt-3" style="background:#F4F4F5;">
-                <div class="ml-row-between">
-                    <div>
-                        <p class="ml-card__title"><?php echo esc_html( ml_t( 'boek.total', 'Te betalen nu' ) ); ?></p>
-                        <p class="ml-text-sm ml-text-muted"><?php echo esc_html( ml_t( 'boek.includes', 'Opname + virtuele tour + 1 jaar online beschikbaarheid + Matterport-activatiekost.' ) ); ?></p>
-                    </div>
-                    <p class="ml-h2"><?php echo esc_html( $fee ? $cur . ' ' . $fee : '€ —' ); ?></p>
-                </div>
-            </div>
-<?php endif; ?>
 
             <button type="submit" class="ml-boek-submit" id="ml-boek-submit" disabled>
                 <?php echo esc_html( $ml_cta ); ?>

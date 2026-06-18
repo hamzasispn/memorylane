@@ -60,9 +60,10 @@ function ml_booking_local_to_utc( $date, $time ) {
 }
 
 /**
- * Get availability for one date: [{ time: 'HH:MM', available: bool }, …]
- * Past times for today are unavailable. Times whose slot row is at
- * capacity (or status != 'open') are unavailable.
+ * Get the bookable times for one date: [{ time: 'HH:MM', available: bool }, …]
+ *
+ * No slots / no capacity anymore — every working-hour time is bookable by
+ * anyone. Only past times for today are marked unavailable.
  */
 function ml_booking_get_times_with_availability( $date ) {
     if ( ! ml_booking_is_date_available( $date ) ) return array();
@@ -71,46 +72,10 @@ function ml_booking_get_times_with_availability( $date ) {
     if ( empty( $times ) ) return array();
 
     $today_local = wp_date( 'Y-m-d' );
-
-    $utc_to_time = array();
+    $now_ts      = time();
+    $result      = array();
     foreach ( $times as $time ) {
-        $utc_to_time[ ml_booking_local_to_utc( $date, $time ) ] = $time;
-    }
-    $utc_list = array_keys( $utc_to_time );
-
-    global $wpdb;
-    $tbl = ml_table( 'availability_slots' );
-
-    $booked_map = array();
-    if ( ! empty( $utc_list ) ) {
-        $placeholders = implode( ',', array_fill( 0, count( $utc_list ), '%s' ) );
-        $existing = $wpdb->get_results( $wpdb->prepare(
-            "SELECT slot_start_datetime, booked_count, capacity, status
-               FROM {$tbl}
-              WHERE slot_start_datetime IN ($placeholders)",
-            ...$utc_list
-        ) );
-        foreach ( $existing as $row ) {
-            $booked_map[ $row->slot_start_datetime ] = array(
-                'booked' => (int) $row->booked_count,
-                'cap'    => (int) $row->capacity,
-                'status' => $row->status,
-            );
-        }
-    }
-
-    $now_ts = time();
-    $result = array();
-    foreach ( $times as $time ) {
-        $utc = ml_booking_local_to_utc( $date, $time );
-        $available = true;
-        if ( isset( $booked_map[ $utc ] ) ) {
-            $available = $booked_map[ $utc ]['status'] === 'open'
-                       && $booked_map[ $utc ]['booked'] < $booked_map[ $utc ]['cap'];
-        }
-        if ( $date === $today_local && strtotime( "{$date} {$time}:00" ) <= $now_ts ) {
-            $available = false;
-        }
+        $available = ! ( $date === $today_local && strtotime( "{$date} {$time}:00" ) <= $now_ts );
         $result[] = array( 'time' => $time, 'available' => $available );
     }
     return $result;

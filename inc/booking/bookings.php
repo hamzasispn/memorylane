@@ -51,10 +51,6 @@ add_action( 'admin_post_ml_booking_request', function () {
         ml_flash_set( 'error', __( 'This date and time is not available.', 'memorylane' ) );
         wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
     }
-    if ( $slot->status !== 'open' || $slot->booked_count >= $slot->capacity ) {
-        ml_flash_set( 'error', __( 'This slot is no longer available.', 'memorylane' ) );
-        wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
-    }
     if ( strtotime( $slot->slot_start_datetime . ' UTC' ) <= time() ) {
         ml_flash_set( 'error', __( 'Slot is in the past.', 'memorylane' ) );
         wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
