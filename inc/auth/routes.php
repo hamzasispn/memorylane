@@ -31,10 +31,8 @@ add_action( 'init', function () {
     add_rewrite_rule( '^reset-password/([^/]+)/?$',             'index.php?ml_route=reset&ml_token=$matches[1]',  'top' );
     add_rewrite_rule( '^welcome/([^/]+)/?$',                    'index.php?ml_route=welcome&ml_token=$matches[1]','top' );
 
-    // Checkout.
-    add_rewrite_rule( '^checkout/start/?$',                     'index.php?ml_route=checkout_start',              'top' );
+    // Booking thank-you page (reuses the old checkout-success template).
     add_rewrite_rule( '^checkout/success/?$',                   'index.php?ml_route=checkout_success',            'top' );
-    add_rewrite_rule( '^checkout/cancel/?$',                    'index.php?ml_route=checkout_cancel',             'top' );
     add_rewrite_rule( '^boek/?$',                               'index.php?ml_route=boek',                        'top' );
 
     // Dashboard.
@@ -42,8 +40,6 @@ add_action( 'init', function () {
     add_rewrite_rule( '^dashboard/tours/?$',                    'index.php?ml_route=dashboard&ml_subroute=tours',      'top' );
     add_rewrite_rule( '^dashboard/tour/([^/]+)/?$',             'index.php?ml_route=dashboard&ml_subroute=tour-viewer&ml_slug=$matches[1]', 'top' );
     add_rewrite_rule( '^dashboard/booking/?$',                  'index.php?ml_route=dashboard&ml_subroute=booking',    'top' );
-    add_rewrite_rule( '^dashboard/subscription/?$',             'index.php?ml_route=dashboard&ml_subroute=subscription','top' );
-    add_rewrite_rule( '^dashboard/reactivate/?$',               'index.php?ml_route=dashboard&ml_subroute=reactivate', 'top' );
     add_rewrite_rule( '^dashboard/settings/?$',                 'index.php?ml_route=dashboard&ml_subroute=settings',   'top' );
 
     // Admin panel (V2-6/V2-7).
@@ -56,7 +52,7 @@ add_action( 'init', function () {
  * One-time rewrite-flush when routes change. Bumped manually when new rules
  * are added so customers' hosts don't need to re-save permalinks.
  */
-define( 'ML_REWRITE_VERSION', '0.3.0-v2-6' );
+define( 'ML_REWRITE_VERSION', '0.4.0-booking-only' );
 add_action( 'admin_init', function () {
     if ( get_option( 'ml_rewrite_version' ) !== ML_REWRITE_VERSION ) {
         flush_rewrite_rules( false );
@@ -104,10 +100,6 @@ add_action( 'template_redirect', function () {
             ml_render_template( 'auth/welcome' );
             break;
 
-        case 'checkout_start':
-            ml_handle_checkout_start();
-            exit;
-
         case 'boek':
             ml_render_template( 'public/boek' );
             break;
@@ -115,10 +107,6 @@ add_action( 'template_redirect', function () {
         case 'checkout_success':
             ml_render_template( 'auth/checkout-success' );
             break;
-
-        case 'checkout_cancel':
-            wp_safe_redirect( home_url( '/tarieven' ) );
-            exit;
 
         case 'dashboard':
             if ( ! is_user_logged_in() ) {

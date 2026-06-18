@@ -21,11 +21,10 @@ $page_title = $page_titles[ $subroute ] ?? ml_t( 'common.brand' );
 include ML_PATH . 'template-parts/auth/_layout-head.php';
 
 $nav_items = array(
-    'overview'     => array( 'label' => ml_t( 'nav.overview' ),     'url' => home_url( '/dashboard' ),             'icon' => 'home' ),
-    'tours'        => array( 'label' => ml_t( 'nav.tours' ),        'url' => home_url( '/dashboard/tours' ),       'icon' => 'view' ),
-    'booking'      => array( 'label' => ml_t( 'nav.booking' ),      'url' => home_url( '/dashboard/booking' ),     'icon' => 'calendar' ),
-    'subscription' => array( 'label' => ml_t( 'nav.subscription' ), 'url' => home_url( '/dashboard/subscription' ),'icon' => 'card' ),
-    'settings'     => array( 'label' => ml_t( 'nav.settings' ),     'url' => home_url( '/dashboard/settings' ),    'icon' => 'gear' ),
+    'overview' => array( 'label' => ml_t( 'nav.overview' ), 'url' => home_url( '/dashboard' ),         'icon' => 'home' ),
+    'tours'    => array( 'label' => ml_t( 'nav.tours' ),    'url' => home_url( '/dashboard/tours' ),   'icon' => 'view' ),
+    'booking'  => array( 'label' => ml_t( 'nav.booking' ),  'url' => home_url( '/dashboard/booking' ), 'icon' => 'calendar' ),
+    'settings' => array( 'label' => ml_t( 'nav.settings' ), 'url' => home_url( '/dashboard/settings' ),'icon' => 'gear' ),
 );
 
 $initials = strtoupper( substr( $current_user->display_name ?: $current_user->user_email, 0, 2 ) );

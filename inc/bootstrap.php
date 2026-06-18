@@ -8,11 +8,6 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/helpers.php';
 
-// Stripe SDK.
-if ( file_exists( __DIR__ . '/stripe-php-master/init.php' ) ) {
-    require_once __DIR__ . '/stripe-php-master/init.php';
-}
-
 // i18n.
 require_once __DIR__ . '/i18n/translator.php';
 
@@ -24,67 +19,38 @@ require_once __DIR__ . '/auth/routes.php';
 require_once __DIR__ . '/auth/handlers.php';
 require_once __DIR__ . '/auth/password-reset.php';
 
-// Stripe.
-require_once __DIR__ . '/stripe/client.php';
-require_once __DIR__ . '/stripe/checkout.php';
-require_once __DIR__ . '/stripe/webhooks.php';
-require_once __DIR__ . '/stripe/schedule.php';
-require_once __DIR__ . '/stripe/customer-portal.php';
-require_once __DIR__ . '/stripe/plans.php';
-
-foreach ( glob( __DIR__ . '/stripe/events/*.php' ) as $event_file ) {
-    require_once $event_file;
-}
-
-// Subscriptions.
+// Access gate (booking-only: logged-in customer = access).
 require_once __DIR__ . '/subscriptions/access-gate.php';
-require_once __DIR__ . '/subscriptions/status.php';
-require_once __DIR__ . '/subscriptions/sync.php';
-require_once __DIR__ . '/subscriptions/reactivation.php';
-require_once __DIR__ . '/subscriptions/reactivation-routes.php';
-require_once __DIR__ . '/subscriptions/billing.php';
 
-// Tours (Phase 3).
+// Tours.
 require_once __DIR__ . '/tours/cpt.php';
 require_once __DIR__ . '/tours/admin-meta.php';
 require_once __DIR__ . '/tours/viewer.php';
 
-// Booking (Phase 4).
+// Booking.
 require_once __DIR__ . '/booking/working-hours.php';
 require_once __DIR__ . '/booking/availability.php';
 require_once __DIR__ . '/booking/slots.php';
 require_once __DIR__ . '/booking/bookings.php';
 require_once __DIR__ . '/booking/admin.php';
+require_once __DIR__ . '/booking/countries.php';
 require_once __DIR__ . '/booking/boek-checkout.php';
 require_once __DIR__ . '/booking/booking-rest.php';
 
-// Admin (Phase 5).
-require_once __DIR__ . '/admin/menu.php';
-require_once __DIR__ . '/admin/settings.php';
-require_once __DIR__ . '/admin/customers.php';
-require_once __DIR__ . '/admin/subscriptions-page.php';
-require_once __DIR__ . '/admin/notifications-log.php';
-require_once __DIR__ . '/admin/webhooks-log.php';
-require_once __DIR__ . '/admin/manual-actions.php';
-require_once __DIR__ . '/admin/approve-access.php';
-require_once __DIR__ . '/admin/reactivations-page.php';
+// Teamleader CRM integration.
+require_once __DIR__ . '/teamleader/oauth.php';
+require_once __DIR__ . '/teamleader/client.php';
+require_once __DIR__ . '/teamleader/booking-sync.php';
+require_once __DIR__ . '/teamleader/settings.php';
 
-// Custom admin panel (V2-6/V2-7).
+// Custom admin panel (slim).
 require_once __DIR__ . '/admin-panel/pagination.php';
 require_once __DIR__ . '/admin-panel/handlers.php';
 
-// Emails + Cron (Phase 6).
+// Emails + Cron.
 require_once __DIR__ . '/emails/mailer.php';
 require_once __DIR__ . '/cron/schedule.php';
-require_once __DIR__ . '/cron/check-expirations.php';
-require_once __DIR__ . '/cron/send-renewal-warnings.php';
-require_once __DIR__ . '/cron/retry-failed-webhooks.php';
-require_once __DIR__ . '/cron/orphan-payment-check.php';
 require_once __DIR__ . '/cron/booking-reminders.php';
-require_once __DIR__ . '/cron/finalize-schedules.php';
-require_once __DIR__ . '/cron/pending-approval-reminder.php';
-require_once __DIR__ . '/cron/reactivation-overdue.php';
-require_once __DIR__ . '/cron/revoke-overdue.php';
 
 /**
  * Theme activation hook — runs once when theme is switched in.
