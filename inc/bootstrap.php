@@ -55,6 +55,7 @@ require_once __DIR__ . '/booking/availability.php';
 require_once __DIR__ . '/booking/slots.php';
 require_once __DIR__ . '/booking/bookings.php';
 require_once __DIR__ . '/booking/admin.php';
+require_once __DIR__ . '/booking/countries.php';
 require_once __DIR__ . '/booking/boek-checkout.php';
 require_once __DIR__ . '/booking/booking-rest.php';
 

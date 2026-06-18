@@ -42,16 +42,33 @@ function ml_rest_boek( WP_REST_Request $req ) {
     }
     set_transient( $rl_key, $count + 1, 15 * MINUTE_IN_SECONDS );
 
-    $date    = sanitize_text_field( (string) $req->get_param( 'date' ) );
-    $time    = sanitize_text_field( (string) $req->get_param( 'time' ) );
-    $email   = sanitize_email( (string) $req->get_param( 'email' ) );
-    $name    = sanitize_text_field( (string) $req->get_param( 'name' ) );
-    $phone   = sanitize_text_field( (string) $req->get_param( 'phone' ) );
-    $address = sanitize_text_field( (string) $req->get_param( 'address' ) );
-    $notes   = sanitize_textarea_field( (string) $req->get_param( 'notes' ) );
+    $date     = sanitize_text_field( (string) $req->get_param( 'date' ) );
+    $time     = sanitize_text_field( (string) $req->get_param( 'time' ) );
+    $email    = sanitize_email( (string) $req->get_param( 'email' ) );
+    $name     = sanitize_text_field( (string) $req->get_param( 'name' ) );
+    $phone    = sanitize_text_field( (string) $req->get_param( 'phone' ) );
+    $notes    = sanitize_textarea_field( (string) $req->get_param( 'notes' ) );
 
-    if ( ! $date || ! $time || ! $email || ! $name || ! $phone || ! $address ) {
+    // Structured address fields.
+    $street   = sanitize_text_field( (string) $req->get_param( 'street' ) );
+    $postcode = sanitize_text_field( (string) $req->get_param( 'postcode' ) );
+    $city     = sanitize_text_field( (string) $req->get_param( 'city' ) );
+    $state    = sanitize_text_field( (string) $req->get_param( 'state' ) );
+    $country_code = strtoupper( sanitize_text_field( (string) $req->get_param( 'country' ) ) );
+    $countries    = ml_iso_countries();
+    $country_name = $countries[ $country_code ] ?? '';
+
+    // Back-compat single-line address (also used as a display fallback).
+    $address = sanitize_text_field( (string) $req->get_param( 'address' ) );
+    if ( ! $address ) {
+        $address = trim( implode( ', ', array_filter( array( $street, trim( $postcode . ' ' . $city ), $state, $country_name ) ) ) );
+    }
+
+    if ( ! $date || ! $time || ! $email || ! $name || ! $phone || ! $street || ! $postcode || ! $city || ! $country_code ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'missing_fields' ), 400 );
+    }
+    if ( ! $country_name ) {
+        return new WP_REST_Response( array( 'ok' => false, 'error' => 'bad_country' ), 400 );
     }
     if ( ! is_email( $email ) ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'bad_email' ), 400 );
@@ -82,11 +99,16 @@ function ml_rest_boek( WP_REST_Request $req ) {
     if ( ! $payment_required ) {
         try {
             ml_boek_provision_no_payment( array(
-                'email'   => $email,
-                'name'    => $name,
-                'phone'   => $phone,
-                'address' => $address,
-                'notes'   => $notes,
+                'email'    => $email,
+                'name'     => $name,
+                'phone'    => $phone,
+                'address'  => $address,
+                'street'   => $street,
+                'postcode' => $postcode,
+                'city'     => $city,
+                'state'    => $state,
+                'country'  => $country_code,
+                'notes'    => $notes,
             ), $slot );
             return array( 'ok' => true, 'url' => home_url( '/checkout/success?booking=1' ) );
         } catch ( \Throwable $e ) {
@@ -120,6 +142,11 @@ function ml_rest_boek( WP_REST_Request $req ) {
                 'ml_name'                => substr( $name, 0, 200 ),
                 'ml_phone'               => substr( $phone, 0, 80 ),
                 'ml_address'             => substr( $address, 0, 200 ),
+                'ml_street'              => substr( $street, 0, 200 ),
+                'ml_postcode'            => substr( $postcode, 0, 40 ),
+                'ml_city'                => substr( $city, 0, 120 ),
+                'ml_state'               => substr( $state, 0, 120 ),
+                'ml_country'             => $country_code,
                 'ml_notes'                => substr( $notes, 0, 400 ),
             ),
             'allow_promotion_codes' => true,
@@ -140,7 +167,7 @@ function ml_rest_boek( WP_REST_Request $req ) {
  * receives a booking-confirmation email; the admin is notified. No set-password
  * welcome email is sent — the admin grants access manually at approval time.
  *
- * @param array{email:string,name:string,phone:string,address:string,notes:string} $data
+ * @param array{email:string,name:string,phone:string,address:string,street:string,postcode:string,city:string,state:string,country:string,notes:string} $data
  * @param object $slot  Slot row (must have id + slot_start_datetime).
  */
 function ml_boek_provision_no_payment( array $data, $slot ) {
@@ -164,9 +191,13 @@ function ml_boek_provision_no_payment( array $data, $slot ) {
         $user->add_role( ML_ROLE_CUSTOMER );
     }
 
-    // Contact details from the /boek form.
-    if ( $data['phone'] )   update_user_meta( $user->ID, ML_META_PHONE, $data['phone'] );
-    if ( $data['address'] ) update_user_meta( $user->ID, '_ml_address_line1', $data['address'] );
+    // Contact + structured address details from the /boek form.
+    if ( $data['phone'] ) update_user_meta( $user->ID, ML_META_PHONE, $data['phone'] );
+    if ( ! empty( $data['street'] ) )   update_user_meta( $user->ID, '_ml_address_line1',   $data['street'] );
+    if ( ! empty( $data['postcode'] ) ) update_user_meta( $user->ID, '_ml_address_postal',  $data['postcode'] );
+    if ( ! empty( $data['city'] ) )     update_user_meta( $user->ID, '_ml_address_city',    $data['city'] );
+    if ( ! empty( $data['state'] ) )    update_user_meta( $user->ID, '_ml_address_state',   $data['state'] );
+    if ( ! empty( $data['country'] ) )  update_user_meta( $user->ID, '_ml_address_country', $data['country'] );
     update_user_meta( $user->ID, ML_META_LANG, ml_current_lang() );
 
     // Pending approval, no payment recorded.
