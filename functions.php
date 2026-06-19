@@ -112,6 +112,18 @@ add_action( 'wp_enqueue_scripts', function () {
     ) );
 } );
 
+// Vite outputs ES modules — they must be loaded with type="module" so each
+// bundle gets its own scope. Loaded as classic scripts, two bundles on the
+// same page (main + boek on /boek) collide on minified top-level vars
+// ("Identifier 'P' has already been declared"), which aborts boek.js and
+// leaves the phone field un-enhanced.
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+    if ( in_array( $handle, array( 'virtual-tour', 'ml-boek' ), true ) && false === strpos( $tag, 'type="module"' ) ) {
+        $tag = str_replace( ' src=', ' type="module" src=', $tag );
+    }
+    return $tag;
+}, 10, 2 );
+
 // Mark the <body> on the booking page so boek.scss can style the shared
 // fixed header for a light background.
 add_filter( 'body_class', function ( $classes ) {
