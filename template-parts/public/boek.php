@@ -17,8 +17,14 @@ get_header();
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 
 <style>
-    /* Keep the fixed marketing header readable over the light booking page. */
+    /* Keep the fixed marketing header readable over the light booking page.
+       (dashboard.css adds an unscoped `a{color:navy}` rule — re-assert white on
+       the header nav so the links don't turn navy-on-navy.) */
     .site-header { background: rgba(21, 39, 81, .93); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .site-header a,
+    .site-header .site-logo,
+    .site-header nav a { color: #fff; }
+    .site-header a:hover { text-decoration: none; opacity: .85; }
     .ml-boek-page { background: linear-gradient(to bottom, #cabee2, #cad7dd); min-height: 100vh; padding: 150px 20px 90px; }
     .ml-boek-wrap { max-width: 880px; margin: 0 auto; }
     .ml-boek-back { color: #152751; font-weight: 600; text-decoration: none; opacity: .9; }
