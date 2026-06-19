@@ -9,22 +9,17 @@
 
 // ── Marketing header over the light booking page ──
 // The booking page is a light gradient (not the dark hero), so the fixed
-// header needs a solid background + white links to stay readable. Scoped to
+// header just needs a solid background to stay readable. Scoped to
 // body.is-boek (added in functions.php) so it never touches other pages.
+//
+// The nav links are already white (text-white in the menu class) and the
+// Inloggen / Mijn Profiel button keeps its own navy-on-white styling — so we
+// only force the background here, NOT a blanket `a { color:white }` (that
+// would whiten the button text onto its white pill = invisible).
 body.is-boek .site-header {
     @apply bg-primary/95;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-}
-
-body.is-boek .site-header a,
-body.is-boek .site-header .site-logo,
-body.is-boek .site-header nav a {
-    @apply text-white;
-}
-
-body.is-boek .site-header a:hover {
-    @apply no-underline opacity-80;
 }
 
 // ── Page shell ──
