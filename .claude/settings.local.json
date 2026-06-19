@@ -31,7 +31,8 @@
       "Bash(rm -f inc/cron/check-expirations.php inc/cron/send-renewal-warnings.php inc/cron/retry-failed-webhooks.php inc/cron/orphan-payment-check.php inc/cron/finalize-schedules.php inc/cron/pending-approval-reminder.php inc/cron/reactivation-overdue.php inc/cron/revoke-overdue.php)",
       "Bash(rm -f template-parts/admin-panel/invoices.php template-parts/admin-panel/subscriptions.php template-parts/admin-panel/customers.php template-parts/admin-panel/customers-detail.php template-parts/admin-panel/slots.php template-parts/admin-panel/logs.php)",
       "Bash(rm -f template-parts/dashboard/subscription.php template-parts/dashboard/reactivate.php)",
-      "Bash(git commit -q -m 'feat: strip payment/subscription/admin to booking-only + Teamleader \\(Phase 1\\) *)"
+      "Bash(git commit -q -m 'feat: strip payment/subscription/admin to booking-only + Teamleader \\(Phase 1\\) *)",
+      "Bash(git merge --no-ff feature/booking-only-teamleader -m 'Merge: booking-only site with Teamleader hand-off \\(Phase 1\\) *)"
     ]
   }
 }
