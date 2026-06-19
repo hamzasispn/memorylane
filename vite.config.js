@@ -10,6 +10,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "assets/src/js/main.js"),
+        boek: path.resolve(__dirname, "assets/src/js/boek.js"),
       }
     },
   },

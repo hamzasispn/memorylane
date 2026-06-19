@@ -1,0 +1,151 @@
+// ─────────────────────────────────────────────────────────────────
+// /boek — public booking page styles.
+//
+// Compiled into the `boek` Vite bundle (see vite.config.js) and only
+// enqueued on the /boek route, so none of this ships site-wide. Replaces
+// the old inline <style> block + the borrowed dashboard.css classes.
+// `@apply` pulls from Tailwind; tweak utilities here, run `npm run watch`.
+// ─────────────────────────────────────────────────────────────────
+
+// ── Marketing header over the light booking page ──
+// The booking page is a light gradient (not the dark hero), so the fixed
+// header needs a solid background + white links to stay readable. Scoped to
+// body.is-boek (added in functions.php) so it never touches other pages.
+body.is-boek .site-header {
+    @apply bg-primary/95;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+body.is-boek .site-header a,
+body.is-boek .site-header .site-logo,
+body.is-boek .site-header nav a {
+    @apply text-white;
+}
+
+body.is-boek .site-header a:hover {
+    @apply no-underline opacity-80;
+}
+
+// ── Page shell ──
+.boek-page {
+    @apply bg-gradient-tb min-h-screen px-5 pb-24 pt-[170px] md:pt-[190px];
+}
+
+.boek-wrap {
+    @apply max-w-[880px] mx-auto;
+}
+
+.boek-back {
+    @apply text-primary font-semibold no-underline opacity-90;
+
+    &:hover {
+        @apply opacity-100 underline;
+    }
+}
+
+.boek-title {
+    @apply text-primary font-normal mt-3.5 mb-1.5 leading-[1.05];
+    font-family: 'AdleryPro', serif;
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+}
+
+.boek-sub {
+    @apply text-primary/85 text-[1.05rem] max-w-[60ch] mb-2;
+}
+
+// ── Card ──
+.boek-card {
+    @apply bg-white rounded-[22px] mt-6;
+    padding: clamp(22px, 4vw, 42px);
+    box-shadow: 0 24px 60px rgba(21, 39, 81, 0.16);
+}
+
+.boek-h2 {
+    @apply text-primary text-xl font-semibold mt-2;
+
+    &:not(:first-of-type) {
+        @apply mt-7;
+    }
+}
+
+// ── Form fields ──
+.boek-label {
+    @apply block text-[13px] font-medium text-primary/70 mb-1.5;
+}
+
+.boek-input {
+    @apply w-full px-3 py-2.5 rounded-[10px] bg-white text-sm leading-snug
+           border border-[#E4E4E7] text-[#27272A] transition-colors;
+
+    &:focus {
+        @apply outline-none border-primary ring-[3px] ring-primary/15;
+    }
+}
+
+textarea.boek-input {
+    @apply resize-y;
+}
+
+// ── Layout helpers ──
+.boek-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4;
+}
+
+// ── Submit ──
+.boek-submit {
+    @apply w-full mt-6 rounded-full border-0 bg-primary text-white font-semibold cursor-pointer
+           text-[1.05rem] transition-[background-color,transform,opacity] duration-150;
+    padding: 15px 22px;
+
+    &:hover:not(:disabled) {
+        @apply -translate-y-px;
+        background-color: #0e1a38;
+    }
+
+    &:disabled {
+        @apply opacity-40 cursor-not-allowed;
+    }
+}
+
+.boek-error {
+    @apply mt-4 rounded-[10px] px-3.5 py-3 text-sm border;
+    background: #FEE2E2;
+    border-color: #FCA5A5;
+    color: #7F1D1D;
+}
+
+// ── intl-tel-input ──
+.iti {
+    @apply w-full;
+}
+
+// ── Address autocomplete dropdown ──
+.boek-ac {
+    @apply relative;
+}
+
+.boek-ac__list {
+    @apply absolute z-30 left-0 right-0 hidden max-h-[260px] overflow-y-auto
+           bg-white rounded-[10px] border border-[#E4E4E7];
+    top: calc(100% + 4px);
+    box-shadow: 0 12px 28px rgba(21, 39, 81, 0.16);
+
+    &.is-open {
+        @apply block;
+    }
+}
+
+.boek-ac__item {
+    @apply px-3.5 py-2.5 text-sm cursor-pointer text-[#27272A] border-b border-[#F4F4F5];
+
+    &:last-child {
+        @apply border-b-0;
+    }
+
+    &:hover,
+    &.is-active {
+        @apply text-primary;
+        background: #E7E2F2;
+    }
+}

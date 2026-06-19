@@ -42,40 +42,83 @@ remove_action( 'wp_head', 'wp_resource_hints', 2 );
 // ─────────────────────────────────────────────
 // 2. ENQUEUE DIST CSS + JS (from Vite build)
 // ─────────────────────────────────────────────
-add_action( 'wp_enqueue_scripts', function () {
-    $dist = get_template_directory_uri() . '/assets/dist';
-    $dir  = get_template_directory()     . '/assets/dist';
-    $manifest_path = $dir . '/.vite/manifest.json';
 
-    if ( ! file_exists( $manifest_path ) ) {
-        return;
+/**
+ * Read (and cache) the Vite build manifest.
+ *
+ * @return array<string,array> map of source-entry => chunk info, or [] if unbuilt.
+ */
+function ml_vite_manifest() {
+    static $manifest = null;
+    if ( null !== $manifest ) {
+        return $manifest;
     }
+    $path = get_template_directory() . '/assets/dist/.vite/manifest.json';
+    $manifest = file_exists( $path )
+        ? ( json_decode( file_get_contents( $path ), true ) ?: array() )
+        : array();
+    return $manifest;
+}
 
-    $manifest = json_decode( file_get_contents( $manifest_path ), true );
-    $entry    = $manifest['assets/src/js/main.js'] ?? null;
-
+/**
+ * Enqueue a Vite entry (its JS chunk + any bundled CSS) by source key.
+ *
+ * @param string   $handle    WP handle prefix.
+ * @param string   $entry_key Manifest key, e.g. 'assets/src/js/main.js'.
+ * @param string[] $deps      Script dependencies.
+ */
+function ml_vite_enqueue( $handle, $entry_key, $deps = array() ) {
+    $entry = ml_vite_manifest()[ $entry_key ] ?? null;
     if ( ! $entry ) {
         return;
     }
+    $dist = get_template_directory_uri() . '/assets/dist';
 
-    if ( ! empty( $entry['css'] ) ) {
-        foreach ( $entry['css'] as $css_file ) {
-            wp_enqueue_style(
-                'virtual-tour',
-                $dist . '/' . $css_file,
-                [],
-                null 
-            );
-        }
+    foreach ( (array) ( $entry['css'] ?? array() ) as $i => $css_file ) {
+        wp_enqueue_style( $handle . ( $i ? "-$i" : '' ), "$dist/$css_file", array(), null );
     }
 
     wp_enqueue_script(
-        'virtual-tour',
-        $dist . '/' . $entry['file'],
-        [],
+        $handle,
+        "$dist/{$entry['file']}",
+        $deps,
         null,
-        [ 'strategy' => 'defer', 'in_footer' => true ]
+        array( 'strategy' => 'defer', 'in_footer' => true )
     );
+}
+
+// Site-wide bundle (marketing site + animations).
+add_action( 'wp_enqueue_scripts', function () {
+    ml_vite_enqueue( 'virtual-tour', 'assets/src/js/main.js' );
+} );
+
+// Booking page bundle (intl-tel-input + address autocomplete + submit) — only
+// on the /boek route. Server values are handed to boek.js via window.mlBoek.
+add_action( 'wp_enqueue_scripts', function () {
+    if ( get_query_var( 'ml_route' ) !== 'boek' ) {
+        return;
+    }
+    ml_vite_enqueue( 'ml-boek', 'assets/src/js/boek.js' );
+    wp_localize_script( 'ml-boek', 'mlBoek', array(
+        'restUrl' => esc_url_raw( rest_url( 'memorylane/v1/boek' ) ),
+        'nonce'   => wp_create_nonce( 'wp_rest' ),
+        'lang'    => function_exists( 'ml_current_lang' ) ? ml_current_lang() : 'nl',
+        'i18n'    => array(
+            'pickSlot'     => ml_t( 'boek.err.pick_slot', 'Kies eerst een datum en uur.' ),
+            'loading'      => ml_t( 'common.loading', 'Laden...' ),
+            'errorGeneric' => ml_t( 'common.error_generic', 'Er ging iets mis.' ),
+            'network'      => 'Network error.',
+        ),
+    ) );
+} );
+
+// Mark the <body> on the booking page so boek.scss can style the shared
+// fixed header for a light background.
+add_filter( 'body_class', function ( $classes ) {
+    if ( get_query_var( 'ml_route' ) === 'boek' ) {
+        $classes[] = 'is-boek';
+    }
+    return $classes;
 } );
 
 // Standalone CSS for the booking date+time picker (not bundled by Vite so
