@@ -118,9 +118,14 @@ add_action( 'wp_enqueue_scripts', function () {
 // ("Identifier 'P' has already been declared"), which aborts boek.js and
 // leaves the phone field un-enhanced.
 add_filter( 'script_loader_tag', function ( $tag, $handle ) {
-    if ( in_array( $handle, array( 'virtual-tour', 'ml-boek' ), true ) && false === strpos( $tag, 'type="module"' ) ) {
-        $tag = str_replace( ' src=', ' type="module" src=', $tag );
+    if ( ! in_array( $handle, array( 'virtual-tour', 'ml-boek' ), true ) ) {
+        return $tag;
     }
+    // Drop any pre-existing type attribute (non-HTML5 setups emit
+    // type="text/javascript") so we never produce a duplicate type that the
+    // browser would resolve back to a classic script, then mark it a module.
+    $tag = preg_replace( '/\s+type=([\'"]).*?\1/', '', $tag, 1 );
+    $tag = preg_replace( '/<script\b/', '<script type="module"', $tag, 1 );
     return $tag;
 }, 10, 2 );
 
