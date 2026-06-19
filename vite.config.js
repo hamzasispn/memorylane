@@ -10,6 +10,14 @@ export default defineConfig({
   // environment, so an absolute "/assets/…" base 404s in production.
   base: "./",
   build: {
+    // Inline the intl-tel-input flag sprites as base64 data URIs so there is no
+    // standalone PNG for Hostinger's CDN (hcdn) to "optimise" — it was resizing
+    // the 5762×15 sprite down to 1600×4, which destroys the CSS sprite (most
+    // flags render blank). Everything else keeps Vite's default inline rules.
+    assetsInlineLimit( filePath ) {
+      if ( /flags(@2x)?\.png$/i.test( filePath ) ) return true;
+      return undefined;
+    },
     outDir: "assets/dist",
     emptyOutDir: true,
     manifest: true,

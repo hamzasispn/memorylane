@@ -1,16 +1,14 @@
 {
   "assets/src/js/boek.js": {
-    "file": "assets/boek-CihZhxC6.js",
+    "file": "assets/boek-DBZrp9sK.js",
     "name": "boek",
     "src": "assets/src/js/boek.js",
     "isEntry": true,
     "css": [
-      "assets/boek-Zqn2O0lb.css"
+      "assets/boek-D3KNugA6.css"
     ],
     "assets": [
-      "assets/utils-Do2B-k3K.js",
-      "assets/flags-BMGzDaSL.png",
-      "assets/flags@2x-DTOyOn_-.png"
+      "assets/utils-Do2B-k3K.js"
     ]
   },
   "assets/src/js/main.js": {
@@ -21,14 +19,6 @@
     "css": [
       "assets/main-D-T9FivX.css"
     ]
-  },
-  "node_modules/intl-tel-input/build/img/flags.png": {
-    "file": "assets/flags-BMGzDaSL.png",
-    "src": "node_modules/intl-tel-input/build/img/flags.png"
-  },
-  "node_modules/intl-tel-input/build/img/flags@2x.png": {
-    "file": "assets/flags@2x-DTOyOn_-.png",
-    "src": "node_modules/intl-tel-input/build/img/flags@2x.png"
   },
   "node_modules/intl-tel-input/build/js/utils.js": {
     "file": "assets/utils-Do2B-k3K.js",
