@@ -4,6 +4,27 @@
  */
 defined( 'ABSPATH' ) || exit;
 
+const ML_TL_OPT_DEPARTMENT_ID = 'ml_tl_department_id';
+const ML_TL_OPT_TAX_RATE_ID   = 'ml_tl_tax_rate_id';
+
+function ml_tl_list_departments() {
+    if ( ! ml_tl_is_connected() ) return array();
+    try { $d = ml_tl_request( 'departments.list' ); return is_array( $d ) ? $d : array(); }
+    catch ( \Throwable $e ) { return array(); }
+}
+
+function ml_tl_list_tax_rates() {
+    if ( ! ml_tl_is_connected() ) return array();
+    $dept = (string) get_option( ML_TL_OPT_DEPARTMENT_ID, '' );
+    $body = $dept ? array( 'filter' => array( 'department_id' => $dept ) ) : array();
+    try { $t = ml_tl_request( 'taxRates.list', $body ); return is_array( $t ) ? $t : array(); }
+    catch ( \Throwable $e ) { return array(); }
+}
+
+function ml_tl_department_id()   { return (string) get_option( ML_TL_OPT_DEPARTMENT_ID, '' ); }
+function ml_tl_tax_rate_id()     { return (string) get_option( ML_TL_OPT_TAX_RATE_ID, '' ); }
+function ml_tl_invoicing_ready() { return ml_tl_is_connected() && ml_tl_department_id() && ml_tl_tax_rate_id(); }
+
 /**
  * Render the Teamleader settings block. Call from the admin settings template.
  */
@@ -98,6 +119,34 @@ function ml_tl_render_settings() {
                     <?php endif; ?>
                 </div>
             </div>
+            <?php $depts = ml_tl_list_departments(); $rates = ml_tl_list_tax_rates(); ?>
+            <div class="mla-form-row">
+                <label>Invoice department</label>
+                <div>
+                    <?php if ( $depts ) : ?>
+                        <select name="tl_department_id">
+                            <option value="">— select —</option>
+                            <?php foreach ( $depts as $d ) : ?>
+                                <option value="<?php echo esc_attr( $d['id'] ); ?>" <?php selected( ml_tl_department_id(), $d['id'] ); ?>><?php echo esc_html( $d['name'] ?? $d['id'] ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php else : ?><em>Could not load departments.</em><?php endif; ?>
+                    <div class="help">The legal entity that issues invoices (syncs to Exact).</div>
+                </div>
+            </div>
+            <div class="mla-form-row">
+                <label>VAT rate</label>
+                <div>
+                    <?php if ( $rates ) : ?>
+                        <select name="tl_tax_rate_id">
+                            <option value="">— select —</option>
+                            <?php foreach ( $rates as $r ) : ?>
+                                <option value="<?php echo esc_attr( $r['id'] ); ?>" <?php selected( ml_tl_tax_rate_id(), $r['id'] ); ?>><?php echo esc_html( ( isset( $r['rate'] ) ? ( (float) $r['rate'] * 100 ) . '% ' : '' ) . ( $r['description'] ?? $r['id'] ) ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php else : ?><em>Select a department first, then save to load its VAT rates.</em><?php endif; ?>
+                </div>
+            </div>
             <div class="mla-form-row">
                 <label>Queued bookings</label>
                 <div>
@@ -136,6 +185,12 @@ add_action( 'admin_post_ml_tl_save', function () {
     if ( $action === 'sync_settings' ) {
         if ( isset( $_POST['tl_phase_id'] ) ) {
             update_option( ML_TL_OPT_PHASE_ID, sanitize_text_field( wp_unslash( $_POST['tl_phase_id'] ) ), false );
+        }
+        if ( isset( $_POST['tl_department_id'] ) ) {
+            update_option( ML_TL_OPT_DEPARTMENT_ID, sanitize_text_field( wp_unslash( $_POST['tl_department_id'] ) ), false );
+        }
+        if ( isset( $_POST['tl_tax_rate_id'] ) ) {
+            update_option( ML_TL_OPT_TAX_RATE_ID, sanitize_text_field( wp_unslash( $_POST['tl_tax_rate_id'] ) ), false );
         }
         wp_safe_redirect( $back );
         exit;
