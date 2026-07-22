@@ -50,6 +50,7 @@ require_once __DIR__ . '/stripe/client.php';
 require_once __DIR__ . '/stripe/plans.php';
 require_once __DIR__ . '/stripe/webhooks.php';
 require_once __DIR__ . '/stripe/events/checkout-session-completed.php';
+require_once __DIR__ . '/stripe/events/subscription-changed.php';
 
 // Custom admin panel (slim).
 require_once __DIR__ . '/admin-panel/pagination.php';
