@@ -66,6 +66,43 @@ function ml_rest_boek( WP_REST_Request $req ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'slot_in_past' ), 409 );
     }
 
+    // Payment path: if Stripe is configured, start a subscription Checkout.
+    // Otherwise fall through to the existing no-payment provisioning (inert).
+    if ( function_exists( 'ml_stripe_is_configured' ) && ml_stripe_is_configured() ) {
+        try {
+            $stripe  = ml_stripe();
+            $session = $stripe->checkout->sessions->create( array(
+                'mode'        => 'subscription',
+                'line_items'  => array(
+                    array( 'price' => ml_stripe_annual_price_id(), 'quantity' => 1 ), // recurring yearly
+                    array( 'price' => ml_stripe_setup_price_id(),  'quantity' => 1 ), // one-time activation on 1st invoice
+                ),
+                'customer_email'             => $email,
+                'billing_address_collection' => 'required',
+                'phone_number_collection'    => array( 'enabled' => true ),
+                'locale'                     => ml_current_lang() === 'en' ? 'en' : 'nl',
+                'success_url'                => home_url( '/checkout/success?session_id={CHECKOUT_SESSION_ID}' ),
+                'cancel_url'                 => home_url( '/boek?cancelled=1' ),
+                'metadata' => array(
+                    'ml_intent'   => 'initial_subscription_with_slot',
+                    'ml_lang'     => ml_current_lang(),
+                    'ml_slot_id'  => (string) $slot->id,
+                    'ml_name'     => substr( $name, 0, 200 ),
+                    'ml_phone'    => substr( $phone, 0, 80 ),
+                    'ml_street'   => substr( $street, 0, 200 ),
+                    'ml_postcode' => substr( $postcode, 0, 40 ),
+                    'ml_city'     => substr( $city, 0, 120 ),
+                    'ml_country'  => $country_code,
+                    'ml_notes'    => substr( $notes, 0, 400 ),
+                ),
+            ) );
+            return array( 'ok' => true, 'url' => $session->url );
+        } catch ( \Throwable $e ) {
+            error_log( '[memorylane] /boek subscription checkout failed: ' . $e->getMessage() );
+            return new WP_REST_Response( array( 'ok' => false, 'error' => 'stripe_error' ), 500 );
+        }
+    }
+
     try {
         ml_boek_provision_booking( array(
             'email'        => $email,
