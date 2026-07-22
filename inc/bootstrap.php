@@ -46,6 +46,7 @@ require_once __DIR__ . '/teamleader/settings.php';
 // Payments (Stripe) — inert until keys are entered.
 require_once __DIR__ . '/stripe/client.php';
 require_once __DIR__ . '/stripe/plans.php';
+require_once __DIR__ . '/stripe/webhooks.php';
 
 // Custom admin panel (slim).
 require_once __DIR__ . '/admin-panel/pagination.php';
