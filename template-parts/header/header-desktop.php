@@ -18,7 +18,7 @@
 
     <div class="col-span-2 justify-end flex gap-4">
         <?php if (is_user_logged_in()) : ?>
-            <a href="<?= esc_url(home_url('/profile')) ?>" class="btn-secondary">
+            <a href="<?= esc_url(home_url('/dashboard')) ?>" class="btn-secondary">
                 Mijn Profiel
             </a>
         <?php else : ?>

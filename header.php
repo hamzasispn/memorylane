@@ -69,7 +69,7 @@
 
             <div class="px-[5vw] pb-6 pt-2">
                 <?php if (is_user_logged_in()) : ?>
-                    <a href="<?= esc_url(home_url('/profile')) ?>" class="btn-secondary !text-xl !py-3 !px-8 block text-center w-full">
+                    <a href="<?= esc_url(home_url('/dashboard')) ?>" class="btn-secondary !text-xl !py-3 !px-8 block text-center w-full">
                         Mijn Profiel
                     </a>
                 <?php else : ?>

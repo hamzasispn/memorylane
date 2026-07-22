@@ -1,15 +1,33 @@
-/* Memory Lane — custom /admin panel.  Linear / Stripe Dashboard density. */
-:root { --mla-bd: #E5E7EB; --mla-bg: #F9FAFB; --mla-fg: #18181B; --mla-mut: #6B7280; --mla-pri: #2563EB; --mla-pri-bg: #EFF6FF; --mla-danger: #B91C1C; --mla-success: #047857; --mla-warning: #92400E; }
+/* Memory Lane — custom /admin panel. On-brand (navy #152751 + lavender +
+ * AdleryPro wordmark), sibling to the customer dashboard. Linear/Stripe density. */
+@font-face {
+    font-family: 'AdleryPro';
+    src: url('../fonts/Adlery-Pro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0041-005A, U+0061-007A, U+00C0-024F, U+0020-002F, U+003A-0040, U+005B-0060, U+007B-007E;
+}
+:root {
+    --mla-bd: #E4E4E7; --mla-bg: #FAFAFA; --mla-fg: #18181B; --mla-mut: #71717A;
+    --mla-pri: #152751;     /* brand navy */
+    --mla-pri-h: #0E1A38;   /* brand navy — hover */
+    --mla-pri-bg: #E7E2F2;  /* brand lavender tint */
+    --mla-danger: #B91C1C; --mla-success: #047857; --mla-warning: #92400E;
+    --mla-font-brand: 'AdleryPro', 'Inter', sans-serif;
+    --mla-brand-grad: linear-gradient(to bottom, #cabee2, #cad7dd);
+}
 
 * { box-sizing: border-box; }
-html, body { background: var(--mla-bg); color: var(--mla-fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-body.mla-body { margin: 0; padding: 0; }
+html, body { background: var(--mla-bg); color: var(--mla-fg); font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+body.mla-body { margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 .mla-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
 
-.mla-sidebar { background: #fff; border-right: 1px solid var(--mla-bd); padding: 16px 0; display: flex; flex-direction: column; }
+.mla-sidebar { position: relative; background: #fff; border-right: 1px solid var(--mla-bd); padding: 16px 0; display: flex; flex-direction: column; }
+.mla-sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--mla-brand-grad); }
 .mla-sidebar__brand { display: flex; align-items: center; gap: 8px; padding: 0 16px 16px; font-weight: 700; color: var(--mla-fg); text-decoration: none; font-size: 16px; border-bottom: 1px solid var(--mla-bd); }
-.mla-sidebar__brand span { font-family: inherit; }
+.mla-sidebar__brand span { font-family: var(--mla-font-brand); font-weight: 400; font-size: 19px; letter-spacing: .01em; color: var(--mla-pri); }
 .mla-sidebar__nav { list-style: none; margin: 0; padding: 8px; flex: 1; }
 .mla-sidebar__nav li { margin: 0; }
 .mla-sidebar__nav a { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 6px; color: #3F3F46; text-decoration: none; font-size: 14px; }
@@ -50,12 +68,12 @@ body.mla-body { margin: 0; padding: 0; }
 .mla-pill--success { background: #D1FAE5; color: var(--mla-success); }
 .mla-pill--warning { background: #FEF3C7; color: var(--mla-warning); }
 .mla-pill--danger  { background: #FEE2E2; color: var(--mla-danger); }
-.mla-pill--info    { background: #DBEAFE; color: #1E40AF; }
+.mla-pill--info    { background: var(--mla-pri-bg); color: var(--mla-pri-h); }
 .mla-pill--neutral { background: #F4F4F5; color: #3F3F46; }
 
 .mla-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; border: 1px solid transparent; cursor: pointer; text-decoration: none; line-height: 1; }
 .mla-btn--primary { background: var(--mla-pri); color: #fff; }
-.mla-btn--primary:hover { filter: brightness(.95); }
+.mla-btn--primary:hover { background: var(--mla-pri-h); }
 .mla-btn--secondary { background: #fff; color: var(--mla-fg); border-color: var(--mla-bd); }
 .mla-btn--secondary:hover { background: var(--mla-bg); }
 .mla-btn--danger { background: #fff; color: var(--mla-danger); border-color: #FCA5A5; }
