@@ -17,6 +17,7 @@ $nav = array(
     'overview' => array( 'label' => 'Overview', 'icon' => 'home'     ),
     'bookings' => array( 'label' => 'Bookings', 'icon' => 'calendar' ),
     'tours'    => array( 'label' => 'Tours',    'icon' => 'view'     ),
+    'billing'  => array( 'label' => 'Billing',  'icon' => 'card'     ),
     'settings' => array( 'label' => 'Settings', 'icon' => 'gear'     ),
 );
 
@@ -39,6 +40,7 @@ $titles = array(
     'overview' => 'Overview',
     'tours'    => $id === 'new' ? 'Add tour' : ( $id ? 'Edit tour' : 'Tours' ),
     'bookings' => 'Bookings',
+    'billing'  => 'Billing',
     'settings' => 'Settings',
 );
 $page_title = $titles[ $section ] ?? 'Memory Lane Admin';
@@ -50,6 +52,9 @@ $page_title = $titles[ $section ] ?? 'Memory Lane Admin';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
     <title><?php echo esc_html( $page_title ); ?> — Memory Lane</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="<?php echo esc_url( get_template_directory_uri() . '/assets/css/admin-panel.css?v=' . filemtime( get_template_directory() . '/assets/css/admin-panel.css' ) ); ?>">
     <?php wp_head(); ?>
 </head>
@@ -59,7 +64,7 @@ $page_title = $titles[ $section ] ?? 'Memory Lane Admin';
     <aside class="mla-sidebar">
         <a href="<?php echo esc_url( home_url( '/admin' ) ); ?>" class="mla-sidebar__brand">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect x="1" y="1" width="22" height="22" rx="6" fill="#18181B"/>
+                <rect x="1" y="1" width="22" height="22" rx="6" fill="#152751"/>
                 <path d="M7 17V7l5 7 5-7v10" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span>Memory Lane</span>
