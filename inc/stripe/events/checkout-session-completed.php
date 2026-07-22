@@ -55,6 +55,7 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
 
     // 3. Insert the booking row (idempotent) from the /boek slot metadata.
     $slot_id = isset( $md['ml_slot_id'] ) ? (int) $md['ml_slot_id'] : 0;
+    $slot    = null;
     if ( $slot_id ) {
         global $wpdb;
         $btbl = ml_table( 'bookings' );
@@ -104,5 +105,22 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
     ), $user->ID );
     foreach ( ml_admin_recipients() as $to ) {
         ml_mail_send( $to, 'admin_new_purchase', array( 'user' => $user, 'session' => $session ) );
+    }
+
+    // Push Contact + Deal to Teamleader (mirrors the no-payment booking flow),
+    // so a Deal exists and _ml_tl_contact_id is set for invoicing on invoice.paid.
+    if ( function_exists( 'ml_tl_push_booking' ) ) {
+        $tl_data = array(
+            'name'          => $session->customer_details->name ?? $user->display_name,
+            'phone'         => (string) ( $session->customer_details->phone ?? ( $md['ml_phone'] ?? '' ) ),
+            'street'        => (string) ( $md['ml_street'] ?? '' ),
+            'postcode'      => (string) ( $md['ml_postcode'] ?? '' ),
+            'city'          => (string) ( $md['ml_city'] ?? '' ),
+            'country'       => (string) ( $md['ml_country'] ?? '' ),
+            'notes'         => (string) ( $md['ml_notes'] ?? '' ),
+            'scheduled_for' => isset( $slot ) && $slot ? $slot->slot_start_datetime : '',
+        );
+        try { ml_tl_push_booking( $user, $tl_data ); }
+        catch ( \Throwable $e ) { error_log( '[memorylane] TL push on activation failed: ' . $e->getMessage() ); }
     }
 }
