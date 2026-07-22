@@ -44,6 +44,7 @@ require_once __DIR__ . '/teamleader/oauth.php';
 require_once __DIR__ . '/teamleader/client.php';
 require_once __DIR__ . '/teamleader/booking-sync.php';
 require_once __DIR__ . '/teamleader/settings.php';
+require_once __DIR__ . '/teamleader/invoicing.php';
 
 // Payments (Stripe) — inert until keys are entered.
 require_once __DIR__ . '/stripe/client.php';
