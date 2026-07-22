@@ -21,6 +21,8 @@ require_once __DIR__ . '/auth/password-reset.php';
 
 // Access gate (booking-only: logged-in customer = access).
 require_once __DIR__ . '/subscriptions/access-gate.php';
+require_once __DIR__ . '/subscriptions/status.php';
+require_once __DIR__ . '/subscriptions/sync.php';
 
 // Tours.
 require_once __DIR__ . '/tours/cpt.php';
