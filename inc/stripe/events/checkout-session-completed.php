@@ -1,9 +1,9 @@
 <?php
 /**
- * Stripe event: checkout.session.completed (subscription mode).
- * Autonomous activation — no admin approval. Provisions the WP user, the
- * booking row (from /boek metadata), and the subscription mirror row, then
- * sends the welcome + purchase-confirmation emails.
+ * Stripe event: checkout.session.completed (payment mode — activation + year 1).
+ * Autonomous — no admin approval. Provisions the WP user + booking row, saves the
+ * card, then creates a monthly subscription trialed for 365 days (year 1 is already
+ * paid), and sends the welcome + purchase-confirmation emails.
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -13,11 +13,11 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
     if ( ! $stripe ) throw new \RuntimeException( 'Stripe client unavailable' );
 
     $session = $stripe->checkout->sessions->retrieve( $obj->id, array(
-        'expand' => array( 'customer', 'customer_details', 'subscription' ),
+        'expand' => array( 'customer', 'customer_details', 'payment_intent' ),
     ) );
 
-    if ( $session->mode !== 'subscription' ) return;          // Phase 2 only handles subscription checkouts
-    if ( $session->status !== 'complete' ) return;
+    if ( $session->mode !== 'payment' ) return;               // booking pays activation + year 1 (one-time)
+    if ( $session->payment_status !== 'paid' ) return;
 
     $customer = $session->customer;
     $email    = $session->customer_details->email ?? ( is_object( $customer ) ? ( $customer->email ?? null ) : null );
@@ -81,14 +81,18 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
         }
     }
 
-    // 4. Mirror the subscription row (status drives access).
-    $sub = $session->subscription;
-    if ( is_object( $sub ) ) {
-        $fields = ml_sub_fields_from_stripe( $sub );
-        if ( empty( $fields['year_one_end_date'] ) && ! empty( $fields['current_period_end'] ) ) {
-            $fields['year_one_end_date'] = $fields['current_period_end']; // first period = year one
+    // 4. Create the trialed monthly subscription (year 1 already paid), using the
+    //    saved card. Trial = 365 days, so monthly billing auto-starts after year 1.
+    $pm = '';
+    $pi = $session->payment_intent;
+    if ( is_object( $pi ) ) {
+        $pm = is_object( $pi->payment_method ?? null ) ? ( $pi->payment_method->id ?? '' ) : (string) ( $pi->payment_method ?? '' );
+    }
+    if ( function_exists( 'ml_create_monthly_subscription' ) ) {
+        $res = ml_create_monthly_subscription( (int) $user->ID, $pm );
+        if ( empty( $res['ok'] ) ) {
+            error_log( '[memorylane] monthly subscription not created for user ' . $user->ID . ': ' . ( $res['error'] ?? '?' ) );
         }
-        ml_upsert_subscription( $user->ID, $fields );
     }
 
     // 5. Autonomous — mark setup approved, send emails. No admin approval step.

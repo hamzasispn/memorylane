@@ -72,19 +72,22 @@ function ml_rest_boek( WP_REST_Request $req ) {
         try {
             $stripe  = ml_stripe();
             $session = $stripe->checkout->sessions->create( array(
-                'mode'        => 'subscription',
+                'mode'        => 'payment',
                 'line_items'  => array(
-                    array( 'price' => ml_stripe_annual_price_id(), 'quantity' => 1 ), // recurring yearly
-                    array( 'price' => ml_stripe_setup_price_id(),  'quantity' => 1 ), // one-time activation on 1st invoice
+                    array( 'price' => ml_stripe_activation_price_id(), 'quantity' => 1 ), // one-time activation
+                    array( 'price' => ml_stripe_yearly_price_id(),     'quantity' => 1 ), // one-time year 1
                 ),
+                'customer_creation'          => 'always',
                 'customer_email'             => $email,
                 'billing_address_collection' => 'required',
                 'phone_number_collection'    => array( 'enabled' => true ),
+                'payment_intent_data'        => array( 'setup_future_usage' => 'off_session' ), // save card for the monthly sub
+                'invoice_creation'           => array( 'enabled' => true ),                     // so invoice.paid fires → Teamleader
                 'locale'                     => ml_current_lang() === 'en' ? 'en' : 'nl',
                 'success_url'                => home_url( '/checkout/success?session_id={CHECKOUT_SESSION_ID}' ),
                 'cancel_url'                 => home_url( '/boek?cancelled=1' ),
                 'metadata' => array(
-                    'ml_intent'   => 'initial_subscription_with_slot',
+                    'ml_intent'   => 'initial_activation_with_slot',
                     'ml_lang'     => ml_current_lang(),
                     'ml_slot_id'  => (string) $slot->id,
                     'ml_name'     => substr( $name, 0, 200 ),

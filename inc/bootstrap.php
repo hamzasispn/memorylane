@@ -49,6 +49,7 @@ require_once __DIR__ . '/teamleader/invoicing.php';
 // Payments (Stripe) — inert until keys are entered.
 require_once __DIR__ . '/stripe/client.php';
 require_once __DIR__ . '/stripe/plans.php';
+require_once __DIR__ . '/stripe/schedule.php';
 require_once __DIR__ . '/stripe/webhooks.php';
 require_once __DIR__ . '/stripe/events/checkout-session-completed.php';
 require_once __DIR__ . '/stripe/events/subscription-changed.php';

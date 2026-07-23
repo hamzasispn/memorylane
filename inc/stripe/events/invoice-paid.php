@@ -13,8 +13,14 @@ function ml_stripe_event_invoice_paid( \Stripe\Event $event ) {
     $user = get_user_by( 'id', (int) $users[0] );
     if ( ! $user ) return;
 
+    // Skip €0 invoices (e.g. the subscription's trial-start invoice) — nothing to invoice.
+    $amount = (int) ( $inv->amount_paid ?? 0 );
+    if ( $amount <= 0 ) return;
+
+    // Booking payment (activation + year 1) comes through as a one-off invoice
+    // (billing_reason 'manual'); the recurring monthly invoices are 'subscription_cycle'.
     $reason = (string) ( $inv->billing_reason ?? '' );
-    $desc   = ( $reason === 'subscription_create' ) ? 'Memory Lane — Activatie' : 'Memory Lane — Jaarlijkse verlenging';
+    $desc   = ( $reason === 'subscription_cycle' ) ? 'Memory Lane — Maandelijkse hosting' : 'Memory Lane — Activatie + jaar 1';
     $data = array(
         'stripe_invoice_id' => (string) ( $inv->id ?? '' ),
         'amount_cents'      => (int) ( $inv->amount_paid ?? 0 ),
