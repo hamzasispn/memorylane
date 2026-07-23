@@ -68,41 +68,17 @@ function ml_plan_sync_to_stripe() {
     $changes = array();
 
     try {
-        // 1. Product.
-        $product_id = $plan['product_id'];
-        if ( $product_id ) {
-            try {
-                $stripe->products->retrieve( $product_id );
-                $stripe->products->update( $product_id, array(
-                    'name'        => $plan['product_name'] ?: 'Memory Lane',
-                    'description' => $plan['product_description'] ?: null,
-                ) );
-                $changes[] = 'product:updated';
-            } catch ( \Stripe\Exception\InvalidRequestException $e ) {
-                $product_id = ''; // stale — recreate
-            }
-        }
-        if ( ! $product_id ) {
-            $product = $stripe->products->create( array(
-                'name'        => $plan['product_name'] ?: 'Memory Lane',
-                'description' => $plan['product_description'] ?: null,
-                'metadata'    => array( 'ml_source' => 'memorylane_wp' ),
-            ) );
-            $product_id = $product->id;
-            $changes[] = 'product:created';
-            ml_plan_save_raw( array( 'product_id' => $product_id ) );
-        }
-
-        // Three prices: activation (one-time), year 1 (one-time), monthly (recurring).
+        // Each price gets its OWN Stripe Product so the customer-facing name on
+        // Checkout is clear (Checkout shows the product name, not the nickname).
         $specs = array(
-            'activation_price_id' => array( $plan['activation_amount'], null, 'Memory Lane — Activation' ),
-            'yearly_price_id'     => array( $plan['yearly_amount'],     null, 'Memory Lane — Year 1' ),
-            'monthly_price_id'    => array( $plan['monthly_amount'],    array( 'interval' => 'month', 'interval_count' => 1 ), 'Memory Lane — Monthly' ),
+            'activation_price_id' => array( $plan['activation_amount'], null, ml_plan_product_name( 'activation' ) ),
+            'yearly_price_id'     => array( $plan['yearly_amount'],     null, ml_plan_product_name( 'yearly' ) ),
+            'monthly_price_id'    => array( $plan['monthly_amount'],    array( 'interval' => 'month', 'interval_count' => 1 ), ml_plan_product_name( 'monthly' ) ),
         );
         foreach ( $specs as $opt_key => $spec ) {
-            list( $amount_cents, $recurring, $nickname ) = $spec;
+            list( $amount_cents, $recurring, $product_name ) = $spec;
             if ( $amount_cents <= 0 ) continue;
-            $price_id = ml_plan_ensure_price( $stripe, $product_id, $plan[ $opt_key ], $amount_cents, $plan['currency'], $recurring, $nickname );
+            $price_id = ml_plan_ensure_price( $stripe, $plan[ $opt_key ], $amount_cents, $plan['currency'], $recurring, $product_name );
             if ( $price_id !== $plan[ $opt_key ] ) {
                 ml_plan_save_raw( array( $opt_key => $price_id ) );
                 $changes[] = $opt_key . ':created';
@@ -121,16 +97,34 @@ function ml_plan_sync_to_stripe() {
 }
 
 /**
- * Ensure a Price object exists in Stripe matching the (amount, currency, recurring) tuple
- * under $product_id. If $existing_id matches, reuse it; otherwise create + archive old.
+ * Customer-facing product name per line (shown on Stripe Checkout + invoices).
+ * Filterable so wording/language can be tweaked without touching the sync.
  */
-function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents, $currency, $recurring, $nickname ) {
+function ml_plan_product_name( $which ) {
+    $names = array(
+        'activation' => 'Memory Lane — Activatie & 3D-scan',
+        'yearly'     => 'Memory Lane — Online tour (jaar 1)',
+        'monthly'    => 'Memory Lane — Maandelijkse hosting',
+    );
+    return apply_filters( 'ml_plan_product_name', $names[ $which ] ?? 'Memory Lane', $which );
+}
+
+/**
+ * Ensure a Price exists matching (amount, currency, recurring) AND whose Product
+ * is named $product_name. Each price gets its own product. Reuses a matching
+ * price; otherwise creates a new price+product and archives the old price.
+ */
+function ml_plan_ensure_price( $stripe, $existing_id, $amount_cents, $currency, $recurring, $product_name ) {
     if ( $existing_id ) {
         try {
             $p = $stripe->prices->retrieve( $existing_id );
+            $prod_name_ok = false;
+            if ( $p->product ) {
+                try { $prod_name_ok = ( $stripe->products->retrieve( $p->product )->name === $product_name ); }
+                catch ( \Throwable $e ) {}
+            }
             $matches =
-                $p->product === $product_id
-                && (int) $p->unit_amount === (int) $amount_cents
+                (int) $p->unit_amount === (int) $amount_cents
                 && strtolower( $p->currency ) === strtolower( $currency )
                 && (
                     ( $recurring === null && $p->type === 'one_time' )
@@ -138,7 +132,8 @@ function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents
                          && $p->recurring->interval === $recurring['interval']
                          && (int) $p->recurring->interval_count === (int) $recurring['interval_count'] )
                 )
-                && $p->active;
+                && $p->active
+                && $prod_name_ok;
             if ( $matches ) return $existing_id;
         } catch ( \Stripe\Exception\InvalidRequestException $e ) {
             // stale; create new
@@ -146,11 +141,10 @@ function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents
     }
 
     $params = array(
-        'product'     => $product_id,
-        'unit_amount' => (int) $amount_cents,
-        'currency'    => strtolower( $currency ),
-        'nickname'    => $nickname,
-        'metadata'    => array( 'ml_source' => 'memorylane_wp' ),
+        'unit_amount'  => (int) $amount_cents,
+        'currency'     => strtolower( $currency ),
+        'nickname'     => $product_name,
+        'product_data' => array( 'name' => $product_name ), // inline new product with a clear name
     );
     if ( $recurring ) {
         $params['recurring'] = $recurring;
@@ -171,11 +165,8 @@ function ml_plan_fetch_state() {
     if ( ! ml_stripe_secret() ) return null;
     $stripe = ml_stripe();
     $plan   = ml_plan_get();
-    $out = array( 'product' => null, 'prices' => array() );
+    $out = array( 'prices' => array() );
 
-    if ( $plan['product_id'] ) {
-        try { $out['product'] = $stripe->products->retrieve( $plan['product_id'] ); } catch ( \Throwable $e ) {}
-    }
     foreach ( array(
         'activation' => $plan['activation_price_id'],
         'yearly'     => $plan['yearly_price_id'],
