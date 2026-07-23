@@ -18,12 +18,16 @@ function ml_stripe_webhook_secret() {
     return (string) ml_stripe_opt( 'webhook_secret' );
 }
 
-function ml_stripe_setup_price_id() {
-    return (string) ml_stripe_opt( 'setup_price_id' );
+function ml_stripe_activation_price_id() {
+    return (string) ml_stripe_opt( 'activation_price_id' );
 }
 
-function ml_stripe_annual_price_id() {
-    return (string) ml_stripe_opt( 'annual_price_id' );
+function ml_stripe_yearly_price_id() {
+    return (string) ml_stripe_opt( 'yearly_price_id' );
+}
+
+function ml_stripe_monthly_price_id() {
+    return (string) ml_stripe_opt( 'monthly_price_id' );
 }
 
 /**
@@ -46,8 +50,9 @@ function ml_stripe_is_configured() {
     return (bool) (
         ml_stripe_secret()
         && ml_stripe_publishable()
-        && ml_stripe_setup_price_id()
-        && ml_stripe_annual_price_id()
+        && ml_stripe_activation_price_id()
+        && ml_stripe_yearly_price_id()
+        && ml_stripe_monthly_price_id()
     );
 }
 

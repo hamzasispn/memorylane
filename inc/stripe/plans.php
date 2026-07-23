@@ -2,32 +2,32 @@
 /**
  * Memory Lane — Plan sync.
  * Admin defines plan amounts in WP; this module creates/updates the Stripe
- * Product + two Prices (one-time activation + recurring yearly) and writes
- * the IDs back to options so Checkout uses them.
+ * Product + three Prices and writes the IDs back to options so Checkout uses them:
+ *   - activation : ONE-TIME (scan + setup),          charged at booking
+ *   - year 1     : ONE-TIME (first year of hosting), charged at booking
+ *   - monthly    : RECURRING monthly,                begins after year 1 (365-day trial)
  *
  * Stripe Prices are immutable. When an amount changes, we create a NEW Price
- * and archive the old one (active=false). Existing subscriptions keep their
- * old price — that's by design; only new checkouts use the new one.
+ * and archive the old one (active=false).
  */
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Read the plan config for the active mode.
- * Amounts are stored in minor units (cents). Option keys are kept from the
- * legacy schema (plan_year_one_amount / plan_annual_amount, setup_price_id /
- * annual_price_id) so no migration is needed.
+ * Read the plan config for the active mode. Amounts are in minor units (cents).
  */
 function ml_plan_get() {
     return array(
         'product_name'        => ml_stripe_opt( 'plan_name',        'Memory Lane' ),
         'product_description' => ml_stripe_opt( 'plan_description', '' ),
         'currency'            => strtolower( ml_stripe_opt( 'plan_currency', 'eur' ) ),
-        'activation_amount'   => (int) ml_stripe_opt( 'plan_year_one_amount', 0 ),
-        'yearly_amount'       => (int) ml_stripe_opt( 'plan_annual_amount',   0 ),
-        'product_id'          => ml_stripe_opt( 'product_id',       '' ),
-        'setup_price_id'      => ml_stripe_opt( 'setup_price_id',   '' ),
-        'annual_price_id'     => ml_stripe_opt( 'annual_price_id',  '' ),
-        'synced_at'           => (int) ml_stripe_opt( 'plan_synced_at', 0 ),
+        'activation_amount'   => (int) ml_stripe_opt( 'plan_activation_amount', 0 ),
+        'yearly_amount'       => (int) ml_stripe_opt( 'plan_yearly_amount',     0 ),
+        'monthly_amount'      => (int) ml_stripe_opt( 'plan_monthly_amount',    0 ),
+        'product_id'          => ml_stripe_opt( 'product_id',          '' ),
+        'activation_price_id' => ml_stripe_opt( 'activation_price_id', '' ),
+        'yearly_price_id'     => ml_stripe_opt( 'yearly_price_id',     '' ),
+        'monthly_price_id'    => ml_stripe_opt( 'monthly_price_id',    '' ),
+        'synced_at'           => (int) ml_stripe_opt( 'plan_synced_at',  0 ),
     );
 }
 
@@ -72,15 +72,14 @@ function ml_plan_sync_to_stripe() {
         $product_id = $plan['product_id'];
         if ( $product_id ) {
             try {
-                $product = $stripe->products->retrieve( $product_id );
+                $stripe->products->retrieve( $product_id );
                 $stripe->products->update( $product_id, array(
                     'name'        => $plan['product_name'] ?: 'Memory Lane',
                     'description' => $plan['product_description'] ?: null,
                 ) );
                 $changes[] = 'product:updated';
             } catch ( \Stripe\Exception\InvalidRequestException $e ) {
-                // Saved ID is stale; create a fresh product.
-                $product_id = '';
+                $product_id = ''; // stale — recreate
             }
         }
         if ( ! $product_id ) {
@@ -94,41 +93,21 @@ function ml_plan_sync_to_stripe() {
             ml_plan_save_raw( array( 'product_id' => $product_id ) );
         }
 
-        // 2. Activation price — ONE-TIME (scan + first year, charged once at booking).
-        if ( $plan['activation_amount'] > 0 ) {
-            $price_id = ml_plan_ensure_price(
-                $stripe,
-                $product_id,
-                $plan['setup_price_id'],
-                $plan['activation_amount'],
-                $plan['currency'],
-                null, // one-time
-                'Memory Lane — Activation'
-            );
-            if ( $price_id !== $plan['setup_price_id'] ) {
-                ml_plan_save_raw( array( 'setup_price_id' => $price_id ) );
-                $changes[] = 'setup_price:created';
+        // Three prices: activation (one-time), year 1 (one-time), monthly (recurring).
+        $specs = array(
+            'activation_price_id' => array( $plan['activation_amount'], null, 'Memory Lane — Activation' ),
+            'yearly_price_id'     => array( $plan['yearly_amount'],     null, 'Memory Lane — Year 1' ),
+            'monthly_price_id'    => array( $plan['monthly_amount'],    array( 'interval' => 'month', 'interval_count' => 1 ), 'Memory Lane — Monthly' ),
+        );
+        foreach ( $specs as $opt_key => $spec ) {
+            list( $amount_cents, $recurring, $nickname ) = $spec;
+            if ( $amount_cents <= 0 ) continue;
+            $price_id = ml_plan_ensure_price( $stripe, $product_id, $plan[ $opt_key ], $amount_cents, $plan['currency'], $recurring, $nickname );
+            if ( $price_id !== $plan[ $opt_key ] ) {
+                ml_plan_save_raw( array( $opt_key => $price_id ) );
+                $changes[] = $opt_key . ':created';
             } else {
-                $changes[] = 'setup_price:unchanged';
-            }
-        }
-
-        // 3. Yearly recurring price — the auto-renewing subscription.
-        if ( $plan['yearly_amount'] > 0 ) {
-            $price_id = ml_plan_ensure_price(
-                $stripe,
-                $product_id,
-                $plan['annual_price_id'],
-                $plan['yearly_amount'],
-                $plan['currency'],
-                array( 'interval' => 'year', 'interval_count' => 1 ),
-                'Memory Lane — Yearly'
-            );
-            if ( $price_id !== $plan['annual_price_id'] ) {
-                ml_plan_save_raw( array( 'annual_price_id' => $price_id ) );
-                $changes[] = 'annual_price:created';
-            } else {
-                $changes[] = 'annual_price:unchanged';
+                $changes[] = $opt_key . ':unchanged';
             }
         }
 
@@ -143,8 +122,7 @@ function ml_plan_sync_to_stripe() {
 
 /**
  * Ensure a Price object exists in Stripe matching the (amount, currency, recurring) tuple
- * under $product_id. If $existing_id matches the desired tuple, reuse it.
- * Otherwise, create a new Price and archive the old one.
+ * under $product_id. If $existing_id matches, reuse it; otherwise create + archive old.
  */
 function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents, $currency, $recurring, $nickname ) {
     if ( $existing_id ) {
@@ -155,7 +133,6 @@ function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents
                 && (int) $p->unit_amount === (int) $amount_cents
                 && strtolower( $p->currency ) === strtolower( $currency )
                 && (
-                    // recurring tuple match
                     ( $recurring === null && $p->type === 'one_time' )
                     || ( $recurring !== null && $p->type === 'recurring'
                          && $p->recurring->interval === $recurring['interval']
@@ -164,7 +141,7 @@ function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents
                 && $p->active;
             if ( $matches ) return $existing_id;
         } catch ( \Stripe\Exception\InvalidRequestException $e ) {
-            // stale; ignore and create new
+            // stale; create new
         }
     }
 
@@ -180,7 +157,6 @@ function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents
     }
     $new = $stripe->prices->create( $params );
 
-    // Archive the previous price so it doesn't get used by new checkouts.
     if ( $existing_id ) {
         try { $stripe->prices->update( $existing_id, array( 'active' => false ) ); } catch ( \Throwable $e ) {}
     }
@@ -189,7 +165,7 @@ function ml_plan_ensure_price( $stripe, $product_id, $existing_id, $amount_cents
 }
 
 /**
- * Fetch current state from Stripe (for the "Synced status" panel).
+ * Fetch current state from Stripe (for the "Synced status" panel). Returns [] on failure.
  */
 function ml_plan_fetch_state() {
     if ( ! ml_stripe_secret() ) return null;
@@ -201,8 +177,9 @@ function ml_plan_fetch_state() {
         try { $out['product'] = $stripe->products->retrieve( $plan['product_id'] ); } catch ( \Throwable $e ) {}
     }
     foreach ( array(
-        'activation' => $plan['setup_price_id'],
-        'yearly'     => $plan['annual_price_id'],
+        'activation' => $plan['activation_price_id'],
+        'yearly'     => $plan['yearly_price_id'],
+        'monthly'    => $plan['monthly_price_id'],
     ) as $k => $pid ) {
         if ( ! $pid ) continue;
         try { $out['prices'][ $k ] = $stripe->prices->retrieve( $pid ); } catch ( \Throwable $e ) {}
