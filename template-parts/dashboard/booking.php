@@ -38,6 +38,22 @@ $user_bookings = ml_get_user_bookings( $user->ID );
                             <td><?php echo esc_html( ml_format_datetime( $b->scheduled_for ) ); ?></td>
                             <td><span class="ml-pill <?php echo esc_attr( $pill ); ?>"><?php echo esc_html( ml_t( 'booking.status.' . $b->status, $b->status ) ); ?></span></td>
                             <td style="text-align: right;">
+                                <?php
+                                $cal = function_exists( 'ml_calendar_links' ) ? ml_calendar_links(
+                                    ml_t( 'booking.cal.title', 'Memory Lane — 3D-scan afspraak' ),
+                                    $b->scheduled_for,
+                                    (int) get_option( ML_BOOKING_OPT_SLOT_LENGTH, 60 ),
+                                    ml_user_address_line( $user->ID ),
+                                    ml_t( 'booking.cal.details', 'Je Memory Lane opname-afspraak.' )
+                                ) : array();
+                                if ( $cal && strtotime( $b->scheduled_for . ' UTC' ) > time() ) : ?>
+                                    <span class="ml-text-sm ml-text-muted" style="margin-right:8px;">
+                                        <?php echo esc_html__( 'Add to calendar:', 'memorylane' ); ?>
+                                        <a href="<?php echo esc_url( $cal['google'] ); ?>" target="_blank" rel="noopener">Google</a> ·
+                                        <a href="<?php echo esc_url( $cal['outlook'] ); ?>" target="_blank" rel="noopener">Outlook</a> ·
+                                        <a href="<?php echo esc_attr( $cal['ical'] ); ?>" download="memory-lane-afspraak.ics">iCal</a>
+                                    </span>
+                                <?php endif; ?>
                                 <?php if ( in_array( $b->status, array( 'requested', 'confirmed' ), true ) ) : ?>
                                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display: inline;" onsubmit="return confirm('<?php echo esc_js( ml_t( 'sub.cancel_confirm' ) ); ?>');">
                                         <?php wp_nonce_field( 'ml_booking_cancel' ); ?>
