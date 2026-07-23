@@ -71,7 +71,7 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
                     'user_id'        => $user->ID,
                     'slot_id'        => $slot_id,
                     'service_type'   => 'initial_scan',
-                    'status'         => 'requested',
+                    'status'         => 'confirmed', // paid → auto-confirmed (no manual approval)
                     'customer_notes' => isset( $md['ml_notes'] ) ? (string) $md['ml_notes'] : '',
                     'scheduled_for'  => $slot->slot_start_datetime,
                     'created_at'     => $now,

@@ -71,6 +71,17 @@ function ml_rest_boek( WP_REST_Request $req ) {
     if ( function_exists( 'ml_stripe_is_configured' ) && ml_stripe_is_configured() ) {
         try {
             $stripe  = ml_stripe();
+
+            // Block re-purchase: a customer who already has an active/trialing
+            // subscription shouldn't be charged again — point them to login.
+            $existing_user = get_user_by( 'email', $email );
+            if ( $existing_user && function_exists( 'ml_get_subscription_row' ) ) {
+                $sub_row = ml_get_subscription_row( $existing_user->ID );
+                if ( $sub_row && in_array( $sub_row->status, array( 'active', 'trialing' ), true ) ) {
+                    return new WP_REST_Response( array( 'ok' => false, 'error' => 'already_subscribed', 'url' => home_url( '/login' ) ), 409 );
+                }
+            }
+
             // Pre-create the Stripe customer with the booking details so email,
             // phone and address are pre-filled at Checkout (no re-typing).
             $customer = $stripe->customers->create( array(
