@@ -32,6 +32,7 @@ function ml_cron_schedule_all() {
     $jobs = array(
         'ml_cron_booking_reminders' => 'hourly',
         'ml_cron_tl_retry'          => 'ml_quarter_hour',
+        'ml_cron_mp_sync'           => 'daily',
     );
     foreach ( $jobs as $hook => $recur ) {
         if ( ! wp_next_scheduled( $hook ) ) {
