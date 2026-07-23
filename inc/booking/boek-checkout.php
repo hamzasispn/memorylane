@@ -66,20 +66,33 @@ function ml_rest_boek( WP_REST_Request $req ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'slot_in_past' ), 409 );
     }
 
-    // Payment path: if Stripe is configured, start a subscription Checkout.
+    // Payment path: if Stripe is configured, start the activation + year-1 Checkout.
     // Otherwise fall through to the existing no-payment provisioning (inert).
     if ( function_exists( 'ml_stripe_is_configured' ) && ml_stripe_is_configured() ) {
         try {
             $stripe  = ml_stripe();
+            // Pre-create the Stripe customer with the booking details so email,
+            // phone and address are pre-filled at Checkout (no re-typing).
+            $customer = $stripe->customers->create( array(
+                'email'   => $email,
+                'name'    => $name,
+                'phone'   => $phone,
+                'address' => array(
+                    'line1'       => $street,
+                    'postal_code' => $postcode,
+                    'city'        => $city,
+                    'state'       => $state,
+                    'country'     => $country_code,
+                ),
+            ) );
             $session = $stripe->checkout->sessions->create( array(
                 'mode'        => 'payment',
+                'customer'        => $customer->id,
+                'customer_update' => array( 'address' => 'auto', 'name' => 'auto' ),
                 'line_items'  => array(
                     array( 'price' => ml_stripe_activation_price_id(), 'quantity' => 1 ), // one-time activation
                     array( 'price' => ml_stripe_yearly_price_id(),     'quantity' => 1 ), // one-time year 1
                 ),
-                'customer_creation'          => 'always',
-                'customer_email'             => $email,
-                'billing_address_collection' => 'required',
                 'phone_number_collection'    => array( 'enabled' => true ),
                 'payment_intent_data'        => array( 'setup_future_usage' => 'off_session' ), // save card for the monthly sub
                 'invoice_creation'           => array( 'enabled' => true ),                     // so invoice.paid fires → Teamleader
