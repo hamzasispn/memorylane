@@ -17,7 +17,7 @@ $lang = ml_current_lang();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="<?php echo esc_url( ML_URI . 'assets/src/css/dashboard.css' ); ?>?v=<?php echo esc_attr( ML_VERSION ); ?>">
+    <link rel="stylesheet" href="<?php echo esc_url( ML_URI . 'assets/src/css/dashboard.css' ); ?>?v=<?php echo esc_attr( filemtime( get_template_directory() . '/assets/src/css/dashboard.css' ) ); ?>">
     <?php wp_head(); ?>
 </head>
 <body class="ml-app">
