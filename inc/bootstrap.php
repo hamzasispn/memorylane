@@ -21,6 +21,8 @@ require_once __DIR__ . '/auth/password-reset.php';
 
 // Access gate (booking-only: logged-in customer = access).
 require_once __DIR__ . '/subscriptions/access-gate.php';
+require_once __DIR__ . '/subscriptions/status.php';
+require_once __DIR__ . '/subscriptions/sync.php';
 
 // Tours.
 require_once __DIR__ . '/tours/cpt.php';
@@ -42,6 +44,17 @@ require_once __DIR__ . '/teamleader/oauth.php';
 require_once __DIR__ . '/teamleader/client.php';
 require_once __DIR__ . '/teamleader/booking-sync.php';
 require_once __DIR__ . '/teamleader/settings.php';
+require_once __DIR__ . '/teamleader/invoicing.php';
+
+// Payments (Stripe) — inert until keys are entered.
+require_once __DIR__ . '/stripe/client.php';
+require_once __DIR__ . '/stripe/plans.php';
+require_once __DIR__ . '/stripe/webhooks.php';
+require_once __DIR__ . '/stripe/events/checkout-session-completed.php';
+require_once __DIR__ . '/stripe/events/subscription-changed.php';
+require_once __DIR__ . '/stripe/events/invoice-paid.php';
+require_once __DIR__ . '/stripe/events/charge-refunded.php';
+require_once __DIR__ . '/stripe/customer-portal.php';
 
 // Custom admin panel (slim).
 require_once __DIR__ . '/admin-panel/pagination.php';

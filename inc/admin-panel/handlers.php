@@ -139,3 +139,33 @@ add_action( 'admin_post_ml_ap_settings_save', function () {
 
     ml_ap_back( 'settings', array( 'msg' => 'saved' ) );
 } );
+
+/**
+ * Billing: save Stripe keys + plan amounts (mode-scoped via ml_plan_save_raw).
+ */
+add_action( 'admin_post_ml_ap_billing_save', function () {
+    ml_ap_assert_admin();
+    check_admin_referer( 'ml_ap_billing_save' );
+
+    $mode = ml_stripe_mode();
+    foreach ( array( 'secret_key', 'publishable_key', 'webhook_secret' ) as $k ) {
+        update_option( "ml_stripe_{$mode}_{$k}", sanitize_text_field( wp_unslash( $_POST[ $k ] ?? '' ) ), false );
+    }
+    ml_plan_save_raw( array(
+        'plan_year_one_amount' => ml_to_minor_units( wp_unslash( $_POST['plan_year_one_amount'] ?? '' ) ),
+        'plan_annual_amount'   => ml_to_minor_units( wp_unslash( $_POST['plan_annual_amount'] ?? '' ) ),
+    ) );
+
+    ml_ap_back( 'billing', array( 'msg' => 'saved' ) );
+} );
+
+/**
+ * Billing: push the plan (Product + activation + yearly Prices) to Stripe.
+ */
+add_action( 'admin_post_ml_ap_billing_sync', function () {
+    ml_ap_assert_admin();
+    check_admin_referer( 'ml_ap_billing_sync' );
+
+    $res = ml_plan_sync_to_stripe();
+    ml_ap_back( 'billing', array( 'msg' => $res['ok'] ? 'synced' : 'sync_failed' ) );
+} );

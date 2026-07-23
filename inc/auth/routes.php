@@ -41,6 +41,7 @@ add_action( 'init', function () {
     add_rewrite_rule( '^dashboard/tour/([^/]+)/?$',             'index.php?ml_route=dashboard&ml_subroute=tour-viewer&ml_slug=$matches[1]', 'top' );
     add_rewrite_rule( '^dashboard/booking/?$',                  'index.php?ml_route=dashboard&ml_subroute=booking',    'top' );
     add_rewrite_rule( '^dashboard/settings/?$',                 'index.php?ml_route=dashboard&ml_subroute=settings',   'top' );
+    add_rewrite_rule( '^dashboard/subscription/?$',            'index.php?ml_route=dashboard&ml_subroute=subscription','top' );
 
     // Admin panel (V2-6/V2-7).
     add_rewrite_rule( '^admin/?$',                                  'index.php?ml_route=admin_panel&ml_admin_section=overview',                              'top' );
@@ -52,7 +53,7 @@ add_action( 'init', function () {
  * One-time rewrite-flush when routes change. Bumped manually when new rules
  * are added so customers' hosts don't need to re-save permalinks.
  */
-define( 'ML_REWRITE_VERSION', '0.4.0-booking-only' );
+define( 'ML_REWRITE_VERSION', '0.5.0-subscription' );
 add_action( 'admin_init', function () {
     if ( get_option( 'ml_rewrite_version' ) !== ML_REWRITE_VERSION ) {
         flush_rewrite_rules( false );

@@ -254,12 +254,14 @@ a:hover { text-decoration: underline; }
 
 .ml-sidebar {
     grid-area: sidebar;
+    position: relative;
     background: var(--ml-surface);
     border-right: 1px solid var(--ml-border);
     padding: 16px 12px;
     display: none;
     flex-direction: column;
 }
+.ml-sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--ml-brand-grad); }
 @media (min-width: 1024px) {
     .ml-sidebar { display: flex; }
 }
