@@ -8,7 +8,8 @@
 html, body { margin: 0; padding: 0; }
 body.ml-app {
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: var(--ml-bg);
+    background: var(--ml-brand-grad);
+    background-attachment: fixed;
     color: var(--ml-text);
     font-size: 15px;
     line-height: 1.55;
@@ -61,8 +62,8 @@ body.ml-app {
 .ml-page { min-height: 100vh; display: flex; flex-direction: column; }
 
 /* Typography */
-.ml-h1 { font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: -.01em; margin: 0 0 8px; }
-.ml-h2 { font-size: 20px; line-height: 1.3; font-weight: 600; margin: 0 0 8px; }
+.ml-h1 { font-family: var(--ml-font-brand); color: var(--ml-accent); font-size: 32px; line-height: 1.2; font-weight: 400; letter-spacing: .01em; margin: 0 0 8px; }
+.ml-h2 { font-family: var(--ml-font-brand); color: var(--ml-accent); font-size: 24px; line-height: 1.3; font-weight: 400; letter-spacing: .01em; margin: 0 0 8px; }
 .ml-h3 { font-size: 16px; line-height: 1.4; font-weight: 600; margin: 0 0 4px; }
 .ml-sub { color: var(--ml-muted); font-size: 14px; margin: 0 0 24px; }
 .ml-label { font-size: 13px; font-weight: 500; color: var(--ml-text-2); margin-bottom: 6px; display: block; }
@@ -249,7 +250,7 @@ a:hover { text-decoration: underline; }
     border-bottom: 1px solid var(--ml-border);
     background: var(--ml-surface);
 }
-.ml-topbar__title { font-weight: 600; font-size: 15px; }
+.ml-topbar__title { font-family: var(--ml-font-brand); color: var(--ml-accent); font-weight: 400; font-size: 20px; letter-spacing: .01em; }
 .ml-topbar__right { display: flex; align-items: center; gap: 12px; }
 
 .ml-sidebar {

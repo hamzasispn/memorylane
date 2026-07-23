@@ -19,7 +19,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { background: var(--mla-bg); color: var(--mla-fg); font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+html, body { background: var(--mla-brand-grad); background-attachment: fixed; color: var(--mla-fg); font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 body.mla-body { margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 .mla-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
@@ -39,12 +39,12 @@ body.mla-body { margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz
 
 .mla-main { padding: 24px 32px; min-width: 0; }
 .mla-topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--mla-bd); margin-bottom: 24px; }
-.mla-topbar h1 { font-size: 22px; margin: 0; font-weight: 600; }
+.mla-topbar h1 { font-family: var(--mla-font-brand); color: var(--mla-pri); font-size: 28px; margin: 0; font-weight: 400; letter-spacing: .01em; }
 .mla-topbar .mla-user { font-size: 13px; color: var(--mla-mut); }
 .mla-topbar .mla-user strong { color: var(--mla-fg); margin-right: 8px; }
 
 .mla-card { background: #fff; border: 1px solid var(--mla-bd); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-.mla-card h2 { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+.mla-card h2 { font-family: var(--mla-font-brand); color: var(--mla-pri); margin: 0 0 12px; font-size: 20px; font-weight: 400; letter-spacing: .01em; }
 .mla-grid { display: grid; gap: 16px; }
 .mla-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 1024px) { .mla-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
