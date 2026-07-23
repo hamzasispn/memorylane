@@ -1,0 +1,536 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "Site Logo" [ref=e6] [cursor=pointer]:
+        - /url: https://mediumturquoise-mink-434967.hostingersite.com/
+        - img "Site Logo" [ref=e7]
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - link "Home" [ref=e12] [cursor=pointer]:
+            - /url: https://mediumturquoise-mink-434967.hostingersite.com/
+        - listitem [ref=e13]:
+          - link "Waarom?" [ref=e14] [cursor=pointer]:
+            - /url: https://mediumturquoise-mink-434967.hostingersite.com/waarom/
+        - listitem [ref=e15]:
+          - link "Hoe Werk Het?" [ref=e16] [cursor=pointer]:
+            - /url: https://mediumturquoise-mink-434967.hostingersite.com/hoe-werk-het/
+        - listitem [ref=e17]:
+          - link "Tarieven" [ref=e18] [cursor=pointer]:
+            - /url: https://mediumturquoise-mink-434967.hostingersite.com/tarieven/
+        - listitem [ref=e19]:
+          - link "Contact" [ref=e20] [cursor=pointer]:
+            - /url: https://mediumturquoise-mink-434967.hostingersite.com/contact/
+      - link "Inloggen" [ref=e22] [cursor=pointer]:
+        - /url: https://mediumturquoise-mink-434967.hostingersite.com/login
+  - main [ref=e23]:
+    - generic [ref=e24]:
+      - link "← Terug" [ref=e25] [cursor=pointer]:
+        - /url: https://mediumturquoise-mink-434967.hostingersite.com/
+      - heading "Boek jouw opname" [level=1] [ref=e26]
+      - paragraph [ref=e27]: Kies een datum en vul je gegevens in. We nemen contact op om je opname te bevestigen.
+      - generic [ref=e28]:
+        - heading "1. Kies je opname-moment" [level=2] [ref=e29]
+        - generic [ref=e32]:
+          - generic [ref=e34]:
+            - button "Fri 19 Jun" [ref=e35] [cursor=pointer]:
+              - generic [ref=e36]: Fri
+              - generic [ref=e37]: "19"
+              - generic [ref=e38]: Jun
+            - button "Sat 20 Jun" [disabled] [ref=e39]:
+              - generic [ref=e40]: Sat
+              - generic [ref=e41]: "20"
+              - generic [ref=e42]: Jun
+            - button "Sun 21 Jun" [disabled] [ref=e43]:
+              - generic [ref=e44]: Sun
+              - generic [ref=e45]: "21"
+              - generic [ref=e46]: Jun
+            - button "Mon 22 Jun" [ref=e47] [cursor=pointer]:
+              - generic [ref=e48]: Mon
+              - generic [ref=e49]: "22"
+              - generic [ref=e50]: Jun
+            - button "Tue 23 Jun" [ref=e51] [cursor=pointer]:
+              - generic [ref=e52]: Tue
+              - generic [ref=e53]: "23"
+              - generic [ref=e54]: Jun
+            - button "Wed 24 Jun" [ref=e55] [cursor=pointer]:
+              - generic [ref=e56]: Wed
+              - generic [ref=e57]: "24"
+              - generic [ref=e58]: Jun
+            - button "Thu 25 Jun" [ref=e59] [cursor=pointer]:
+              - generic [ref=e60]: Thu
+              - generic [ref=e61]: "25"
+              - generic [ref=e62]: Jun
+            - button "Fri 26 Jun" [ref=e63] [cursor=pointer]:
+              - generic [ref=e64]: Fri
+              - generic [ref=e65]: "26"
+              - generic [ref=e66]: Jun
+            - button "Sat 27 Jun" [disabled] [ref=e67]:
+              - generic [ref=e68]: Sat
+              - generic [ref=e69]: "27"
+              - generic [ref=e70]: Jun
+            - button "Sun 28 Jun" [disabled] [ref=e71]:
+              - generic [ref=e72]: Sun
+              - generic [ref=e73]: "28"
+              - generic [ref=e74]: Jun
+            - button "Mon 29 Jun" [ref=e75] [cursor=pointer]:
+              - generic [ref=e76]: Mon
+              - generic [ref=e77]: "29"
+              - generic [ref=e78]: Jun
+            - button "Tue 30 Jun" [ref=e79] [cursor=pointer]:
+              - generic [ref=e80]: Tue
+              - generic [ref=e81]: "30"
+              - generic [ref=e82]: Jun
+            - button "Wed 1 Jul" [ref=e83] [cursor=pointer]:
+              - generic [ref=e84]: Wed
+              - generic [ref=e85]: "1"
+              - generic [ref=e86]: Jul
+            - button "Thu 2 Jul" [ref=e87] [cursor=pointer]:
+              - generic [ref=e88]: Thu
+              - generic [ref=e89]: "2"
+              - generic [ref=e90]: Jul
+            - button "Fri 3 Jul" [ref=e91] [cursor=pointer]:
+              - generic [ref=e92]: Fri
+              - generic [ref=e93]: "3"
+              - generic [ref=e94]: Jul
+            - button "Sat 4 Jul" [disabled] [ref=e95]:
+              - generic [ref=e96]: Sat
+              - generic [ref=e97]: "4"
+              - generic [ref=e98]: Jul
+            - button "Sun 5 Jul" [disabled] [ref=e99]:
+              - generic [ref=e100]: Sun
+              - generic [ref=e101]: "5"
+              - generic [ref=e102]: Jul
+            - button "Mon 6 Jul" [ref=e103] [cursor=pointer]:
+              - generic [ref=e104]: Mon
+              - generic [ref=e105]: "6"
+              - generic [ref=e106]: Jul
+            - button "Tue 7 Jul" [ref=e107] [cursor=pointer]:
+              - generic [ref=e108]: Tue
+              - generic [ref=e109]: "7"
+              - generic [ref=e110]: Jul
+            - button "Wed 8 Jul" [ref=e111] [cursor=pointer]:
+              - generic [ref=e112]: Wed
+              - generic [ref=e113]: "8"
+              - generic [ref=e114]: Jul
+            - button "Thu 9 Jul" [ref=e115] [cursor=pointer]:
+              - generic [ref=e116]: Thu
+              - generic [ref=e117]: "9"
+              - generic [ref=e118]: Jul
+            - button "Fri 10 Jul" [ref=e119] [cursor=pointer]:
+              - generic [ref=e120]: Fri
+              - generic [ref=e121]: "10"
+              - generic [ref=e122]: Jul
+            - button "Sat 11 Jul" [disabled] [ref=e123]:
+              - generic [ref=e124]: Sat
+              - generic [ref=e125]: "11"
+              - generic [ref=e126]: Jul
+            - button "Sun 12 Jul" [disabled] [ref=e127]:
+              - generic [ref=e128]: Sun
+              - generic [ref=e129]: "12"
+              - generic [ref=e130]: Jul
+            - button "Mon 13 Jul" [ref=e131] [cursor=pointer]:
+              - generic [ref=e132]: Mon
+              - generic [ref=e133]: "13"
+              - generic [ref=e134]: Jul
+            - button "Tue 14 Jul" [ref=e135] [cursor=pointer]:
+              - generic [ref=e136]: Tue
+              - generic [ref=e137]: "14"
+              - generic [ref=e138]: Jul
+            - button "Wed 15 Jul" [ref=e139] [cursor=pointer]:
+              - generic [ref=e140]: Wed
+              - generic [ref=e141]: "15"
+              - generic [ref=e142]: Jul
+            - button "Thu 16 Jul" [ref=e143] [cursor=pointer]:
+              - generic [ref=e144]: Thu
+              - generic [ref=e145]: "16"
+              - generic [ref=e146]: Jul
+            - button "Fri 17 Jul" [ref=e147] [cursor=pointer]:
+              - generic [ref=e148]: Fri
+              - generic [ref=e149]: "17"
+              - generic [ref=e150]: Jul
+            - button "Sat 18 Jul" [disabled] [ref=e151]:
+              - generic [ref=e152]: Sat
+              - generic [ref=e153]: "18"
+              - generic [ref=e154]: Jul
+            - button "Sun 19 Jul" [disabled] [ref=e155]:
+              - generic [ref=e156]: Sun
+              - generic [ref=e157]: "19"
+              - generic [ref=e158]: Jul
+            - button "Mon 20 Jul" [ref=e159] [cursor=pointer]:
+              - generic [ref=e160]: Mon
+              - generic [ref=e161]: "20"
+              - generic [ref=e162]: Jul
+            - button "Tue 21 Jul" [ref=e163] [cursor=pointer]:
+              - generic [ref=e164]: Tue
+              - generic [ref=e165]: "21"
+              - generic [ref=e166]: Jul
+            - button "Wed 22 Jul" [ref=e167] [cursor=pointer]:
+              - generic [ref=e168]: Wed
+              - generic [ref=e169]: "22"
+              - generic [ref=e170]: Jul
+            - button "Thu 23 Jul" [ref=e171] [cursor=pointer]:
+              - generic [ref=e172]: Thu
+              - generic [ref=e173]: "23"
+              - generic [ref=e174]: Jul
+            - button "Fri 24 Jul" [ref=e175] [cursor=pointer]:
+              - generic [ref=e176]: Fri
+              - generic [ref=e177]: "24"
+              - generic [ref=e178]: Jul
+            - button "Sat 25 Jul" [disabled] [ref=e179]:
+              - generic [ref=e180]: Sat
+              - generic [ref=e181]: "25"
+              - generic [ref=e182]: Jul
+            - button "Sun 26 Jul" [disabled] [ref=e183]:
+              - generic [ref=e184]: Sun
+              - generic [ref=e185]: "26"
+              - generic [ref=e186]: Jul
+            - button "Mon 27 Jul" [ref=e187] [cursor=pointer]:
+              - generic [ref=e188]: Mon
+              - generic [ref=e189]: "27"
+              - generic [ref=e190]: Jul
+            - button "Tue 28 Jul" [ref=e191] [cursor=pointer]:
+              - generic [ref=e192]: Tue
+              - generic [ref=e193]: "28"
+              - generic [ref=e194]: Jul
+            - button "Wed 29 Jul" [ref=e195] [cursor=pointer]:
+              - generic [ref=e196]: Wed
+              - generic [ref=e197]: "29"
+              - generic [ref=e198]: Jul
+            - button "Thu 30 Jul" [ref=e199] [cursor=pointer]:
+              - generic [ref=e200]: Thu
+              - generic [ref=e201]: "30"
+              - generic [ref=e202]: Jul
+            - button "Fri 31 Jul" [ref=e203] [cursor=pointer]:
+              - generic [ref=e204]: Fri
+              - generic [ref=e205]: "31"
+              - generic [ref=e206]: Jul
+            - button "Sat 1 Aug" [disabled] [ref=e207]:
+              - generic [ref=e208]: Sat
+              - generic [ref=e209]: "1"
+              - generic [ref=e210]: Aug
+            - button "Sun 2 Aug" [disabled] [ref=e211]:
+              - generic [ref=e212]: Sun
+              - generic [ref=e213]: "2"
+              - generic [ref=e214]: Aug
+            - button "Mon 3 Aug" [ref=e215] [cursor=pointer]:
+              - generic [ref=e216]: Mon
+              - generic [ref=e217]: "3"
+              - generic [ref=e218]: Aug
+            - button "Tue 4 Aug" [ref=e219] [cursor=pointer]:
+              - generic [ref=e220]: Tue
+              - generic [ref=e221]: "4"
+              - generic [ref=e222]: Aug
+            - button "Wed 5 Aug" [ref=e223] [cursor=pointer]:
+              - generic [ref=e224]: Wed
+              - generic [ref=e225]: "5"
+              - generic [ref=e226]: Aug
+            - button "Thu 6 Aug" [ref=e227] [cursor=pointer]:
+              - generic [ref=e228]: Thu
+              - generic [ref=e229]: "6"
+              - generic [ref=e230]: Aug
+            - button "Fri 7 Aug" [ref=e231] [cursor=pointer]:
+              - generic [ref=e232]: Fri
+              - generic [ref=e233]: "7"
+              - generic [ref=e234]: Aug
+            - button "Sat 8 Aug" [disabled] [ref=e235]:
+              - generic [ref=e236]: Sat
+              - generic [ref=e237]: "8"
+              - generic [ref=e238]: Aug
+            - button "Sun 9 Aug" [disabled] [ref=e239]:
+              - generic [ref=e240]: Sun
+              - generic [ref=e241]: "9"
+              - generic [ref=e242]: Aug
+            - button "Mon 10 Aug" [ref=e243] [cursor=pointer]:
+              - generic [ref=e244]: Mon
+              - generic [ref=e245]: "10"
+              - generic [ref=e246]: Aug
+            - button "Tue 11 Aug" [ref=e247] [cursor=pointer]:
+              - generic [ref=e248]: Tue
+              - generic [ref=e249]: "11"
+              - generic [ref=e250]: Aug
+            - button "Wed 12 Aug" [ref=e251] [cursor=pointer]:
+              - generic [ref=e252]: Wed
+              - generic [ref=e253]: "12"
+              - generic [ref=e254]: Aug
+            - button "Thu 13 Aug" [ref=e255] [cursor=pointer]:
+              - generic [ref=e256]: Thu
+              - generic [ref=e257]: "13"
+              - generic [ref=e258]: Aug
+            - button "Fri 14 Aug" [ref=e259] [cursor=pointer]:
+              - generic [ref=e260]: Fri
+              - generic [ref=e261]: "14"
+              - generic [ref=e262]: Aug
+            - button "Sat 15 Aug" [disabled] [ref=e263]:
+              - generic [ref=e264]: Sat
+              - generic [ref=e265]: "15"
+              - generic [ref=e266]: Aug
+            - button "Sun 16 Aug" [disabled] [ref=e267]:
+              - generic [ref=e268]: Sun
+              - generic [ref=e269]: "16"
+              - generic [ref=e270]: Aug
+            - button "Mon 17 Aug" [ref=e271] [cursor=pointer]:
+              - generic [ref=e272]: Mon
+              - generic [ref=e273]: "17"
+              - generic [ref=e274]: Aug
+            - button "Tue 18 Aug" [ref=e275] [cursor=pointer]:
+              - generic [ref=e276]: Tue
+              - generic [ref=e277]: "18"
+              - generic [ref=e278]: Aug
+          - generic:
+            - generic: Kies eerst een datum
+        - heading "2. Jouw gegevens" [level=2] [ref=e279]
+        - generic [ref=e280]:
+          - generic [ref=e281]:
+            - generic [ref=e282]: Naam *
+            - textbox [ref=e283]
+          - generic [ref=e284]:
+            - generic [ref=e285]: E-mailadres *
+            - textbox [ref=e286]
+        - generic [ref=e287]:
+          - generic [ref=e288]: Telefoon *
+          - generic [ref=e289]:
+            - combobox "Telephone country code" [ref=e291]:
+              - generic [ref=e293]: "+32"
+            - textbox [ref=e295]
+        - heading "3. Adres van de woning" [level=2] [ref=e296]
+        - generic [ref=e297]:
+          - generic [ref=e298]: Straat en huisnummer *
+          - textbox "Begin te typen voor suggesties…" [ref=e299]
+        - generic [ref=e300]:
+          - generic [ref=e301]:
+            - generic [ref=e302]: Postcode *
+            - textbox [ref=e303]
+          - generic [ref=e304]:
+            - generic [ref=e305]: Plaats *
+            - textbox [ref=e306]
+        - generic [ref=e307]:
+          - generic [ref=e308]:
+            - generic [ref=e309]: Provincie / regio
+            - textbox [ref=e310]
+          - generic [ref=e311]:
+            - generic [ref=e312]: Land *
+            - combobox [ref=e313]:
+              - option "Afghanistan"
+              - option "Åland Islands"
+              - option "Albania"
+              - option "Algeria"
+              - option "Andorra"
+              - option "Angola"
+              - option "Anguilla"
+              - option "Antigua & Barbuda"
+              - option "Argentina"
+              - option "Armenia"
+              - option "Aruba"
+              - option "Australia"
+              - option "Austria"
+              - option "Azerbaijan"
+              - option "Bahamas"
+              - option "Bahrain"
+              - option "Bangladesh"
+              - option "Barbados"
+              - option "Belarus"
+              - option "Belgium" [selected]
+              - option "Belize"
+              - option "Benin"
+              - option "Bermuda"
+              - option "Bhutan"
+              - option "Bolivia"
+              - option "Bosnia & Herzegovina"
+              - option "Botswana"
+              - option "Brazil"
+              - option "Brunei"
+              - option "Bulgaria"
+              - option "Burkina Faso"
+              - option "Burundi"
+              - option "Cambodia"
+              - option "Cameroon"
+              - option "Canada"
+              - option "Cape Verde"
+              - option "Cayman Islands"
+              - option "Central African Republic"
+              - option "Chad"
+              - option "Chile"
+              - option "China"
+              - option "Colombia"
+              - option "Comoros"
+              - option "Congo"
+              - option "Congo (DRC)"
+              - option "Costa Rica"
+              - option "Côte d'Ivoire"
+              - option "Croatia"
+              - option "Cuba"
+              - option "Curaçao"
+              - option "Cyprus"
+              - option "Czechia"
+              - option "Denmark"
+              - option "Djibouti"
+              - option "Dominica"
+              - option "Dominican Republic"
+              - option "Ecuador"
+              - option "Egypt"
+              - option "El Salvador"
+              - option "Equatorial Guinea"
+              - option "Eritrea"
+              - option "Estonia"
+              - option "Eswatini"
+              - option "Ethiopia"
+              - option "Fiji"
+              - option "Finland"
+              - option "France"
+              - option "French Guiana"
+              - option "French Polynesia"
+              - option "Gabon"
+              - option "Gambia"
+              - option "Georgia"
+              - option "Germany"
+              - option "Ghana"
+              - option "Gibraltar"
+              - option "Greece"
+              - option "Greenland"
+              - option "Grenada"
+              - option "Guadeloupe"
+              - option "Guam"
+              - option "Guatemala"
+              - option "Guernsey"
+              - option "Guinea"
+              - option "Guinea-Bissau"
+              - option "Guyana"
+              - option "Haiti"
+              - option "Honduras"
+              - option "Hong Kong"
+              - option "Hungary"
+              - option "Iceland"
+              - option "India"
+              - option "Indonesia"
+              - option "Iran"
+              - option "Iraq"
+              - option "Ireland"
+              - option "Isle of Man"
+              - option "Israel"
+              - option "Italy"
+              - option "Jamaica"
+              - option "Japan"
+              - option "Jersey"
+              - option "Jordan"
+              - option "Kazakhstan"
+              - option "Kenya"
+              - option "Kiribati"
+              - option "Kuwait"
+              - option "Kyrgyzstan"
+              - option "Laos"
+              - option "Latvia"
+              - option "Lebanon"
+              - option "Lesotho"
+              - option "Liberia"
+              - option "Libya"
+              - option "Liechtenstein"
+              - option "Lithuania"
+              - option "Luxembourg"
+              - option "Macao"
+              - option "Madagascar"
+              - option "Malawi"
+              - option "Malaysia"
+              - option "Maldives"
+              - option "Mali"
+              - option "Malta"
+              - option "Marshall Islands"
+              - option "Martinique"
+              - option "Mauritania"
+              - option "Mauritius"
+              - option "Mexico"
+              - option "Micronesia"
+              - option "Moldova"
+              - option "Monaco"
+              - option "Mongolia"
+              - option "Montenegro"
+              - option "Montserrat"
+              - option "Morocco"
+              - option "Mozambique"
+              - option "Myanmar"
+              - option "Namibia"
+              - option "Nauru"
+              - option "Nepal"
+              - option "Netherlands"
+              - option "New Caledonia"
+              - option "New Zealand"
+              - option "Nicaragua"
+              - option "Niger"
+              - option "Nigeria"
+              - option "North Macedonia"
+              - option "Norway"
+              - option "Oman"
+              - option "Pakistan"
+              - option "Palau"
+              - option "Palestine"
+              - option "Panama"
+              - option "Papua New Guinea"
+              - option "Paraguay"
+              - option "Peru"
+              - option "Philippines"
+              - option "Poland"
+              - option "Portugal"
+              - option "Puerto Rico"
+              - option "Qatar"
+              - option "Réunion"
+              - option "Romania"
+              - option "Russia"
+              - option "Rwanda"
+              - option "Samoa"
+              - option "San Marino"
+              - option "Saudi Arabia"
+              - option "Senegal"
+              - option "Serbia"
+              - option "Seychelles"
+              - option "Sierra Leone"
+              - option "Singapore"
+              - option "Sint Maarten"
+              - option "Slovakia"
+              - option "Slovenia"
+              - option "Solomon Islands"
+              - option "Somalia"
+              - option "South Africa"
+              - option "South Korea"
+              - option "South Sudan"
+              - option "Spain"
+              - option "Sri Lanka"
+              - option "Sudan"
+              - option "Suriname"
+              - option "Sweden"
+              - option "Switzerland"
+              - option "Syria"
+              - option "Taiwan"
+              - option "Tajikistan"
+              - option "Tanzania"
+              - option "Thailand"
+              - option "Timor-Leste"
+              - option "Togo"
+              - option "Tonga"
+              - option "Trinidad & Tobago"
+              - option "Tunisia"
+              - option "Türkiye"
+              - option "Turkmenistan"
+              - option "Turks & Caicos"
+              - option "Tuvalu"
+              - option "Uganda"
+              - option "Ukraine"
+              - option "United Arab Emirates"
+              - option "United Kingdom"
+              - option "United States"
+              - option "Uruguay"
+              - option "Uzbekistan"
+              - option "Vanuatu"
+              - option "Vatican City"
+              - option "Venezuela"
+              - option "Vietnam"
+              - option "Yemen"
+              - option "Zambia"
+              - option "Zimbabwe"
+        - generic [ref=e314]:
+          - generic [ref=e315]: Opmerkingen (optioneel)
+          - textbox [ref=e316]
+        - button "Bevestig je boeking" [disabled] [ref=e317]
+  - contentinfo [ref=e318]:
+    - paragraph [ref=e320]:
+      - text: © 2026
+      - link "Memory Lane" [ref=e321] [cursor=pointer]:
+        - /url: https://mediumturquoise-mink-434967.hostingersite.com/
