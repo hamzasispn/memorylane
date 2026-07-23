@@ -90,3 +90,4 @@ $day_labels = array(
 </form>
 
 <?php ml_tl_render_settings(); ?>
+<?php ml_mp_render_settings(); ?>

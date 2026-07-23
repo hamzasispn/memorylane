@@ -47,6 +47,11 @@ require_once __DIR__ . '/teamleader/booking-sync.php';
 require_once __DIR__ . '/teamleader/settings.php';
 require_once __DIR__ . '/teamleader/invoicing.php';
 
+// Matterport tour import (inert until API creds are entered).
+require_once __DIR__ . '/matterport/settings.php';
+require_once __DIR__ . '/matterport/client.php';
+require_once __DIR__ . '/matterport/sync.php';
+
 // Payments (Stripe) — inert until keys are entered.
 require_once __DIR__ . '/stripe/client.php';
 require_once __DIR__ . '/stripe/plans.php';
