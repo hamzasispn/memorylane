@@ -1,2 +1,7 @@
 # Dependency directories
 node_modules/
+
+# Local tooling / debug artifacts
+.playwright-mcp/
+boek-dropdown.png
+boek-phone-flag.png
