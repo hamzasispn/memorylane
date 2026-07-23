@@ -135,3 +135,33 @@ function ml_tl_process_invoice_queue() {
     update_option( ML_TL_OPT_INVOICE_QUEUE, $remaining, false );
 }
 add_action( 'ml_cron_tl_retry', 'ml_tl_process_invoice_queue' );
+
+/**
+ * Create a credit note in Teamleader for a refunded Stripe invoice, if we
+ * recorded a Teamleader invoice for it. Idempotent per Stripe charge id.
+ */
+function ml_tl_push_credit_note( $user, $stripe_invoice_id, $charge_id, $amount_cents, $currency ) {
+    $done_key = '_ml_tl_cn_' . preg_replace( '/[^a-zA-Z0-9_]/', '', (string) $charge_id );
+    if ( get_user_meta( $user->ID, $done_key, true ) ) return;
+    $tl_invoice_id = (string) get_user_meta( $user->ID, ml_tl_invoice_done_key( $stripe_invoice_id ), true );
+    if ( ! $tl_invoice_id ) { error_log( '[memorylane] refund: no TL invoice for ' . $stripe_invoice_id ); return; }
+
+    $cn = ml_tl_request( 'creditNotes.create', array(
+        'invoice_id'  => $tl_invoice_id,
+        'credit_note' => array(
+            'grouped_lines' => array( array(
+                'line_items' => array( array(
+                    'quantity'    => 1,
+                    'description' => 'Refund',
+                    'unit_price'  => array(
+                        'amount'   => number_format( ( (int) $amount_cents ) / 100, 2, '.', '' ),
+                        'currency' => strtoupper( (string) $currency ),
+                        'tax'      => 'including',
+                    ),
+                    'tax_rate_id' => ml_tl_tax_rate_id(),
+                ) ),
+            ) ),
+        ),
+    ) );
+    if ( ! empty( $cn['id'] ) ) update_user_meta( $user->ID, $done_key, $cn['id'] );
+}

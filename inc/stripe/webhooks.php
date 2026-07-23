@@ -77,6 +77,7 @@ function ml_stripe_dispatch_event( \Stripe\Event $event ) {
         'customer.subscription.updated' => 'ml_stripe_event_customer_subscription_changed',
         'customer.subscription.deleted' => 'ml_stripe_event_customer_subscription_deleted',
         'invoice.paid'                  => 'ml_stripe_event_invoice_paid',   // Phase 3 (Teamleader)
+        'charge.refunded'               => 'ml_stripe_event_charge_refunded', // Phase 4 (credit note)
     );
     $fn = $map[ $type ] ?? null;
     if ( $fn && function_exists( $fn ) ) {
