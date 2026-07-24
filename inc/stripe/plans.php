@@ -20,13 +20,15 @@ function ml_plan_get() {
         'product_name'        => ml_stripe_opt( 'plan_name',        'Memory Lane' ),
         'product_description' => ml_stripe_opt( 'plan_description', '' ),
         'currency'            => strtolower( ml_stripe_opt( 'plan_currency', 'eur' ) ),
-        'activation_amount'   => (int) ml_stripe_opt( 'plan_activation_amount', 0 ),
-        'yearly_amount'       => (int) ml_stripe_opt( 'plan_yearly_amount',     0 ),
-        'monthly_amount'      => (int) ml_stripe_opt( 'plan_monthly_amount',    0 ),
-        'product_id'          => ml_stripe_opt( 'product_id',          '' ),
-        'activation_price_id' => ml_stripe_opt( 'activation_price_id', '' ),
-        'yearly_price_id'     => ml_stripe_opt( 'yearly_price_id',     '' ),
-        'monthly_price_id'    => ml_stripe_opt( 'monthly_price_id',    '' ),
+        'activation_amount'   => (int) ml_stripe_opt( 'plan_activation_amount',   0 ),
+        'yearly_amount'       => (int) ml_stripe_opt( 'plan_yearly_amount',       0 ),
+        'monthly_amount'      => (int) ml_stripe_opt( 'plan_monthly_amount',      0 ),
+        'reactivation_amount' => (int) ml_stripe_opt( 'plan_reactivation_amount', 0 ),
+        'product_id'          => ml_stripe_opt( 'product_id',            '' ),
+        'activation_price_id' => ml_stripe_opt( 'activation_price_id',   '' ),
+        'yearly_price_id'     => ml_stripe_opt( 'yearly_price_id',       '' ),
+        'monthly_price_id'    => ml_stripe_opt( 'monthly_price_id',      '' ),
+        'reactivation_price_id' => ml_stripe_opt( 'reactivation_price_id', '' ),
         'synced_at'           => (int) ml_stripe_opt( 'plan_synced_at',  0 ),
     );
 }
@@ -71,9 +73,10 @@ function ml_plan_sync_to_stripe() {
         // Each price gets its OWN Stripe Product so the customer-facing name on
         // Checkout is clear (Checkout shows the product name, not the nickname).
         $specs = array(
-            'activation_price_id' => array( $plan['activation_amount'], null, ml_plan_product_name( 'activation' ) ),
-            'yearly_price_id'     => array( $plan['yearly_amount'],     null, ml_plan_product_name( 'yearly' ) ),
-            'monthly_price_id'    => array( $plan['monthly_amount'],    array( 'interval' => 'month', 'interval_count' => 1 ), ml_plan_product_name( 'monthly' ) ),
+            'activation_price_id'   => array( $plan['activation_amount'],   null, ml_plan_product_name( 'activation' ) ),
+            'yearly_price_id'       => array( $plan['yearly_amount'],       null, ml_plan_product_name( 'yearly' ) ),
+            'monthly_price_id'      => array( $plan['monthly_amount'],      array( 'interval' => 'month', 'interval_count' => 1 ), ml_plan_product_name( 'monthly' ) ),
+            'reactivation_price_id' => array( $plan['reactivation_amount'], null, ml_plan_product_name( 'reactivation' ) ),
         );
         foreach ( $specs as $opt_key => $spec ) {
             list( $amount_cents, $recurring, $product_name ) = $spec;
@@ -102,9 +105,10 @@ function ml_plan_sync_to_stripe() {
  */
 function ml_plan_product_name( $which ) {
     $names = array(
-        'activation' => 'Memory Lane — Activatie & 3D-scan',
-        'yearly'     => 'Memory Lane — Online tour (jaar 1)',
-        'monthly'    => 'Memory Lane — Maandelijkse hosting',
+        'activation'   => 'Memory Lane — Activatie & 3D-scan',
+        'yearly'       => 'Memory Lane — Online tour (jaar 1)',
+        'monthly'      => 'Memory Lane — Maandelijkse hosting',
+        'reactivation' => 'Memory Lane — Reactivatie',
     );
     return apply_filters( 'ml_plan_product_name', $names[ $which ] ?? 'Memory Lane', $which );
 }
@@ -168,9 +172,10 @@ function ml_plan_fetch_state() {
     $out = array( 'prices' => array() );
 
     foreach ( array(
-        'activation' => $plan['activation_price_id'],
-        'yearly'     => $plan['yearly_price_id'],
-        'monthly'    => $plan['monthly_price_id'],
+        'activation'   => $plan['activation_price_id'],
+        'yearly'       => $plan['yearly_price_id'],
+        'monthly'      => $plan['monthly_price_id'],
+        'reactivation' => $plan['reactivation_price_id'],
     ) as $k => $pid ) {
         if ( ! $pid ) continue;
         try { $out['prices'][ $k ] = $stripe->prices->retrieve( $pid ); } catch ( \Throwable $e ) {}

@@ -152,9 +152,10 @@ add_action( 'admin_post_ml_ap_billing_save', function () {
         update_option( "ml_stripe_{$mode}_{$k}", sanitize_text_field( wp_unslash( $_POST[ $k ] ?? '' ) ), false );
     }
     ml_plan_save_raw( array(
-        'plan_activation_amount' => ml_to_minor_units( wp_unslash( $_POST['plan_activation_amount'] ?? '' ) ),
-        'plan_yearly_amount'     => ml_to_minor_units( wp_unslash( $_POST['plan_yearly_amount'] ?? '' ) ),
-        'plan_monthly_amount'    => ml_to_minor_units( wp_unslash( $_POST['plan_monthly_amount'] ?? '' ) ),
+        'plan_activation_amount'   => ml_to_minor_units( wp_unslash( $_POST['plan_activation_amount'] ?? '' ) ),
+        'plan_yearly_amount'       => ml_to_minor_units( wp_unslash( $_POST['plan_yearly_amount'] ?? '' ) ),
+        'plan_monthly_amount'      => ml_to_minor_units( wp_unslash( $_POST['plan_monthly_amount'] ?? '' ) ),
+        'plan_reactivation_amount' => ml_to_minor_units( wp_unslash( $_POST['plan_reactivation_amount'] ?? '' ) ),
     ) );
 
     ml_ap_back( 'billing', array( 'msg' => 'saved' ) );
