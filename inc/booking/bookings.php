@@ -55,6 +55,10 @@ add_action( 'admin_post_ml_booking_request', function () {
         ml_flash_set( 'error', __( 'Slot is in the past.', 'memorylane' ) );
         wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
     }
+    if ( (int) $slot->booked_count >= (int) $slot->capacity ) {
+        ml_flash_set( 'error', __( 'Sorry, that time was just taken. Please pick another.', 'memorylane' ) );
+        wp_safe_redirect( home_url( '/dashboard/booking' ) ); exit;
+    }
     $slot_id = (int) $slot->id;
 
     global $wpdb;

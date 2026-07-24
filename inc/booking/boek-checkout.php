@@ -65,6 +65,10 @@ function ml_rest_boek( WP_REST_Request $req ) {
     if ( strtotime( $slot->slot_start_datetime . ' UTC' ) <= time() ) {
         return new WP_REST_Response( array( 'ok' => false, 'error' => 'slot_in_past' ), 409 );
     }
+    // Prevent double-booking: refuse a slot that's already at capacity.
+    if ( (int) $slot->booked_count >= (int) $slot->capacity ) {
+        return new WP_REST_Response( array( 'ok' => false, 'error' => 'slot_unavailable' ), 409 );
+    }
 
     // Payment path: if Stripe is configured, start the activation + year-1 Checkout.
     // Otherwise fall through to the existing no-payment provisioning (inert).
@@ -211,6 +215,7 @@ function ml_boek_provision_booking( array $data, $slot ) {
             'updated_at'     => $now_db,
         ) );
         $booking_id = (int) $wpdb->insert_id;
+        if ( $booking_id ) ml_increment_slot_booked( $slot_id ); // count against slot capacity
     }
 
     // Confirm to the customer + notify admins.

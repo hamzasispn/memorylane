@@ -77,6 +77,7 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
                     'created_at'     => $now,
                     'updated_at'     => $now,
                 ) );
+                if ( function_exists( 'ml_increment_slot_booked' ) ) ml_increment_slot_booked( $slot_id );
             }
         }
     }

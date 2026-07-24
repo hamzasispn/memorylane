@@ -71,11 +71,23 @@ function ml_booking_get_times_with_availability( $date ) {
     $times = ml_booking_compute_times_for_date( $date );
     if ( empty( $times ) ) return array();
 
+    // Slots already at capacity → their times are shown as unavailable.
+    global $wpdb;
+    $tbl  = ml_table( 'availability_slots' );
+    $full = array();
+    foreach ( (array) $wpdb->get_col(
+        "SELECT slot_start_datetime FROM {$tbl} WHERE booked_count >= capacity AND slot_start_datetime >= UTC_TIMESTAMP()"
+    ) as $dt ) {
+        $full[ $dt ] = true;
+    }
+
     $today_local = wp_date( 'Y-m-d' );
     $now_ts      = time();
     $result      = array();
     foreach ( $times as $time ) {
-        $available = ! ( $date === $today_local && strtotime( "{$date} {$time}:00" ) <= $now_ts );
+        $utc       = ml_booking_local_to_utc( $date, $time );
+        $available = ! ( $date === $today_local && strtotime( "{$date} {$time}:00" ) <= $now_ts )
+                     && empty( $full[ $utc ] );
         $result[] = array( 'time' => $time, 'available' => $available );
     }
     return $result;
