@@ -19,6 +19,7 @@ $nav = array(
     'tours'    => array( 'label' => 'Tours',    'icon' => 'view'     ),
     'billing'  => array( 'label' => 'Billing',  'icon' => 'card'     ),
     'subscriptions' => array( 'label' => 'Subscriptions', 'icon' => 'card' ),
+    'logs'     => array( 'label' => 'Logs',     'icon' => 'list'     ),
     'settings' => array( 'label' => 'Settings', 'icon' => 'gear'     ),
 );
 
@@ -43,6 +44,7 @@ $titles = array(
     'bookings' => 'Bookings',
     'billing'  => 'Billing',
     'subscriptions' => 'Subscriptions',
+    'logs'     => 'Logs',
     'settings' => 'Settings',
 );
 $page_title = $titles[ $section ] ?? 'Memory Lane Admin';
