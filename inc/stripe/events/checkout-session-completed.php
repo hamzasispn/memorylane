@@ -19,6 +19,17 @@ function ml_stripe_event_checkout_session_completed( \Stripe\Event $event ) {
     if ( $session->mode !== 'payment' ) return;               // booking pays activation + year 1 (one-time)
     if ( $session->payment_status !== 'paid' ) return;
 
+    // Reactivation checkout → its own flow (no new user/booking/activation).
+    if ( ( $session->metadata['ml_intent'] ?? '' ) === 'reactivation' && function_exists( 'ml_reactivation_complete' ) ) {
+        $r_uid  = (int) ( $session->metadata['ml_user_id'] ?? 0 );
+        $r_user = $r_uid ? get_user_by( 'id', $r_uid ) : null;
+        if ( ! $r_user && ! empty( $session->customer_details->email ) ) {
+            $r_user = get_user_by( 'email', $session->customer_details->email );
+        }
+        if ( $r_user ) ml_reactivation_complete( $r_user, $session );
+        return;
+    }
+
     $customer = $session->customer;
     $email    = $session->customer_details->email ?? ( is_object( $customer ) ? ( $customer->email ?? null ) : null );
     if ( ! $email ) throw new \RuntimeException( 'No email on Stripe session' );

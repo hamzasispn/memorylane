@@ -30,6 +30,10 @@ function ml_stripe_monthly_price_id() {
     return (string) ml_stripe_opt( 'monthly_price_id' );
 }
 
+function ml_stripe_reactivation_price_id() {
+    return (string) ml_stripe_opt( 'reactivation_price_id' );
+}
+
 /**
  * Get a Stripe client. Returns null if not configured. Throws no exception.
  */

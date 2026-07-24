@@ -8,10 +8,26 @@ $post = esc_url( admin_url( 'admin-post.php' ) );
     <h1 class="ml-h1"><?php ml_e( 'sub.title' ); ?></h1>
     <p class="ml-sub"></p>
 
+    <?php if ( ! empty( $_GET['reactivated'] ) ) : ?>
+        <div class="ml-alert ml-alert--success ml-mb-2"><?php echo esc_html__( 'Payment received — your tour will be back online shortly (within 8 hours).', 'memorylane' ); ?></div>
+    <?php endif; ?>
+
+    <?php
+    $can_reactivate = function_exists( 'ml_stripe_reactivation_price_id' ) && ml_stripe_reactivation_price_id()
+        && ( ! $row || ! in_array( $row->status, array( 'active', 'trialing' ), true ) );
+    ?>
+
     <?php if ( ! $row ) : ?>
         <div class="ml-empty">
             <div class="ml-empty__title"><?php echo esc_html__( 'No subscription yet', 'memorylane' ); ?></div>
             <p class="ml-text-sm"><?php echo esc_html__( 'There is no active subscription on this account.', 'memorylane' ); ?></p>
+            <?php if ( $can_reactivate ) : ?>
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="ml-mt-2">
+                    <?php wp_nonce_field( 'ml_reactivate' ); ?>
+                    <input type="hidden" name="action" value="ml_reactivate">
+                    <button class="ml-btn ml-btn--primary" type="submit"><?php echo esc_html__( 'Reactivate my tour', 'memorylane' ); ?></button>
+                </form>
+            <?php endif; ?>
         </div>
     <?php else :
         $label = ml_subscription_status_label( $row );
@@ -44,6 +60,13 @@ $post = esc_url( admin_url( 'admin-post.php' ) );
                         <?php wp_nonce_field( 'ml_sub_cancel' ); ?>
                         <input type="hidden" name="action" value="ml_sub_cancel">
                         <button class="ml-btn ml-btn--ghost" type="submit"><?php echo esc_html__( 'Cancel subscription', 'memorylane' ); ?></button>
+                    </form>
+                <?php endif; ?>
+                <?php if ( $can_reactivate ) : ?>
+                    <form method="post" action="<?php echo $post; ?>" style="display:inline;">
+                        <?php wp_nonce_field( 'ml_reactivate' ); ?>
+                        <input type="hidden" name="action" value="ml_reactivate">
+                        <button class="ml-btn ml-btn--primary" type="submit"><?php echo esc_html__( 'Reactivate my tour', 'memorylane' ); ?></button>
                     </form>
                 <?php endif; ?>
             </div>

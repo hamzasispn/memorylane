@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * @return array { ok: bool, sub_id?: string, error?: string, reused?: bool }
  */
-function ml_create_monthly_subscription( int $user_id, string $default_pm = '' ) {
+function ml_create_monthly_subscription( int $user_id, string $default_pm = '', $trial_days = ML_YEAR_ONE_DAYS ) {
     $stripe = ml_stripe();
     if ( ! $stripe ) return array( 'ok' => false, 'error' => 'Stripe not configured.' );
 
@@ -30,10 +30,12 @@ function ml_create_monthly_subscription( int $user_id, string $default_pm = '' )
         $params = array(
             'customer'           => $customer_id,
             'items'              => array( array( 'price' => $monthly_price_id ) ),
-            'trial_period_days'  => ML_YEAR_ONE_DAYS,
             'proration_behavior' => 'none',
             'metadata'           => array( 'ml_intent' => 'memory_lane_monthly', 'ml_user_id' => (string) $user_id ),
         );
+        if ( (int) $trial_days > 0 ) {
+            $params['trial_period_days'] = (int) $trial_days; // year 1 free (activation) — omitted for reactivation
+        }
         if ( $default_pm ) {
             $params['default_payment_method'] = $default_pm;
         }

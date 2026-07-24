@@ -43,6 +43,11 @@ $post_url   = esc_url( admin_url( 'admin-post.php' ) );
             <div><input type="text" name="plan_monthly_amount" value="<?php echo esc_attr( ml_from_minor_units( $plan['monthly_amount'] ) ); ?>" placeholder="15.00">
                 <div class="help">Starts automatically after 12 months; customer can cancel anytime.</div></div>
         </div>
+        <div class="mla-form-row">
+            <label>Reactivation — one-time (€)</label>
+            <div><input type="text" name="plan_reactivation_amount" value="<?php echo esc_attr( ml_from_minor_units( $plan['reactivation_amount'] ) ); ?>" placeholder="149.00">
+                <div class="help">One-time fee to restore an archived tour after a lapse.</div></div>
+        </div>
         <div style="margin-top:16px;"><button class="mla-btn mla-btn--primary" type="submit">Save</button></div>
     </form>
 </div>

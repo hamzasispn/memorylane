@@ -23,6 +23,7 @@ require_once __DIR__ . '/auth/password-reset.php';
 require_once __DIR__ . '/subscriptions/access-gate.php';
 require_once __DIR__ . '/subscriptions/status.php';
 require_once __DIR__ . '/subscriptions/sync.php';
+require_once __DIR__ . '/subscriptions/reactivation.php';
 
 // Tours.
 require_once __DIR__ . '/tours/cpt.php';
